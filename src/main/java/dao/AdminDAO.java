@@ -20,12 +20,11 @@ public class AdminDAO extends DBContext{
         AdminDAO dao = new AdminDAO();
         System.out.println(dao.getAll());
     }
-    public static final String SELECT_CUSTOMERS = "select Username, FullName, Email, Phone from Users where Role = ?";
-    public static final String SELECT_CUSTOMERSr = "SELECT Username, FullName, Email, Phone FROM Users";
+    
+    public static final String SELECT_CUSTOMERS = "select Username, FullName, Email, Phone, Role from Users";
     public List<User> getAll() throws SQLException {
         List<User> list = new ArrayList<>();
-        Object[] params = {"1"};
-        ResultSet rs = executeSelectQuery(SELECT_CUSTOMERS, params);
+        ResultSet rs = executeSelectQuery(SELECT_CUSTOMERS, null);
         
         while (rs.next()) {            
             User user = new User();
@@ -33,6 +32,7 @@ public class AdminDAO extends DBContext{
             user.setUserFullname(rs.getString("Fullname"));
             user.setUserEmail(rs.getString("Email"));
             user.setUserPhone(rs.getString("Phone"));
+            user.setUserRole(rs.getInt("Role"));
             list.add(user);
         }
         

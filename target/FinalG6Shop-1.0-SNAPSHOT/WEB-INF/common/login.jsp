@@ -30,7 +30,7 @@
             <!-- Username -->
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" name="username" id="usernameInput"
-                       placeholder="Enter User Name" value="<%= savedUsername %>" required>
+                       placeholder="Enter User Name" value="${username != null ? username : ''}" required>
                 <label for="usernameInput">Username</label>
             </div>
 

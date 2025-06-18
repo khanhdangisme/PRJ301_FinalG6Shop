@@ -13,12 +13,12 @@
 %>
 
 <html>
-    
+
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-        <link rel="apple-touch-icon" href="assets/img/apple-icon.png">
-        <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+        <link rel="apple-touch-icon" href="assets/img/logo_G6.png">
+        <link rel="shortcut icon" type="image/x-icon" href="assets/img/mini_logo.png">
 
         <link rel="stylesheet" href="assets/css/bootstrap.min.css">
         <link rel="stylesheet" href="assets/css/templatemo.css">
@@ -33,8 +33,11 @@
         <nav class="navbar navbar-expand-lg navbar-light shadow fixed-top bg-white">
             <div class="container d-flex justify-content-between align-items-center">
 
-                <a class="navbar-brand text-success logo h1 align-self-center" href="index.jsp">
-                    G6Shop
+                <!--                <a class="navbar-brand text-success logo h1 align-self-center" href="index.jsp">
+                                    G6Shop
+                                </a>-->
+                <a class="navbar-brand align-self-center" href="index.jsp">
+                    <img src="assets/img/logo_G6.png" alt="G6Shop Logo" height="70">
                 </a>
 
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#templatemo_main_nav">
@@ -60,7 +63,7 @@
                         </a>
 
                         <!-- Cart icon -->
-                        <a class="nav-icon position-relative text-decoration-none" href="#">
+                        <a class="nav-icon position-relative text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
                             <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
                             <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">7</span>
                         </a>
@@ -69,48 +72,50 @@
                         <% if (loggedIn) { %>
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-
+                                <!-- Avatar icon -->
                                 <!-- Avatar icon -->
                                 <div class="avatar-placeholder me-2">
                                     <%= loggedUser.getUserFullname().toUpperCase().charAt(0) %>
                                 </div>
 
-                                <!-- Lời chào -->
-                                <span class="ms-1">Hi, <%= loggedUser.getUserFullname() %></span>
+                                <!-- Greeting -->
+                                <span class="fw-semibold">Hi, <%= loggedUser.getUserFullname() %></span>
                             </a>
 
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" style="min-width: 250px;">
-                                <!-- Header hiển thị tên + email -->
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="userDropdown" style="min-width: 260px;">
+                                <!-- User Info -->
                                 <li class="px-3 py-2 border-bottom">
-                                    <div class="fw-bold"><%= loggedUser.getUserName() %></div>
+                                    <div class="fw-bold text-dark mb-1"><%= loggedUser.getUserName() %></div>
                                     <div class="text-muted small"><%= loggedUser.getUserEmail() %></div>
                                 </li>
 
-                                <!-- Menu chức năng -->
+                                <!-- Profile -->
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="user?view=profile">
-                                        <i class="fa fa-user me-2"></i> My profile
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="user?view=profile">
+                                        <i class="fa fa-user me-2 text-primary"></i> My Profile
                                     </a>
                                 </li>
 
-                                <!-- Nếu là admin thì hiển thị link dashboard -->
+                                <!-- Admin Dashboard -->
                                 <c:if test="${sessionScope.loggedUser.userRole == 0}">
                                     <li>
-                                        <a class="dropdown-item d-flex align-items-center" href="${pageContext.request.contextPath}/admin?view=dashboard">
-                                            <i class="fa fa-tachometer-alt me-2"></i> Dashboard
+                                        <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/admin?view=dashboard">
+                                            <i class="fa fa-tachometer-alt me-2 text-warning"></i> Dashboard
                                         </a>
                                     </li>
                                 </c:if>
 
+                                <!-- Order History -->
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <i class="fa fa-history me-2"></i> Order history
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="#">
+                                        <i class="fa fa-history me-2 text-secondary"></i> Order History
                                     </a>
                                 </li>
 
+                                <!-- Logout -->
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="<%=request.getContextPath()%>/logout">
-                                        <i class="fa fa-sign-out-alt me-2"></i> Sign out
+                                    <a class="dropdown-item d-flex align-items-center py-2 text-danger" href="<%=request.getContextPath()%>/logout">
+                                        <i class="fa fa-sign-out-alt me-2"></i> Sign Out
                                     </a>
                                 </li>
                             </ul>

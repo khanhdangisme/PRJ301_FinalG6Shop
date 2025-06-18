@@ -23,6 +23,8 @@ public class PathConstant {
     
     //Servlet (neu response.sendRedirect thi them request.getContextPath() + URL servlet)
     public static final String URL_SERVLET_LOGIN = "/login";
-    public static final String URL_SERVLET_REGISTER = "/registe";
-    public static final String URL_SERVLET_HOME = "/home";
+    
+    //SendRedirect
+    public static final String URL_SERVLET_ADMIN_CUSTOMERS = "/admin?view=customers";
+    public static final String URL_SERVLET_USER_PROFILE = "/user?view=profile";
 }

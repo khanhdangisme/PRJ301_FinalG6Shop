@@ -17,6 +17,9 @@ public class MessageConstant {
     
     public static final String UPDATE_SUCCESSFULLY = "Update profile successful!";
     public static final String UPDATE_UNSUCCESSFULLY = "Update profile unsuccessful!";
+    public static final String UPDATE_CURRENTPASSWORD_ERROR = "Current password is incorrect.";
+    public static final String UPDATE_PASSWORD = "Password changed successfully.";
+    public static final String UPDATE_PASSWORD_ERROR = "Failed to change password.";
     
     public static final String REGISTER_ERROR_EXISTS = "Username already exists.";
     public static final String REGISTER_ERROR = "Registration failed. Please try again later or contact support.";

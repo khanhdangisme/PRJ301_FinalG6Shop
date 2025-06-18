@@ -116,6 +116,7 @@ public class LoginServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath());
         } else {
             // Đăng nhập thất bại
+            request.setAttribute(AttributeConstant.USERNAME, username);
             session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.LOGIN_ERROR);
             session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
             request.getRequestDispatcher(PathConstant.URL_LOGIN).forward(request, response);

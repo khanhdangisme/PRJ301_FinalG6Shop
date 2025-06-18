@@ -5,9 +5,11 @@
 package controller;
 
 import constant.AttributeConstant;
+import constant.MessageConstant;
 import constant.ParamConstant;
 import constant.PathConstant;
 import dao.AdminDAO;
+import dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -15,6 +17,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -82,10 +85,6 @@ public class AdminServlet extends HttpServlet {
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
-
-            case "update-password":
-                request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
-                break;
         }
     }
 
@@ -100,6 +99,44 @@ public class AdminServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String action = request.getParameter(ParamConstant.ACTION);
+        HttpSession session = request.getSession(false);
+        User user = (User) session.getAttribute("loggedUser"); // KHÔNG cần check null nữa
+        UserDAO dao = new UserDAO();
+        
+        if ("register".equals(action)) {
+            String username = request.getParameter(ParamConstant.USERNAME);
+            String password = request.getParameter(ParamConstant.PASSWORD);
+            String fullname = request.getParameter(ParamConstant.FULLNAME);
+            String email = request.getParameter(ParamConstant.EMAIL);
+            String phone = request.getParameter(ParamConstant.PHONE);
+
+             // Kiểm tra người dùng đã tồn tại chưa
+            if (dao.checkUserExists(username)) {
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                return;
+            }
+            User newUser = new User(0, username, password, fullname, email, phone, 0, null); // Role = 1 là customer
+
+            boolean inserted = false;
+            try {
+                inserted = dao.insertUser(newUser);
+            } catch (SQLException ex) {
+                Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            if (inserted) {
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_SUCCESSFULLY);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+            } else {
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+            }
+        }
 
     }
 

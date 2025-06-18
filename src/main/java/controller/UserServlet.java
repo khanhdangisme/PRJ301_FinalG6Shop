@@ -153,7 +153,7 @@ public class UserServlet extends HttpServlet {
                 session.setAttribute(AttributeConstant.LOGGEDUSER, user);
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_SUCCESSFULLY);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
-                response.sendRedirect(PathConstant.URL_USER_PROFILE);
+                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_USER_PROFILE);
             } else {
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_UNSUCCESSFULLY);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
@@ -161,14 +161,14 @@ public class UserServlet extends HttpServlet {
             }
         } else if ("change-password".equals(action)) {
             
-            String username = request.getParameter("username");
-            String currentPassword = request.getParameter("currentPassword");
-            String newPassword = request.getParameter("newPassword");
+            String username = request.getParameter(AttributeConstant.USERNAME);
+            String currentPassword = request.getParameter(AttributeConstant.CURRENT_PASSWORD);
+            String newPassword = request.getParameter(AttributeConstant.NEW_PASSWORD);
             
             boolean correct = dao.checkExistsPassword(username, currentPassword);
             
             if (!correct) {
-                session.setAttribute(AttributeConstant.MESSAGE, "Current password is incorrect.");
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_CURRENTPASSWORD_ERROR);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
             } else {
@@ -180,12 +180,13 @@ public class UserServlet extends HttpServlet {
                 }
                 if (updated) {
                     session.setAttribute(AttributeConstant.LOGGEDUSER, user);
-                    session.setAttribute(AttributeConstant.MESSAGE, "Password changed successfully.");
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD);
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
-                    response.sendRedirect(PathConstant.URL_USER_PROFILE);
+                    response.sendRedirect(PathConstant.URL_SERVLET_USER_PROFILE);
                 } else {
-                    session.setAttribute("message", "Failed to change password.");
-                    session.setAttribute("messageType", "danger");
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD_ERROR);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
                 }
 
             }
