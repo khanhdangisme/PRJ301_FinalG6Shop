@@ -1,7 +1,11 @@
+dao\IphoneDetailsDAO.class
 controller\LoginServlet.class
+dao\MacbookDetailsDAO.class
+controller\ProductServlet.class
 constant\PathConstant.class
 filter\AdminFilter.class
 dao\AdminDAO.class
+dao\IpadDetailsDAO.class
 constant\AttributeConstant.class
 constant\MessageConstant.class
 constant\ParamConstant.class
@@ -11,5 +15,6 @@ controller\UserServlet.class
 db\DBContext.class
 filter\UserFilter.class
 controller\RegisterServlet.class
+dao\ProductDAO.class
 controller\AdminServlet.class
 model\User.class

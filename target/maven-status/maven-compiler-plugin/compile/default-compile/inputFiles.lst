@@ -2,9 +2,12 @@ D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\contr
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\model\User.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\controller\UserServlet.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\filter\AdminFilter.java
+D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\dao\ProductDAO.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\controller\LogoutServlet.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\controller\RegisterServlet.java
+D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\dao\IpadDetailsDAO.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\db\DBContext.java
+D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\controller\ProductServlet.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\constant\MessageConstant.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\constant\ParamConstant.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\dao\AdminDAO.java
@@ -12,4 +15,6 @@ D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\contr
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\constant\AttributeConstant.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\dao\UserDAO.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\constant\PathConstant.java
+D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\dao\IphoneDetailsDAO.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\filter\UserFilter.java
+D:\CodeJava\JavaForNeatBeans\PRJ301\finalProject\FinalG6Shop\src\main\java\dao\MacbookDetailsDAO.java
