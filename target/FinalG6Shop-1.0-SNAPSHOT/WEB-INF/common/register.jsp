@@ -6,7 +6,6 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/header.jsp" %>
-<%@include file="/WEB-INF/include/showNotification.jsp" %>
 <title>G6Shop - Register</title>
 
 <link href="/assets/css/signin.css" rel="stylesheet">

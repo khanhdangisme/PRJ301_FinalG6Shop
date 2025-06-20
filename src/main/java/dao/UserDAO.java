@@ -19,12 +19,13 @@ import model.User;
  */
 public class UserDAO extends DBContext {
 
-    public static final String SELECT_PASSWORD = "SELECT ID, Username, Password, FullName, Email, Phone, Role, avatar_url FROM Users WHERE Username = ? AND Password = ?";
-    public static final String INSERT_USER = "INSERT INTO Users (Username, Password, FullName, Email, Phone, Role) VALUES (?, ?, ?, ?, ?, ?)";
+    public static final String SELECT_PASSWORD = "SELECT ID, Username, Password, FullName, Email, Phone, Role, avatar_url, status FROM Users WHERE Username = ? AND Password = ?";
+    public static final String INSERT_USER = "INSERT INTO Users (Username, Password, FullName, Email, Phone, Role, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
     public static final String CHECK_EXIST = "SELECT 1 FROM Users WHERE Username = ?";
     public static final String UPDATE_USER = "UPDATE users SET fullname=?, email=?, phone=?, avatar_url=? WHERE username=?";
     public static final String UPDATE_PASSWORD_USER = "UPDATE Users SET password = ? WHERE username = ?";
     public static final String CHECK_EXIST_BEFORE_UPDATE_PASSWORD = "SELECT 1 FROM Users WHERE username = ? AND password = ?";
+    public static final String DELETE_USER = "DELETE FROM Users WHERE Username = ? and password = ?";
 
     //method login(User)
     //ham ma hoa password 
@@ -60,7 +61,8 @@ public class UserDAO extends DBContext {
                         rs.getString("Email"),
                         rs.getString("Phone"),
                         rs.getInt("Role"),
-                        rs.getString("avatar_url")
+                        rs.getString("avatar_url"),
+                        rs.getString("status")
                 );
             } else {
                 return null;
@@ -89,7 +91,8 @@ public class UserDAO extends DBContext {
             user.getUserFullname(),
             user.getUserEmail(),
             user.getUserPhone(),
-            user.getUserRole()
+            user.getUserRole(),
+            user.getStatus()
         };
         return this.executeQuery(INSERT_USER, params) > 0;
     }
@@ -123,5 +126,10 @@ public class UserDAO extends DBContext {
             Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+    }
+    
+    public boolean deleteUser(String username, String password) throws SQLException{
+        String hashedPwd = hashMd5(password);
+        return this.executeQuery(DELETE_USER, new Object[]{username, hashedPwd}) > 0;
     }
 }

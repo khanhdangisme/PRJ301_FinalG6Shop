@@ -10,10 +10,9 @@
     model.User user = (model.User) session.getAttribute("loggedUser");
 %>
 <%@include file="/WEB-INF/include/header.jsp" %>
-<%@include file="/WEB-INF/include/showNotification.jsp" %>
 <title>G6Shop - Update Profile</title>
 
-<div class="container py-5" style="margin-top: 140px; margin-bottom: 20px">
+<div class="container py-5" style="margin-top: 120px; margin-bottom: 20px">
     <form action="user?action=save-profile" method="post" enctype="multipart/form-data">
         <!-- Avatar upload -->
         <div class="text-center mb-5">
@@ -61,7 +60,7 @@
                     <a href="user?view=profile" class="btn btn-secondary me-2">
                         Cancel
                     </a>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary fw-semibold me-2">
                         Save Changes
                     </button>
                 </div>
@@ -87,6 +86,5 @@ function previewAvatar(input) {
     }
 }
 </script>
-
 <%@include file="/WEB-INF/include/footer.jsp" %>
 

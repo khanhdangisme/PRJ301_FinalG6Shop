@@ -103,7 +103,8 @@ public class AdminServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         User user = (User) session.getAttribute("loggedUser"); // KHÔNG cần check null nữa
         UserDAO dao = new UserDAO();
-        
+        AdminDAO adminDAO = new AdminDAO();
+
         if ("register".equals(action)) {
             String username = request.getParameter(ParamConstant.USERNAME);
             String password = request.getParameter(ParamConstant.PASSWORD);
@@ -111,14 +112,14 @@ public class AdminServlet extends HttpServlet {
             String email = request.getParameter(ParamConstant.EMAIL);
             String phone = request.getParameter(ParamConstant.PHONE);
 
-             // Kiểm tra người dùng đã tồn tại chưa
+            // Kiểm tra người dùng đã tồn tại chưa
             if (dao.checkUserExists(username)) {
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
                 return;
             }
-            User newUser = new User(0, username, password, fullname, email, phone, 0, null); // Role = 1 là customer
+            User newUser = new User(0, username, password, fullname, email, phone, 0, null, "Enable"); // Role = 1 là customer
 
             boolean inserted = false;
             try {
@@ -133,6 +134,24 @@ public class AdminServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
             } else {
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+            }
+        } else if ("update-status".equals(action)) {
+            String username = request.getParameter(ParamConstant.USERNAME);
+            
+            boolean inserted = false;
+            try {
+                inserted = adminDAO.updateStatus(username);
+            } catch (SQLException ex) {
+                Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (inserted) {
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_STATUS);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+            } else {
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_STATUS_ERROR);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
             }

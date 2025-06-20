@@ -6,12 +6,13 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@include file="/WEB-INF/include/showNotification.jsp" %>
 <!doctype html>
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
-
+        <link rel="icon" type="image/png" href="<c:url value='/assets/img/mini_logo.png'/>">
         <link rel="stylesheet" href="assets/css/bootstrap.min.css">
         <link rel="stylesheet" href="assets/css/dashboard.css">
         <!-- Custom styles for this template -->

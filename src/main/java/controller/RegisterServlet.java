@@ -100,7 +100,7 @@ public class RegisterServlet extends HttpServlet {
             request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
             return;
         }
-        User newUser = new User(0, username, password, fullname, email, phone, 1, null); // Role = 1 là customer
+        User newUser = new User(0, username, password, fullname, email, phone, 1, null, "Enable"); // Role = 1 là customer
 
         boolean inserted = false;
         try {

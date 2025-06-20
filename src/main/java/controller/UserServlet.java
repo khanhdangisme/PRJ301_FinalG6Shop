@@ -107,7 +107,7 @@ public class UserServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         User user = (User) session.getAttribute("loggedUser"); // KHÔNG cần check null nữa
         UserDAO dao = new UserDAO();
-        
+
         if ("save-profile".equals(action)) {
 
             // Lấy dữ liệu từ form
@@ -121,7 +121,7 @@ public class UserServlet extends HttpServlet {
 
             // Xử lý ảnh mới nếu có
             Part avatarPart = request.getPart("avatar");
-            
+
             if (avatarPart != null && avatarPart.getSize() > 0) {
                 String uploadPath = request.getServletContext().getRealPath("/assets/uploads");
                 File dir = new File(uploadPath);
@@ -160,13 +160,13 @@ public class UserServlet extends HttpServlet {
                 request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PROFILE).forward(request, response);
             }
         } else if ("change-password".equals(action)) {
-            
+
             String username = request.getParameter(AttributeConstant.USERNAME);
             String currentPassword = request.getParameter(AttributeConstant.CURRENT_PASSWORD);
             String newPassword = request.getParameter(AttributeConstant.NEW_PASSWORD);
-            
+
             boolean correct = dao.checkExistsPassword(username, currentPassword);
-            
+
             if (!correct) {
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_CURRENTPASSWORD_ERROR);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
@@ -182,13 +182,43 @@ public class UserServlet extends HttpServlet {
                     session.setAttribute(AttributeConstant.LOGGEDUSER, user);
                     session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD);
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
-                    response.sendRedirect(PathConstant.URL_SERVLET_USER_PROFILE);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_USER_PROFILE);
                 } else {
                     session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD_ERROR);
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                     request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
                 }
 
+            }
+        } else if ("delete".equals(action)) {
+            String username = request.getParameter(AttributeConstant.USERNAME);
+            String password = request.getParameter(AttributeConstant.CURRENT_PASSWORD);
+
+            boolean correct = dao.checkExistsPassword(username, password);
+            if (!correct) {
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.DELETE_PASSWORD_ERROR);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.getRequestDispatcher(PathConstant.URL_USER_PROFILE).forward(request, response);
+            } else {
+                boolean updated = false;
+                try {
+                    updated = dao.deleteUser(username, password);
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if (updated) {
+                    session.invalidate();
+
+                    // Tạo session mới để chứa thông báo
+                    HttpSession newSession = request.getSession(true);
+                    newSession.setAttribute(AttributeConstant.MESSAGE, MessageConstant.DELETE_PASSWORD);
+                    newSession.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_LOGIN);
+                } else {
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.DELETE_PASSWORD_ERROR);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
+                }
             }
         }
     }

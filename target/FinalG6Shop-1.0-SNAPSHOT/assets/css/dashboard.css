@@ -98,3 +98,13 @@ body {
   border-color: transparent;
   box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
 }
+
+.table td{
+  line-height: normal !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+}
+.table th {
+  line-height: normal !important;
+  font-size: 14px !important;
+}

@@ -7,6 +7,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="model.User" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@include file="/WEB-INF/include/showNotification.jsp" %>
 
 <% User loggedUser = (User) session.getAttribute("loggedUser");
     boolean loggedIn = loggedUser != null;
@@ -92,7 +93,7 @@
                                 <!-- Profile -->
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center py-2" href="user?view=profile">
-                                        <i class="fa fa-user me-2 text-primary"></i> My Profile
+                                        <i class="fa fa-user me-2" style="color: #343a40;"></i> My Profile
                                     </a>
                                 </li>
 
@@ -100,7 +101,7 @@
                                 <c:if test="${sessionScope.loggedUser.userRole == 0}">
                                     <li>
                                         <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/admin?view=dashboard">
-                                            <i class="fa fa-tachometer-alt me-2 text-warning"></i> Dashboard
+                                            <i class="fa fa-tachometer-alt me-2" style="color: #9c8412;"></i> Dashboard
                                         </a>
                                     </li>
                                 </c:if>
@@ -108,14 +109,15 @@
                                 <!-- Order History -->
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center py-2" href="#">
-                                        <i class="fa fa-history me-2 text-secondary"></i> Order History
+                                        <i class="fa fa-history me-2" style="color: #198754;"></i> Order History
                                     </a>
                                 </li>
 
                                 <!-- Logout -->
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2 text-danger" href="<%=request.getContextPath()%>/logout">
-                                        <i class="fa fa-sign-out-alt me-2"></i> Sign Out
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="<%=request.getContextPath()%>/logout">
+                                        <i class="fa fa-sign-out-alt me-2" style="color: #dc3545;"></i> 
+                                        <span class="text-danger">Sign Out</span>
                                     </a>
                                 </li>
                             </ul>

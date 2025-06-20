@@ -18,11 +18,12 @@ public class User {
     private String userPhone;
     private int userRole;
     private String avatarUrl;
+    private String status;
 
     public User() {
     }
 
-    public User(int userID, String userName, String userPassword, String userFullname, String userEmail, String userPhone, int userRole, String avatarUrl) {
+    public User(int userID, String userName, String userPassword, String userFullname, String userEmail, String userPhone, int userRole, String avatarUrl, String status) {
         this.userID = userID;
         this.userName = userName;
         this.userPassword = userPassword;
@@ -31,6 +32,7 @@ public class User {
         this.userPhone = userPhone;
         this.userRole = userRole;
         this.avatarUrl = avatarUrl;
+        this.status = status;
     }
 
     public int getUserID() {
@@ -97,6 +99,12 @@ public class User {
         this.avatarUrl = avatarUrl;
     }
 
-    
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
 }

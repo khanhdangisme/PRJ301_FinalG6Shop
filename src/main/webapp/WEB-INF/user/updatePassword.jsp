@@ -10,10 +10,9 @@
     model.User user = (model.User) session.getAttribute("loggedUser");
 %>
 <%@include file="/WEB-INF/include/header.jsp" %>
-<%@include file="/WEB-INF/include/showNotification.jsp" %>
 <title>G6Shop - Update Password</title>
 
-<div class="container py-5" style="margin-top: 140px; margin-bottom: 20px">
+<div class="container py-5" style="margin-top: 120px; margin-bottom: 20px">
     <form action="user?action=change-password" method="post">
         <!-- Avatar và tiêu đề -->
         <div class="text-center mb-5">
