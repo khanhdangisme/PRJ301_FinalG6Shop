@@ -50,8 +50,7 @@
                     <div class="flex-fill">
                         <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                             <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Shop</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                            <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/product">Shop</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                         </ul>
                     </div>

@@ -29,7 +29,7 @@
                                 <h1 class="h1 text-dark"><b>iPhone 16 Pro Max</b></h1>
                                 <h3>Premium performance at just 36 million VND</h3>
                                 <h3 class="h2">Power, Precision, and Style. Built for your digital lifestyle</h3>
-                                
+
                                 <a href="shop.jsp" class="btn btn-dark btn-lg mt-3">Shop Now</a>
                             </div>
                         </div>
@@ -119,23 +119,27 @@
             </div>
         </div>
         <div class="row" style="margin-top: 20px">
-            <div class="col-12 col-md-4 mb-4">
-                <div class="card h-100">
-                    <a href="shop-single.html">
-                        <img src="./assets/img/16promax_den.webp" class="card-img-top" alt="...">
-                    </a>
-                    <div class="card-body">
-                        <ul class="list-unstyled d-flex justify-content-between">
-                            <li class="text-muted text-center">$240.00</li>
-                        </ul>
-                        <a href="shop-single.html" class="h2 text-decoration-none text-dark">iPhone 16 Pro Max</a>
-                        <p class="card-text">
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sunt in culpa qui officia deserunt.
-                        </p>
-                        <p class="text-muted">Reviews (24)</p>
+            <c:forEach var="p" items="${featuredProducts}">
+                <div class="col-12 col-md-4 mb-4">
+                    <div class="card h-100">
+                        <a href="shop-single.jsp?id=${p.productId}">
+                            <img src="${p.mainImage}" class="card-img-top" alt="${p.name}">
+                        </a>
+                        <div class="card-body">
+                            <ul class="list-unstyled d-flex justify-content-between">
+                                <li class="text-muted text-center">$${p.price}</li>
+                            </ul>
+                            <a href="shop-single.jsp?id=${p.productId}" class="h2 text-decoration-none text-dark">
+                                ${p.name}
+                            </a>
+                            <p class="card-text">
+                                ${p.version} ${p.color} ${p.category}
+                            </p>
+                            <p class="text-muted">Reviews (24)</p> 
+                        </div>
                     </div>
                 </div>
-            </div>
+            </c:forEach>
             <div class="col-12 col-md-4 mb-4">
                 <div class="card h-100">
                     <a href="shop-single.html">
