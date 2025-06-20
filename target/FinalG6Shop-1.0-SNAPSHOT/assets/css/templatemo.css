@@ -31,7 +31,7 @@ Table of contents
 /* Typography */
 body, ul, li, p, a, label, input, div {
   font-family: 'Roboto', sans-serif;
-  font-size: 18px !important;
+  font-size: 20px !important;
   font-weight: 300 !important;
 }
 .h1 {
@@ -64,14 +64,15 @@ body, ul, li, p, a, label, input, div {
 }
 .pagination .page-link:hover {color: #000;}
 .pagination .page-link:hover, .pagination .page-link.active {
-  background-color: #69bb7e;
+  background-color: #C0C0C0;
   color: #fff;
 }
 /* Nav */
 #templatemo_nav_top { min-height: 40px;}
 #templatemo_nav_top * { font-size: .9em !important;}
-#templatemo_main_nav a { color: #212934;}
-#templatemo_main_nav a:hover { color: #69bb7e;}
+#templatemo_main_nav a { color: #000000;}
+#templatemo_main_nav a:hover { color: #C0C0C0;}
+#templatemo_main_nav i:hover { color: #C0C0C0 !important;}
 #templatemo_main_nav .navbar .nav-icon { margin-right: 20px;}
 
 /* Hero Carousel */
@@ -138,7 +139,7 @@ body, ul, li, p, a, label, input, div {
 .form-control { border: 1px solid #e8e8e8;}
 /* Footer */
 #tempaltemo_footer a { color: #dcdde1;}
-#tempaltemo_footer a:hover { color: #68bb7d;}
+#tempaltemo_footer a:hover { color: #C0C0C0;}
 #tempaltemo_footer ul.footer-link-list li { padding-top: 10px;}
 #tempaltemo_footer ul.footer-icons li {
   width: 2.6em;
@@ -189,3 +190,36 @@ body, ul, li, p, a, label, input, div {
 
 /* Extra large devices (large desktops, 1200px and up)*/
 @media (min-width: 1200px) {}
+
+.btn-edit-profile {
+    background-color: #0B5ED7;
+    color: white;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+.btn-edit-profile:hover {
+    background-color: #084298;
+    color: #ffffff;
+}
+
+.btn-change-password {
+    background-color: #ffc107;
+    color: black;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+.btn-change-password:hover {
+    background-color: #e0a800;
+    color: black;
+}
+
+.btn-delete-account {
+    background-color: #E43B3B;
+    color: white;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+.btn-delete-account:hover {
+    background-color: #b02a2a;
+    color: white;
+}

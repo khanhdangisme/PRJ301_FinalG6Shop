@@ -49,8 +49,12 @@
 
                 <!-- Action buttons -->
                 <div class="text-end mt-4">
-                    <a href="user?view=profile" class="btn btn-secondary me-2">Cancel</a>
-                    <button type="submit" class="btn btn-warning">Change Password</button>
+                    <a href="user?view=profile" class="btn btn-secondary fw-semibold px-4 py-2 me-2">
+                        <i class="fa fa-times me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-warning fw-semibold px-4" style="height: 48px;">
+                        <i class="fa fa-save me-1"></i> Save Password
+                    </button>
                 </div>
             </div>
         </div>

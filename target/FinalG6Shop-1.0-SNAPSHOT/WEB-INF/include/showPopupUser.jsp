@@ -82,11 +82,11 @@
 
                 <!-- Footer -->
                 <div class="modal-footer justify-content-end">
-                    <button type="button" class="btn btn-secondary" style="color: white;" data-bs-dismiss="modal">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn" style="background-color: #E43B3B; color: white;">
-                        Yes, Delete
+                    <a href="user?view=profile" class="btn btn-secondary fw-semibold py-1 me-2">
+                        <i class="fa fa-times me-1"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-warning fw-semibold px-4" style="background-color: #E43B3B; color: white;">
+                        <i class="fa fa-trash me-1"></i> Delete
                     </button>
                 </div>
             </form>

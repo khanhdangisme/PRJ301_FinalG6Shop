@@ -61,14 +61,13 @@
 
                     <!-- Action buttons -->
                     <div class="text-end mt-4">
-                        <a href="user?view=update-profile"  class="btn" style="background-color: #0B5ED7; color: white; border-radius: 0.5rem;">
+                        <a href="user?view=update-profile" class="btn btn-edit-profile">
                             <i class="fa fa-edit me-1"></i> Edit Profile
                         </a>
-                        <a href="user?view=update-password"  class="btn" style="background-color: #ffc107; color: black; border-radius: 0.5rem;">
+                        <a href="user?view=update-password" class="btn btn-change-password">
                             <i class="fa fa-key me-1"></i> Change Password
                         </a>
-                        <a href="#" class="btn" style="background-color: #E43B3B; color: black; border-radius: 0.5rem;"
-                           data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+                        <a href="#" class="btn btn-delete-account" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
                             <i class="fa fa-trash me-1"></i> Delete Account
                         </a>
                     </div>

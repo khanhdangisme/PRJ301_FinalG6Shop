@@ -19,10 +19,10 @@ import model.User;
  */
 public class UserDAO extends DBContext {
 
-    public static final String SELECT_PASSWORD = "SELECT ID, Username, Password, FullName, Email, Phone, Role, avatar_url, status FROM Users WHERE Username = ? AND Password = ?";
+    public static final String SELECT_PASSWORD = "SELECT ID, Username, Password, FullName, Email, Phone, Role, avatar, status FROM Users WHERE Username = ? AND Password = ?";
     public static final String INSERT_USER = "INSERT INTO Users (Username, Password, FullName, Email, Phone, Role, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
     public static final String CHECK_EXIST = "SELECT 1 FROM Users WHERE Username = ?";
-    public static final String UPDATE_USER = "UPDATE users SET fullname=?, email=?, phone=?, avatar_url=? WHERE username=?";
+    public static final String UPDATE_USER = "UPDATE users SET fullname=?, email=?, phone=?, avatar =? WHERE username=?";
     public static final String UPDATE_PASSWORD_USER = "UPDATE Users SET password = ? WHERE username = ?";
     public static final String CHECK_EXIST_BEFORE_UPDATE_PASSWORD = "SELECT 1 FROM Users WHERE username = ? AND password = ?";
     public static final String DELETE_USER = "DELETE FROM Users WHERE Username = ? and password = ?";
@@ -61,7 +61,7 @@ public class UserDAO extends DBContext {
                         rs.getString("Email"),
                         rs.getString("Phone"),
                         rs.getInt("Role"),
-                        rs.getString("avatar_url"),
+                        rs.getString("avatar"),
                         rs.getString("status")
                 );
             } else {
@@ -102,7 +102,7 @@ public class UserDAO extends DBContext {
             user.getUserFullname(),
             user.getUserEmail(),
             user.getUserPhone(),
-            user.getAvatarUrl(),
+            user.getAvatar(),
             user.getUserName()
         };
         return this.executeQuery(UPDATE_USER, params) > 0;

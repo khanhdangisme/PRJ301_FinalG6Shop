@@ -117,7 +117,7 @@ public class UserServlet extends HttpServlet {
             String phone = request.getParameter(ParamConstant.PHONE);
 
             // Giữ nguyên avatar hiện tại
-            String avatarUrl = user.getAvatarUrl();
+            String avatar = user.getAvatar();
 
             // Xử lý ảnh mới nếu có
             Part avatarPart = request.getPart("avatar");
@@ -131,7 +131,7 @@ public class UserServlet extends HttpServlet {
 
                 String filename = UUID.randomUUID() + "_" + Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
                 avatarPart.write(uploadPath + File.separator + filename);
-                avatarUrl = "assets/uploads/" + filename;
+                avatar = "assets/uploads/" + filename;
             }
 
             // Gán lại thông tin cho user hiện tại
@@ -139,7 +139,7 @@ public class UserServlet extends HttpServlet {
             user.setUserFullname(fullname);
             user.setUserEmail(email);
             user.setUserPhone(phone);
-            user.setAvatarUrl(avatarUrl);
+            user.setAvatar(avatar);
 
             // Gọi DAO để cập nhật
             boolean updated = false;

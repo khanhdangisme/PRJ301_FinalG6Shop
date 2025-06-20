@@ -57,11 +57,11 @@
 
                 <!-- Buttons -->
                 <div class="text-end mt-4">
-                    <a href="user?view=profile" class="btn btn-secondary me-2">
-                        Cancel
+                    <a href="user?view=profile" class="btn btn-secondary fw-semibold px-4 py-2 me-2">
+                        <i class="fa fa-times me-1"></i> Cancel
                     </a>
-                    <button type="submit" class="btn btn-primary fw-semibold me-2">
-                        Save Changes
+                    <button type="submit" class="btn btn-primary fw-semibold px-4" style="height: 48px;">
+                        <i class="fa fa-save me-1"></i> Save Changes
                     </button>
                 </div>
             </div>
@@ -70,21 +70,21 @@
 </div>
 
 <script>
-function previewAvatar(input) {
-    const file = input.files[0];
-    const preview = document.getElementById("avatarPreview");
-    const letter = document.getElementById("avatarLetter");
+    function previewAvatar(input) {
+        const file = input.files[0];
+        const preview = document.getElementById("avatarPreview");
+        const letter = document.getElementById("avatarLetter");
 
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            preview.src = e.target.result;
-            preview.style.display = "block";
-            letter.style.display = "none";
-        };
-        reader.readAsDataURL(file);
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+                letter.style.display = "none";
+            };
+            reader.readAsDataURL(file);
+        }
     }
-}
 </script>
 <%@include file="/WEB-INF/include/footer.jsp" %>
 
