@@ -70,6 +70,14 @@ public class AccesControlFilter implements Filter {
             res.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
+        
+        // 2. Không cho người đã login quay lại login.jsp
+        if ("/register".equals(path) && user != null && session != null) {
+            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.FILTER_BLOCK_LOGIN);
+            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+            res.sendRedirect(req.getContextPath() + "/index.jsp");
+            return;
+        }
 
         // 3. Chặn nếu status ≠ "Enable"
         if (user != null && session != null && !"Enable".equals(user.getStatus())) {
