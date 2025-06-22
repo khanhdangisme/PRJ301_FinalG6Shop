@@ -9,6 +9,7 @@ import constant.MessageConstant;
 import constant.ParamConstant;
 import constant.PathConstant;
 import dao.AdminDAO;
+import dao.AdminProductDAO;
 import dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,9 +20,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Product;
+import model.ProductDTO;
 import model.User;
 
 /**
@@ -75,7 +80,7 @@ public class AdminServlet extends HttpServlet {
             case "dashboard":
                 request.getRequestDispatcher(PathConstant.URL_ADMIN_DASHBOARD).forward(request, response);
                 break;
-            case "customers":
+            case "customer":
                 AdminDAO dao = new AdminDAO();
                 try {
                     List<User> customers = dao.getAll();
@@ -85,6 +90,30 @@ public class AdminServlet extends HttpServlet {
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
+            case "product":
+                AdminProductDAO productCate = new AdminProductDAO();
+                try {
+                    // 1. Lấy danh sách category
+                    List<Product> cate = productCate.getAllCategory(); // Product chỉ chứa CategoryID + Name
+                    request.setAttribute(AttributeConstant.LIST, cate);
+
+                    // 2. Lấy sản phẩm cho từng category
+                    Map<Integer, List<ProductDTO>> productsMap = new HashMap<>();
+                    for (Product p : cate) {
+                        List<ProductDTO> prodList = productCate.getProduct(p.getCategoryID());
+                        productsMap.put(p.getCategoryID(), prodList);
+                    }
+
+                    // 3. Gửi sang JSP
+                    request.setAttribute("productsMap", productsMap);
+                    System.out.println("→ list size: " + (cate != null ? cate.size() : "null"));
+System.out.println("→ map size: " + productsMap.size());
+                    request.getRequestDispatcher(PathConstant.URL_ADMIN_PRODUCT).forward(request, response);
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+
         }
     }
 
@@ -139,7 +168,7 @@ public class AdminServlet extends HttpServlet {
             }
         } else if ("update-status".equals(action)) {
             String username = request.getParameter(ParamConstant.USERNAME);
-            
+
             boolean inserted = false;
             try {
                 inserted = adminDAO.updateStatus(username);

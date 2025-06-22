@@ -1,109 +1,153 @@
 <%-- 
-    Document   : headerAdmin
-    Created on : Jun 18, 2025, 10:14:51 PM
+    Document   : header
+    Created on : Jun 16, 2025, 1:13:18 PM
     Author     : KhanhDang
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="model.User" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@include file="/WEB-INF/include/showNotification.jsp" %>
-<!doctype html>
-<html lang="en">
+
+<% User loggedUser = (User) session.getAttribute("loggedUser");
+    boolean loggedIn = loggedUser != null;
+%>
+
+<html>
+
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <link rel="icon" type="image/png" href="<c:url value='/assets/img/mini_logo.png'/>">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <link rel="apple-touch-icon" href="assets/img/logo_G6.png">
+        <link rel="shortcut icon" type="image/x-icon" href="assets/img/mini_logo.png">
+
         <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+        <!--<link rel="stylesheet" href="assets/css/templatemo.css">-->
+        <link rel="stylesheet" href="assets/css/custom.css">
         <link rel="stylesheet" href="assets/css/dashboard.css">
-        <!-- Custom styles for this template -->
-        <link href="assets/css/dashboard.css" rel="stylesheet">
+
+        <!-- Load fonts style after rendering the layout styles -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
+        <link rel="stylesheet" href="assets/css/fontawesome.min.css">
     </head>
     <body>
+        <!-- Header -->
+        <nav class="navbar navbar-expand-lg navbar-light shadow fixed-top bg-white">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a class="navbar-brand align-self-center" href="index.jsp">
+                    <img src="assets/img/logo_G6.png" alt="G6Shop Logo" height="70">
+                </a>
 
-        <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-            <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="index.jsp">G6Shop</a>
-            <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-nav">
-                <div class="nav-item text-nowrap">
-                    <a class="nav-link px-3" href="<%=request.getContextPath()%>/logout">Sign out</a>
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#templatemo_main_nav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse flex-fill d-lg-flex justify-content-lg-between" id="templatemo_main_nav">
+                    <!-- Main menu -->
+                    <div class="flex-fill">
+                        <ul class="nav navbar-nav d-flex justify-content-around mx-lg-auto">
+                            <li class="nav-item"><a class="nav-link home" href="index.jsp">Home</a></li>
+                            <li class="nav-item"><a class="nav-link home" href="<%=request.getContextPath()%>/product">Shop</a></li>
+
+                        </ul>
+                    </div>
+
+                    <!-- Icons: Search / Cart / User -->
+                    <div class="navbar align-self-center d-flex">
+                        <!-- Search icon (large screen) -->
+                        <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#templatemo_search">
+                            <i class="fa fa-fw fa-search text-dark mr-2"></i>
+                        </a>
+
+                        <!-- User account -->
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <!-- Avatar icon -->
+                                <div class="avatar-placeholder me-2 profile">
+                                    <%= loggedUser.getUserFullname().toUpperCase().charAt(0) %>
+                                </div>
+
+                                <!-- Greeting -->
+                                <span class="fw-semibold profile">Hi, <%= loggedUser.getUserFullname() %></span>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2 profile" aria-labelledby="userDropdown" style="min-width: 260px;">
+                                <!-- User Info -->
+                                <li class="px-3 py-2 border-bottom">
+                                    <div class="fw-bold text-dark mb-1"><%= loggedUser.getUserName() %></div>
+                                    <div class="text-muted small"><%= loggedUser.getUserEmail() %></div>
+                                </li>
+
+                                <!-- Profile -->
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="user?view=profile">
+                                        <i class="fa fa-user me-2" style="color: #343a40;"></i> My Profile
+                                    </a>
+                                </li>
+
+                                <!-- Admin Dashboard -->
+                                <c:if test="${sessionScope.loggedUser.userRole == 0}">
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/admin?view=dashboard">
+                                            <i class="fa fa-tachometer-alt me-2" style="color: #9c8412;"></i> Dashboard
+                                        </a>
+                                    </li>
+                                </c:if>
+
+                                <!-- Logout -->
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="<%=request.getContextPath()%>/logout">
+                                        <i class="fa fa-sign-out-alt me-2" style="color: #dc3545;"></i> 
+                                        <span class="text-danger">Sign Out</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
+
             </div>
-        </header>
+        </nav>
 
         <div class="container-fluid">
             <div class="row">
-                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <nav id="sidebarMenuAdmin" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse sidebarAdmin" style="margin-top: 60px;">
                     <div class="position-sticky pt-3">
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a class="nav-link" aria-current="page" href="#">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=dashboard" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="home"></span>
                                     Dashboard
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=order" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="file"></span>
                                     Orders
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=product" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="shopping-cart"></span>
                                     Products
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=customer" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="users"></span>
                                     Customers
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=report" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="bar-chart-2"></span>
                                     Reports
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="#" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="layers"></span>
                                     Integrations
-                                </a>
-                            </li>
-                        </ul>
-
-                        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                            <span>Saved reports</span>
-                            <a class="link-secondary" href="#" aria-label="Add a new report">
-                                <span data-feather="plus-circle"></span>
-                            </a>
-                        </h6>
-                        <ul class="nav flex-column mb-2">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span data-feather="file-text"></span>
-                                    Current month
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span data-feather="file-text"></span>
-                                    Last quarter
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span data-feather="file-text"></span>
-                                    Social engagement
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span data-feather="file-text"></span>
-                                    Year-end sale
                                 </a>
                             </li>
                         </ul>

@@ -23,4 +23,7 @@ public class ParamConstant {
     public static final String VIEW = "view";
     public static final String ACTION = "action";
     
+    public static final String ID = "id";
+    public static final String COLOR = "color";
+    public static final String STORAGE = "storage";
 }

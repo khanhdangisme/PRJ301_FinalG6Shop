@@ -9,17 +9,47 @@ package model;
  * @author email
  */
 public class Product {
+    private int categoryID;
+    private String categoryName;
+    private int productID;
     private String productName;
-    private int productCategoryID;
-    private String productMainImage;
+    private int productQuatity;
+    private String productImage;
 
     public Product() {
     }
 
-    public Product(String productName, int productCategoryID, String productMainImage) {
+    public Product(int categoryID, String categoryName, int productID, String productName, int productQuatity, String productImage) {
+        this.categoryID = categoryID;
+        this.categoryName = categoryName;
+        this.productID = productID;
         this.productName = productName;
-        this.productCategoryID = productCategoryID;
-        this.productMainImage = productMainImage;
+        this.productQuatity = productQuatity;
+        this.productImage = productImage;
+    }
+
+    public int getCategoryID() {
+        return categoryID;
+    }
+
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public int getProductID() {
+        return productID;
+    }
+
+    public void setProductID(int productID) {
+        this.productID = productID;
     }
 
     public String getProductName() {
@@ -30,20 +60,20 @@ public class Product {
         this.productName = productName;
     }
 
-    public int getProductCategoryID() {
-        return productCategoryID;
+    public int getProductQuatity() {
+        return productQuatity;
     }
 
-    public void setProductCategoryID(int productCategoryID) {
-        this.productCategoryID = productCategoryID;
+    public void setProductQuatity(int productQuatity) {
+        this.productQuatity = productQuatity;
     }
 
-    public String getProductMainImage() {
-        return productMainImage;
+    public String getProductImage() {
+        return productImage;
     }
 
-    public void setProductMainImage(String productMainImage) {
-        this.productMainImage = productMainImage;
+    public void setProductImage(String productImage) {
+        this.productImage = productImage;
     }
     
 }

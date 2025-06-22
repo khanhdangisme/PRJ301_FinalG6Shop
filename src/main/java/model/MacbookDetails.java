@@ -15,7 +15,7 @@ public class MacbookDetails extends Product{
     private double MacPrice;
     private String MacGpuType;
     private String MacRam;
-    private String Mactorage;
+    private String MacStorage;
     private String MacSreenSize;
     private String MaccreenTech;
     private String MacBattery;
@@ -28,14 +28,14 @@ public class MacbookDetails extends Product{
     public MacbookDetails() {
     }
 
-    public MacbookDetails(int MacDetailId, String MacVersion, String MacColor, double MacPrice, String MacGpuType, String MacRam, String Mactorage, String MacSreenSize, String MaccreenTech, String MacBattery, String MacOs, String MacResolution, String MacCpuType, String MacPorts, String MacImageUrl) {
+    public MacbookDetails(int MacDetailId, String MacVersion, String MacColor, double MacPrice, String MacGpuType, String MacRam, String MacStorage, String MacSreenSize, String MaccreenTech, String MacBattery, String MacOs, String MacResolution, String MacCpuType, String MacPorts, String MacImageUrl) {
         this.MacDetailId = MacDetailId;
         this.MacVersion = MacVersion;
         this.MacColor = MacColor;
         this.MacPrice = MacPrice;
         this.MacGpuType = MacGpuType;
         this.MacRam = MacRam;
-        this.Mactorage = Mactorage;
+        this.MacStorage = MacStorage;
         this.MacSreenSize = MacSreenSize;
         this.MaccreenTech = MaccreenTech;
         this.MacBattery = MacBattery;
@@ -94,12 +94,12 @@ public class MacbookDetails extends Product{
         this.MacRam = MacRam;
     }
 
-    public String getMactorage() {
-        return Mactorage;
+    public String getMacStorage() {
+        return MacStorage;
     }
 
-    public void setMactorage(String Mactorage) {
-        this.Mactorage = Mactorage;
+    public void setMacStorage(String Mactorage) {
+        this.MacStorage = Mactorage;
     }
 
     public String getMacSreenSize() {
@@ -166,5 +166,32 @@ public class MacbookDetails extends Product{
         this.MacImageUrl = MacImageUrl;
     }
     
+    @Override
+public String toString() {
+    return "MacbookDetails{" +
+            "MacDetailId=" + MacDetailId +
+            ", MacVersion='" + MacVersion + '\'' +
+            ", MacColor='" + MacColor + '\'' +
+            ", MacPrice=" + MacPrice +
+            ", MacGpuType='" + MacGpuType + '\'' +
+            ", MacRam='" + MacRam + '\'' +
+            ", MacStorage='" + MacStorage + '\'' +
+            ", MacSreenSize='" + MacSreenSize + '\'' +
+            ", MaccreenTech='" + MaccreenTech + '\'' +
+            ", MacBattery='" + MacBattery + '\'' +
+            ", MacOs='" + MacOs + '\'' +
+            ", MacResolution='" + MacResolution + '\'' +
+            ", MacCpuType='" + MacCpuType + '\'' +
+            ", MacPorts='" + MacPorts + '\'' +
+            ", MacImageUrl='" + MacImageUrl + '\'' +
+            ", ProductID=" + getProductID() +
+            ", ProductName='" + getProductName() + '\'' +
+            ", ProductQuatity=" + getProductQuatity() +
+            ", ProductImage='" + getProductImage() + '\'' +
+            ", CategoryID=" + getCategoryID() +
+            ", CategoryName='" + getCategoryName() + '\'' +
+            '}';
+}
+
     
 }

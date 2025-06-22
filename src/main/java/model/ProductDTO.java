@@ -10,26 +10,30 @@ package model;
  */
 public class ProductDTO {
     private int productId;
-    private String name;
-    private String mainImage;
+    private String productName;
+    private String image;
     private String version;
     private String color;
+    private String storage;
     private double price;
+    private String categoryName;
     private int categoryId;
-    private String category;
+    private int quantity;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(int productId, String name, String mainImage, String version, String color, double price, int categoryId, String category) {
+    public ProductDTO(int productId, String productName, String image, String version, String color, String storage, double price, String categoryName, int categoryId, int quantity) {
         this.productId = productId;
-        this.name = name;
-        this.mainImage = mainImage;
+        this.productName = productName;
+        this.image = image;
         this.version = version;
         this.color = color;
+        this.storage = storage;
         this.price = price;
+        this.categoryName = categoryName;
         this.categoryId = categoryId;
-        this.category = category;
+        this.quantity = quantity;
     }
 
     public int getProductId() {
@@ -40,20 +44,20 @@ public class ProductDTO {
         this.productId = productId;
     }
 
-    public String getName() {
-        return name;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public String getMainImage() {
-        return mainImage;
+    public String getImage() {
+        return image;
     }
 
-    public void setMainImage(String mainImage) {
-        this.mainImage = mainImage;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getVersion() {
@@ -72,12 +76,28 @@ public class ProductDTO {
         this.color = color;
     }
 
+    public String getStorage() {
+        return storage;
+    }
+
+    public void setStorage(String storage) {
+        this.storage = storage;
+    }
+
     public double getPrice() {
         return price;
     }
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public int getCategoryId() {
@@ -88,12 +108,33 @@ public class ProductDTO {
         this.categoryId = categoryId;
     }
 
-    public String getCategory() {
-        return category;
+    public int getQuantity() {
+        return quantity;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
+    
+    
+    @Override
+    public String toString() {
+        return "ProductDTO{" +
+           "productId=" + productId +
+           ", productName='" + productName + '\'' +
+           ", image='" + image + '\'' +
+           ", version='" + version + '\'' +
+           ", color='" + color + '\'' +
+           ", storage='" + storage + '\'' +
+           ", price=" + price + '\'' +
+           ", categoryName='" + categoryName + '\'' +
+           ", categoryId=" + categoryId + '\'' +
+           ", quantity=" + quantity +
+           '}';
+    }
+
+    
+    
+    
 }
