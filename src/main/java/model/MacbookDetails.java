@@ -8,16 +8,18 @@ package model;
  *
  * @author email
  */
-public class MacbookDetails extends Product{
+public class MacbookDetails extends Product {
+
     private int MacDetailId;     // <-- Bắt buộc nếu cập nhật
     private String MacVersion;
     private String MacColor;
     private double MacPrice;
+    private int MacQuantity;
     private String MacGpuType;
     private String MacRam;
     private String MacStorage;
-    private String MacSreenSize;
-    private String MaccreenTech;
+    private String MacScreenSize;
+    private String MacScreenTech;
     private String MacBattery;
     private String MacOs;
     private String MacResolution;
@@ -28,16 +30,17 @@ public class MacbookDetails extends Product{
     public MacbookDetails() {
     }
 
-    public MacbookDetails(int MacDetailId, String MacVersion, String MacColor, double MacPrice, String MacGpuType, String MacRam, String MacStorage, String MacSreenSize, String MaccreenTech, String MacBattery, String MacOs, String MacResolution, String MacCpuType, String MacPorts, String MacImageUrl) {
+    public MacbookDetails(int MacDetailId, String MacVersion, String MacColor, double MacPrice, int MacQuantity, String MacGpuType, String MacRam, String MacStorage, String MacScreenSize, String MacScreenTech, String MacBattery, String MacOs, String MacResolution, String MacCpuType, String MacPorts, String MacImageUrl) {
         this.MacDetailId = MacDetailId;
         this.MacVersion = MacVersion;
         this.MacColor = MacColor;
         this.MacPrice = MacPrice;
+        this.MacQuantity = MacQuantity;
         this.MacGpuType = MacGpuType;
         this.MacRam = MacRam;
         this.MacStorage = MacStorage;
-        this.MacSreenSize = MacSreenSize;
-        this.MaccreenTech = MaccreenTech;
+        this.MacScreenSize = MacScreenSize;
+        this.MacScreenTech = MacScreenTech;
         this.MacBattery = MacBattery;
         this.MacOs = MacOs;
         this.MacResolution = MacResolution;
@@ -45,6 +48,16 @@ public class MacbookDetails extends Product{
         this.MacPorts = MacPorts;
         this.MacImageUrl = MacImageUrl;
     }
+
+    public int getMacQuantity() {
+        return MacQuantity;
+    }
+
+    public void setMacQuantity(int MacQuantity) {
+        this.MacQuantity = MacQuantity;
+    }
+
+
 
     public int getMacDetailId() {
         return MacDetailId;
@@ -102,20 +115,20 @@ public class MacbookDetails extends Product{
         this.MacStorage = Mactorage;
     }
 
-    public String getMacSreenSize() {
-        return MacSreenSize;
+    public String getMacScreenSize() {
+        return MacScreenSize;
     }
 
-    public void setMacSreenSize(String MacSreenSize) {
-        this.MacSreenSize = MacSreenSize;
+    public void setMacScreenSize(String MacScreenSize) {
+        this.MacScreenSize = MacScreenSize;
     }
 
-    public String getMaccreenTech() {
-        return MaccreenTech;
+    public String getMacScreenTech() {
+        return MacScreenTech;
     }
 
-    public void setMaccreenTech(String MaccreenTech) {
-        this.MaccreenTech = MaccreenTech;
+    public void setMacScreenTech(String MacScreenTech) {
+        this.MacScreenTech = MacScreenTech;
     }
 
     public String getMacBattery() {
@@ -165,33 +178,32 @@ public class MacbookDetails extends Product{
     public void setMacImageUrl(String MacImageUrl) {
         this.MacImageUrl = MacImageUrl;
     }
-    
-    @Override
-public String toString() {
-    return "MacbookDetails{" +
-            "MacDetailId=" + MacDetailId +
-            ", MacVersion='" + MacVersion + '\'' +
-            ", MacColor='" + MacColor + '\'' +
-            ", MacPrice=" + MacPrice +
-            ", MacGpuType='" + MacGpuType + '\'' +
-            ", MacRam='" + MacRam + '\'' +
-            ", MacStorage='" + MacStorage + '\'' +
-            ", MacSreenSize='" + MacSreenSize + '\'' +
-            ", MaccreenTech='" + MaccreenTech + '\'' +
-            ", MacBattery='" + MacBattery + '\'' +
-            ", MacOs='" + MacOs + '\'' +
-            ", MacResolution='" + MacResolution + '\'' +
-            ", MacCpuType='" + MacCpuType + '\'' +
-            ", MacPorts='" + MacPorts + '\'' +
-            ", MacImageUrl='" + MacImageUrl + '\'' +
-            ", ProductID=" + getProductID() +
-            ", ProductName='" + getProductName() + '\'' +
-            ", ProductQuatity=" + getProductQuatity() +
-            ", ProductImage='" + getProductImage() + '\'' +
-            ", CategoryID=" + getCategoryID() +
-            ", CategoryName='" + getCategoryName() + '\'' +
-            '}';
-}
 
-    
+    @Override
+    public String toString() {
+        return "MacbookDetails{"
+                + "MacDetailId=" + MacDetailId
+                + ", MacVersion='" + MacVersion + '\''
+                + ", MacColor='" + MacColor + '\''
+                + ", MacPrice=" + MacPrice
+                + ", MacGpuType='" + MacGpuType + '\''
+                + ", MacRam='" + MacRam + '\''
+                + ", MacStorage='" + MacStorage + '\''
+                + ", MacScreenSize='" + MacScreenSize + '\''
+                + ", MacScreenTech='" + MacScreenTech + '\''
+                + ", MacBattery='" + MacBattery + '\''
+                + ", MacOs='" + MacOs + '\''
+                + ", MacResolution='" + MacResolution + '\''
+                + ", MacCpuType='" + MacCpuType + '\''
+                + ", MacPorts='" + MacPorts + '\''
+                + ", MacImageUrl='" + MacImageUrl + '\''
+                + ", ProductID=" + getProductID()
+                + ", ProductName='" + getProductName() + '\''
+                + ", ProductQuatity=" + getProductQuatity()
+                + ", ProductImage='" + getProductImage() + '\''
+                + ", CategoryID=" + getCategoryID()
+                + ", CategoryName='" + getCategoryName() + '\''
+                + '}';
+    }
+
 }

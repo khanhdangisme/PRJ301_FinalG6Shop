@@ -1,8 +1,8 @@
 model\MacbookDetails.class
 controller\LoginServlet.class
-controller\ProductServlet.class
 constant\PathConstant.class
 model\iPadDetails.class
+controller\ImageListServlet.class
 dao\AdminDAO.class
 constant\AttributeConstant.class
 constant\MessageConstant.class

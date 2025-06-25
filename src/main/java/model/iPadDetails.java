@@ -14,6 +14,7 @@ public class iPadDetails extends Product{
     private String iPadColor;
     private String iPadStorage;
     private double iPadPrice;
+    private  int iPadQuantity;
     private String iPadScreenSize;
     private String iPadRearCamera;
     private String iPadFrontCamera;
@@ -29,12 +30,13 @@ public class iPadDetails extends Product{
     public iPadDetails() {
     }
 
-    public iPadDetails(int iPadDetailId, String iPadVersion, String iPadColor, String iPadStorage, double iPadPrice, String iPadScreenSize, String iPadRearCamera, String iPadFrontCamera, String iPadChipset, String iPadBattery, String iPadSimType, String iPadOs, String iPadResolution, String iPadScreenFeatures, String iPadCpuType, String iPadImageUrl) {
+    public iPadDetails(int iPadDetailId, String iPadVersion, String iPadColor, String iPadStorage, double iPadPrice, int iPadQuantity, String iPadScreenSize, String iPadRearCamera, String iPadFrontCamera, String iPadChipset, String iPadBattery, String iPadSimType, String iPadOs, String iPadResolution, String iPadScreenFeatures, String iPadCpuType, String iPadImageUrl) {
         this.iPadDetailId = iPadDetailId;
         this.iPadVersion = iPadVersion;
         this.iPadColor = iPadColor;
         this.iPadStorage = iPadStorage;
         this.iPadPrice = iPadPrice;
+        this.iPadQuantity = iPadQuantity;
         this.iPadScreenSize = iPadScreenSize;
         this.iPadRearCamera = iPadRearCamera;
         this.iPadFrontCamera = iPadFrontCamera;
@@ -47,6 +49,16 @@ public class iPadDetails extends Product{
         this.iPadCpuType = iPadCpuType;
         this.iPadImageUrl = iPadImageUrl;
     }
+
+    public int getiPadQuantity() {
+        return iPadQuantity;
+    }
+
+    public void setiPadQuantity(int iPadQuantity) {
+        this.iPadQuantity = iPadQuantity;
+    }
+
+    
 
     public int getiPadDetailId() {
         return iPadDetailId;

@@ -32,6 +32,12 @@
     </ul>
     <!-- Tab content -->
     <div class="tab-content mt-3" id="productTabContent">
+        <div class="d-flex justify-content-between ...">
+            <h1 class="h2">Product</h1>
+            <a href="image-list" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Add Product
+            </a>
+        </div>
         <c:forEach var="cate" items="${list}" varStatus="status">
             <div class="tab-pane fade ${status.index == 0 ? 'show active' : ''}" 
                  id="content-${cate.categoryID}" 

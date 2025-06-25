@@ -14,6 +14,7 @@ public class iPhoneDetails extends Product{
     private String iPhoneColor;
     private String iPhoneStorage;
     private double iPhonePrice;
+    private int iPhoneQuantity;
     private String iPhoneScreenSize;
     private String iPhoneRearCamera;
     private String iPhoneFrontCamera;
@@ -29,12 +30,13 @@ public class iPhoneDetails extends Product{
     public iPhoneDetails() {
     }
 
-    public iPhoneDetails(int iPhoneDetailId, String iPhoneVersion, String iPhoneColor, String iPhoneStorage, double iPhonePrice, String iPhoneScreenSize, String iPhoneRearCamera, String iPhoneFrontCamera, String iPhoneChipset, String iPhoneBattery, String iPhoneSimType, String iPhoneOs, String iPhoneResolution, String iPhoneScreenFeatures, String iPhoneCpuType, String iPhoneImageUrl) {
+    public iPhoneDetails(int iPhoneDetailId, String iPhoneVersion, String iPhoneColor, String iPhoneStorage, double iPhonePrice, int iPhoneQuantity, String iPhoneScreenSize, String iPhoneRearCamera, String iPhoneFrontCamera, String iPhoneChipset, String iPhoneBattery, String iPhoneSimType, String iPhoneOs, String iPhoneResolution, String iPhoneScreenFeatures, String iPhoneCpuType, String iPhoneImageUrl) {
         this.iPhoneDetailId = iPhoneDetailId;
         this.iPhoneVersion = iPhoneVersion;
         this.iPhoneColor = iPhoneColor;
         this.iPhoneStorage = iPhoneStorage;
         this.iPhonePrice = iPhonePrice;
+        this.iPhoneQuantity = iPhoneQuantity;
         this.iPhoneScreenSize = iPhoneScreenSize;
         this.iPhoneRearCamera = iPhoneRearCamera;
         this.iPhoneFrontCamera = iPhoneFrontCamera;
@@ -47,6 +49,16 @@ public class iPhoneDetails extends Product{
         this.iPhoneCpuType = iPhoneCpuType;
         this.iPhoneImageUrl = iPhoneImageUrl;
     }
+
+    public int getiPhoneQuantity() {
+        return iPhoneQuantity;
+    }
+
+    public void setiPhoneQuantity(int iPhoneQuantity) {
+        this.iPhoneQuantity = iPhoneQuantity;
+    }
+
+    
 
     public int getiPhoneDetailId() {
         return iPhoneDetailId;

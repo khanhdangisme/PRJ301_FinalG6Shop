@@ -46,8 +46,14 @@
 </style>
 
 <main class="ms-auto pe-4" style="margin-top: 120px; max-width: calc(100% - 270px);">
-    <form action="product?action=update&id=${getDetail.productID}&detailID=${getDetail.de}" method="post"
+    <form action="product?id=${getDetail.productID}" method="post"
           class="card shadow p-4 border-0 bg-white">
+
+        <input type="hidden" name="view" value="edit" />
+
+        <!-- Các input hidden cần thiết -->
+        <input type="hidden" name="id" value="${getDetail.productID}" />
+        <input type="hidden" name="categoryId" value="${getDetail.categoryID}" />
 
         <!-- Top section -->
         <div class="row mb-4 align-items-center">
@@ -59,26 +65,41 @@
                     <label class="form-label">Product Name</label>
                     <input type="text" name="productName" class="form-control fw-bold fs-5" value="${getDetail.productName}" />
                 </div>
+
                 <c:choose>
                     <c:when test='${getDetail.categoryName eq "iPhone"}'>
-                        <c:set var="rawPrice" value="${getDetail.iPhonePrice}" />
+                        <c:set var="price" value="${getDetail.iPhonePrice}" />
                     </c:when>
                     <c:when test='${getDetail.categoryName eq "iPad"}'>
-                        <c:set var="rawPrice" value="${getDetail.iPadPrice}" />
+                        <c:set var="price" value="${getDetail.iPadPrice}" />
                     </c:when>
                     <c:when test='${getDetail.categoryName eq "MacBook"}'>
-                        <c:set var="rawPrice" value="${getDetail.macPrice}" />
+                        <c:set var="price" value="${getDetail.macPrice}" />
                     </c:when>
                 </c:choose>
 
-                <fmt:formatNumber value="${rawPrice}" type="number" var="price" maxFractionDigits="0" />
+
+                <!-- Trường nhập giá -->
                 <div class="mb-3">
                     <label class="form-label">Price</label>
                     <div class="input-group">
-                        <input type="text" name="price" class="form-control text-start" value="${price}" />
+                        <input type="number"
+                               name="price"
+                               class="form-control text-start"
+                               value="${price * 1}"
+                               min="0"
+                               step="1000"
+                               required />
+
                         <span class="input-group-text">₫</span>
                     </div>
                 </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" name="quantity" class="form-control text-start" value="${getDetail.productQuatity}" />
+                </div>
+
             </div>
         </div>
 
@@ -110,6 +131,7 @@
             <div class="col-md-6">
                 <label class="form-label">Color</label>
                 <input type="text" name="color" class="form-control text-start" value="${color}" />
+                <input type="hidden" name="oldColor" value="${color}" />
             </div>
         </div>
 
@@ -121,6 +143,7 @@
             <div class="col-md-6">
                 <label class="form-label">Storage</label>
                 <input type="text" name="storage" class="form-control text-start" value="${storage}" />
+                <input type="hidden" name="oldStorage" value="${storage}" />
             </div>
         </div>
 
@@ -178,8 +201,8 @@
                     <div class="col-md-6"><label class="form-label">GPU Type</label><input type="text" name="gpuType" class="form-control" value="${getDetail.macGpuType}" /></div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6"><label class="form-label">Screen Size</label><input type="text" name="screenSize" class="form-control" value="${getDetail.macSreenSize}" /></div>
-                    <div class="col-md-6"><label class="form-label">Screen Tech</label><input type="text" name="screenTech" class="form-control" value="${getDetail.maccreenTech}" /></div>
+                    <div class="col-md-6"><label class="form-label">Screen Size</label><input type="text" name="screenSize" class="form-control" value="${getDetail.macScreenSize}" /></div>
+                    <div class="col-md-6"><label class="form-label">Screen Tech</label><input type="text" name="screenTech" class="form-control" value="${getDetail.macScreenTech}" /></div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-6"><label class="form-label">Battery</label><input type="text" name="battery" class="form-control" value="${getDetail.macBattery}" /></div>
@@ -200,10 +223,11 @@
             <button type="submit" style="padding-left: 10px;" class="btn btn-primary me-2">
                 <i class="bi bi-save"></i> Save Changes
             </button>
-            <a href="javascript:history.back()" style="padding-left: 13px;" class="btn btn-outline-secondary me-2">
+            <a href="product?view=list&categoryId=${getDetail.categoryID}" class="btn btn-outline-secondary me-2">
                 <i class="bi bi-arrow-left-circle"></i> Cancel
             </a>
-            <a href="ProductServlet?view=delete&id=${getDetail.productID}" style="padding-left: 15px;" class="btn btn-danger"
+            <a href="product?view=delete&id=${getDetail.productID}&categoryId=${getDetail.categoryID}&color=${color}&storage=${storage}"
+               class="btn btn-danger"
                onclick="return confirm('Are you sure you want to delete this product?');">
                 <i class="bi bi-trash"></i> Delete
             </a>
