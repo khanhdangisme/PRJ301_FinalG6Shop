@@ -9,6 +9,7 @@ package model;
  * @author email
  */
 public class ProductDTO {
+
     private int productId;
     private String productName;
     private String image;
@@ -19,11 +20,12 @@ public class ProductDTO {
     private String categoryName;
     private int categoryId;
     private int quantity;
+    private int detailId;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(int productId, String productName, String image, String version, String color, String storage, double price, String categoryName, int categoryId, int quantity) {
+    public ProductDTO(int productId, String productName, String image, String version, String color, String storage, double price, String categoryName, int categoryId, int quantity, int detailId) {
         this.productId = productId;
         this.productName = productName;
         this.image = image;
@@ -34,6 +36,7 @@ public class ProductDTO {
         this.categoryName = categoryName;
         this.categoryId = categoryId;
         this.quantity = quantity;
+        this.detailId = detailId;
     }
 
     public int getProductId() {
@@ -116,25 +119,29 @@ public class ProductDTO {
         this.quantity = quantity;
     }
 
-    
-    
-    @Override
-    public String toString() {
-        return "ProductDTO{" +
-           "productId=" + productId +
-           ", productName='" + productName + '\'' +
-           ", image='" + image + '\'' +
-           ", version='" + version + '\'' +
-           ", color='" + color + '\'' +
-           ", storage='" + storage + '\'' +
-           ", price=" + price + '\'' +
-           ", categoryName='" + categoryName + '\'' +
-           ", categoryId=" + categoryId + '\'' +
-           ", quantity=" + quantity +
-           '}';
+    public int getDetailId() {
+        return detailId;
+    }
+
+    public void setDetailId(int detailId) {
+        this.detailId = detailId;
     }
 
     
-    
-    
+    @Override
+    public String toString() {
+        return "ProductDTO{"
+                + "productId=" + productId
+                + ", productName='" + productName + '\''
+                + ", image='" + image + '\''
+                + ", version='" + version + '\''
+                + ", color='" + color + '\''
+                + ", storage='" + storage + '\''
+                + ", price=" + price + '\''
+                + ", categoryName='" + categoryName + '\''
+                + ", categoryId=" + categoryId + '\''
+                + ", quantity=" + quantity
+                + '}';
+    }
+
 }

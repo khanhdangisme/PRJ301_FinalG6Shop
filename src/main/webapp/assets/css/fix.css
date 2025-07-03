@@ -1,0 +1,24 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jul 2, 2025, 11:56:04 PM
+    Author     : email
+*/
+
+.templatemo-accordion ul {
+    padding-left: 1rem !important;
+    list-style: none !important;
+}
+.templatemo-accordion li {
+    margin: 0 !important;
+    padding: 0.4rem 0 !important;
+}
+.templatemo-accordion a {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+.templatemo-accordion .collapse ul li {
+    list-style: none !important;
+}

@@ -33,7 +33,7 @@
     <body>
         <!-- Header -->
         <nav class="navbar navbar-expand-lg navbar-light shadow fixed-top bg-white">
-            <div class="container d-flex justify-content-between align-items-center">
+            <div class="container d-flex justify-content-between align-items-center" style="margin-top: -7px; margin-bottom: -7px;">
                 <a class="navbar-brand align-self-center" href="index.jsp">
                     <img src="assets/img/logo_G6.png" alt="G6Shop Logo" height="70">
                 </a>

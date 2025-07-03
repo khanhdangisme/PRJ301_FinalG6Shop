@@ -32,7 +32,8 @@ public class AdminProductDAO extends DBContext {
     public static final String SELECT_CATEGORY_PRODUCT = "{CALL SearchProducts(?, null, null, null, null)}";
     public static final String SELECT_ALL_PRODUCT = "{CALL SearchProducts(null, null, null, null, null)}";
     public static final String SELECT_CATEGORY = "select distinct a.ID,  a.Name from Categories a join Products b on a.ID = b.CategoryID";
-    public static final String SELECT_PRODUCT_MACBOOK = "select b.ImageURL, a.Name, b.Version, b.Storage, b.Color, b.Price, a.Quantity from Products a join iPhone_Details b on a.ID = b.ProductID";
+    public static final String SELECT_DETAIL = "{CALL GetProductDetail(?, ?, ?)}";
+    
 
     public List<Product> getAllCategory() throws SQLException {
         List<Product> list = new ArrayList<>();
@@ -91,8 +92,7 @@ public class AdminProductDAO extends DBContext {
     }
 
     public Product getProductDetail(int productId, String color, String storage) throws SQLException {
-        String sql = "{CALL GetProductDetail(?, ?, ?)}";
-        ResultSet rs = executeSelectQuery(sql, new Object[]{productId, color, storage});
+        ResultSet rs = executeSelectQuery(SELECT_DETAIL, new Object[]{productId, color, storage});
 
         if (rs.next()) {
             int categoryId = rs.getInt("CategoryID");
@@ -102,7 +102,7 @@ public class AdminProductDAO extends DBContext {
                     iPhoneDetails iphone = new iPhoneDetails();
                     iphone.setProductID(productId);
                     iphone.setProductName(rs.getString("ProductName"));
-                    iphone.setProductImage(rs.getString("MainImage"));
+                    iphone.setProductImage(rs.getString("ImageURL"));
                     iphone.setProductQuatity(rs.getInt("Quantity"));
                     iphone.setCategoryID(categoryId);
                     iphone.setCategoryName(rs.getString("CategoryName"));
@@ -128,7 +128,7 @@ public class AdminProductDAO extends DBContext {
                     iPadDetails ipad = new iPadDetails();
                     ipad.setProductID(productId);
                     ipad.setProductName(rs.getString("ProductName"));
-                    ipad.setProductImage(rs.getString("MainImage"));
+                    ipad.setProductImage(rs.getString("ImageURL"));
                     ipad.setProductQuatity(rs.getInt("Quantity"));
                     ipad.setCategoryID(categoryId); // ✅ FIXED
                     ipad.setCategoryName(rs.getString("CategoryName"));
@@ -154,7 +154,7 @@ public class AdminProductDAO extends DBContext {
                     MacbookDetails mac = new MacbookDetails();
                     mac.setProductID(productId);
                     mac.setProductName(rs.getString("ProductName"));
-                    mac.setProductImage(rs.getString("MainImage"));
+                    mac.setProductImage(rs.getString("ImageURL"));
                     mac.setProductQuatity(rs.getInt("Quantity"));
                     mac.setCategoryID(categoryId);
                     mac.setCategoryName(rs.getString("CategoryName"));

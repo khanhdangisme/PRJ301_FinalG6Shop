@@ -24,6 +24,7 @@ public class PathConstant {
     
     public static final String URL_INDEX = "index.jsp";
     public static final String URL_SHOP = "/WEB-INF/view/shop.jsp";
+    public static final String URL_SHOP_DETAILS = "/WEB-INF/view/shopDetails.jsp";
     
     //Servlet (neu response.sendRedirect thi them request.getContextPath() + URL servlet)
     public static final String URL_SERVLET_LOGIN = "/login";

@@ -5,7 +5,6 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-
 <!-- Search Modal -->
 <div class="modal fade" id="templatemo_search" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog mt-3">
@@ -15,7 +14,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="search" method="get">
+                <form action="shop" method="get">
+                    <input type="hidden" name="view" value="search">
                     <div class="input-group">
                         <input type="text" name="query" class="form-control" placeholder="Type to search..." required>
                         <button class="btn btn-success" type="submit">
@@ -23,6 +23,7 @@
                         </button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>

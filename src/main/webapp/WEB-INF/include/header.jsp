@@ -34,9 +34,7 @@
         <nav class="navbar navbar-expand-lg navbar-light shadow fixed-top bg-white">
             <div class="container d-flex justify-content-between align-items-center">
 
-                <!--                <a class="navbar-brand text-success logo h1 align-self-center" href="index.jsp">
-                                    G6Shop
-                                </a>-->
+               
                 <a class="navbar-brand align-self-center" href="index.jsp">
                     <img src="assets/img/logo_G6.png" alt="G6Shop Logo" height="70">
                 </a>
@@ -50,7 +48,7 @@
                     <div class="flex-fill">
                         <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                             <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/product">Shop</a></li>
+                            <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/shop">Shop</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                         </ul>
                     </div>

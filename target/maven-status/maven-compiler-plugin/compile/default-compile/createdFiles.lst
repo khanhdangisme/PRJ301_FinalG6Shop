@@ -1,5 +1,7 @@
+controller\ProductAdminServlet.class
 model\MacbookDetails.class
 controller\LoginServlet.class
+controller\ShopServlet.class
 constant\PathConstant.class
 model\iPadDetails.class
 controller\ImageListServlet.class
@@ -11,6 +13,7 @@ model\ProductDTO.class
 constant\ParamConstant.class
 controller\LogoutServlet.class
 dao\UserDAO.class
+dao\ShopProductDAO.class
 model\iPhoneDetails.class
 controller\UserServlet.class
 dao\AdminProductDAO.class

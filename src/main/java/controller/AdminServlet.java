@@ -107,7 +107,7 @@ public class AdminServlet extends HttpServlet {
                     // 3. Gửi sang JSP
                     request.setAttribute("productsMap", productsMap);
                     System.out.println("→ list size: " + (cate != null ? cate.size() : "null"));
-System.out.println("→ map size: " + productsMap.size());
+                    System.out.println("→ map size: " + productsMap.size());
                     request.getRequestDispatcher(PathConstant.URL_ADMIN_PRODUCT).forward(request, response);
                 } catch (SQLException ex) {
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
