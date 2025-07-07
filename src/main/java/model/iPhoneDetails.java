@@ -8,7 +8,8 @@ package model;
  *
  * @author email
  */
-public class iPhoneDetails extends Product{
+public class iPhoneDetails extends Product {
+
     private int iPhoneDetailId;
     private String iPhoneVersion;
     private String iPhoneColor;
@@ -57,8 +58,6 @@ public class iPhoneDetails extends Product{
     public void setiPhoneQuantity(int iPhoneQuantity) {
         this.iPhoneQuantity = iPhoneQuantity;
     }
-
-    
 
     public int getiPhoneDetailId() {
         return iPhoneDetailId;
@@ -187,6 +186,5 @@ public class iPhoneDetails extends Product{
     public void setiPhoneImageUrl(String iPhoneImageUrl) {
         this.iPhoneImageUrl = iPhoneImageUrl;
     }
-    
-    
+
 }

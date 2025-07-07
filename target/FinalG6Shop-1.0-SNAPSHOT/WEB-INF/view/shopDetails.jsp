@@ -1,9 +1,3 @@
-<%-- 
-    Document   : shopDetials
-    Created on : Jul 3, 2025, 10:23:31 AM
-    Author     : KhanhDang
---%>
-
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -173,22 +167,122 @@
                     </c:when>
                 </c:choose>
 
-                <!-- Back button -->
+                <c:set var="discountPercent" value="10"/>
+                <c:set var="finalPrice" value="${price * (1 - discountPercent / 100.0)}"/>
+
                 <div class="text-center mt-4">
-                    <a href="shop" class="btn btn-outline-secondary btn-sm me-2">
-                        <i class="bi bi-arrow-left-circle"></i> Back to Shop
-                    </a>
-                    <button type="button" class="btn btn-dark me-2">
-                        <i class="fas fa-cart-plus"></i> Add to Cart
-                    </button>
-                    <button type="button" class="btn btn-success">
-                        <i class="fas fa-shopping-bag"></i> Buy
-                    </button>
+                    <div class="d-flex justify-content-between align-items-end flex-wrap gap-2">
+                        <!-- Nút Back -->
+                        <a href="shop" class="btn btn-outline-secondary" style="width: 160px; height: 44px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
+                            <i class="fas fa-arrow-left"></i> Back to Shop
+                        </a>
+
+                        <!-- Ô nhập voucher -->
+                        <input type="text" value="G6SALE10"
+                               class="form-control text-center fw-bold"
+                               style="width: 300px; height: 44px; margin-bottom: 5px;" />
+
+                        <!-- Nút Add + Buy + Total Price -->
+                        <div class="d-flex flex-column align-items-center gap-1">
+                            <span class="text-danger fw-bold" style="font-size: 1rem; text-align: center; margin-bottom: 5px;">
+                                <fmt:formatNumber value="${price * 0.9}" pattern="#,##0"/> ₫ (10% off)
+                            </span>
+                            <div class="d-flex gap-2">
+                                <c:choose>
+                                    <c:when test="${getDetail.productQuatity > 0}">
+                                        <button type="button"
+                                                onclick="location.href = '<c:url value='/cart?action=add&id=${getDetail.productID}&color=${color}&storage=${storage}'/>'"
+                                                class="btn btn-dark" style="width: 160px; height: 44px; font-weight: bold; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                        <button type="button"
+                                                onclick="showBuy('${getDetail.productID}:${color}:${storage}')"
+                                                class="btn btn-success" style="width: 160px; height: 44px; font-weight: bold; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-shopping-bag"></i> Buy
+                                        </button>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button type="button" class="btn btn-danger" disabled
+                                                style="width: 160px; height: 44px; font-weight: bold; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-times-circle"></i> Out of Stock
+                                        </button>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
 
     </div>
 </main>
 
+<!-- ====== ORDER SUCCESS TRIGGER ====== -->
+<c:if test="${sessionScope.orderSuccess}">
+    <script>
+        window.addEventListener("load", () => {
+            const modal = new bootstrap.Modal(document.getElementById('orderSuccessModal'));
+            modal.show();
+        });
+    </script>
+    <c:remove var="orderSuccess" scope="session"/>
+</c:if>
+
+<c:if test="${not empty sessionScope.coSelIds}">
+    <script>
+        window.addEventListener("load", () => {
+            const selId = "${sessionScope.coSelIds}";
+            document.getElementById('coSelIds').value = selId;
+            new bootstrap.Modal(document.getElementById('checkoutModal')).show();
+        });
+    </script>
+    <c:remove var="coSelIds" scope="session" />
+</c:if>
+
+<script>
+    function alertOutOfStock() {
+        const body = document.getElementById('cartAlertBody');
+        body.innerText = "Sản phẩm đã hết hàng. Vui lòng chọn sản phẩm khác.";
+        const modal = new bootstrap.Modal(document.getElementById('cartAlertModal'));
+        modal.show();
+    }
+</script>    
+
+<script>
+    function showLoginModal(redirectUrl) {
+        sessionStorage.setItem("redirectAfterLogin", redirectUrl);
+        const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+        loginModal.show();
+    }
+
+    function showCheckoutForm(productId, color, storage) {
+        document.getElementById('checkoutProductId').value = productId;
+        document.getElementById('checkoutColor').value = color;
+        document.getElementById('checkoutStorage').value = storage;
+
+        const modal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+        modal.show();
+    }
+</script>
+
+<script>
+    function showBuy(selId) {
+        const loggedIn = '${sessionScope.loggedUser != null}';
+
+        if (loggedIn === 'false') {
+            const url = '${pageContext.request.contextPath}/checkout'
+                    + '?selectedIds=' + encodeURIComponent(selId);
+            window.location.href = url;
+            return;
+        }
+
+        // Đã login → show buyCheckoutModal
+        document.getElementById('buySelIds').value = selId;
+        new bootstrap.Modal(document.getElementById('buyCheckoutModal')).show();
+    }
+</script>
+
 <%@include file="/WEB-INF/include/footer.jsp" %> 
+<%@include file="/WEB-INF/include/showPopupUser.jsp" %>

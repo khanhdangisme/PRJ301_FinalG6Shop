@@ -28,6 +28,30 @@ public class ShopProductDAO extends DBContext {
     public static final String SELECT_CATEGORY_MENU = "{CALL GetProductsByCategory(?)}";
     public static final String SELECT_DETAIL = "{CALL GetProductDetail(?, ?, ?)}";
 
+    // Thêm vào ShopProductDAO
+    public ProductDTO getProductDetailDTO(int productId, String color, String storage)
+            throws SQLException {
+
+        ResultSet rs = executeSelectQuery(SELECT_DETAIL,
+                new Object[]{productId, color, storage});
+        if (rs.next()) {
+            ProductDTO dto = new ProductDTO();
+            dto.setProductId(productId);
+            dto.setProductName(rs.getString("ProductName"));
+            dto.setVersion(rs.getString("Version"));
+            dto.setColor(rs.getString("Color"));
+            dto.setStorage(rs.getString("Storage"));
+            dto.setPrice(rs.getDouble("Price"));
+            dto.setImage(rs.getString("ImageURL"));
+            dto.setQuantity(rs.getInt("Quantity"));
+            dto.setCategoryId(rs.getInt("CategoryID"));
+            dto.setCategoryName(rs.getString("CategoryName"));
+            dto.setDetailId(rs.getInt("DetailID"));  // nếu cần
+            return dto;
+        }
+        return null;
+    }
+
     public List<Product> getAllCategory() throws SQLException {
         List<Product> list = new ArrayList<>();
         ResultSet rs = executeSelectQuery(SELECT_CATEGORY, null);
@@ -61,29 +85,6 @@ public class ShopProductDAO extends DBContext {
         }
         return list;
     }
-//    public List<ProductDTO> getProduct(Integer categoryId, int page) throws SQLException {
-//        List<ProductDTO> list = new ArrayList<>();
-//        String query = "{CALL SearchProducts(?, null, null, null, null, ?, ?)}";  // Truyền các tham số vào stored procedure
-//
-//        Object[] params = {categoryId, (page - 1) * PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE, PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE};  // Truyền vào categoryId, page, pageSize
-//        ResultSet rs = executeSelectQuery(query, params);
-//
-//        while (rs.next()) {
-//            ProductDTO dto = new ProductDTO();
-//            dto.setProductId(rs.getInt("ProductID"));
-//            dto.setProductName(rs.getString("ProductName"));
-//            dto.setVersion(rs.getString("Version"));
-//            dto.setColor(rs.getString("Color"));
-//            dto.setStorage(rs.getString("Storage"));
-//            dto.setPrice(rs.getDouble("Price"));
-//            dto.setImage(rs.getString("Image"));
-//            dto.setCategoryId(rs.getInt("CategoryID"));
-//            dto.setCategoryName(rs.getString("CategoryName"));
-//            dto.setQuantity(rs.getInt("Quantity"));
-//            list.add(dto);
-//        }
-//        return list;
-//    }
 
     public List<ProductDTO> getProductsForCategory(int categoryId) throws SQLException {
         List<ProductDTO> list = new ArrayList<>();
@@ -358,5 +359,4 @@ public class ShopProductDAO extends DBContext {
 
         return list;
     }
-
 }

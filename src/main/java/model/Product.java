@@ -9,6 +9,7 @@ package model;
  * @author email
  */
 public class Product {
+
     private int categoryID;
     private String categoryName;
     private int productID;
@@ -75,5 +76,4 @@ public class Product {
     public void setProductImage(String productImage) {
         this.productImage = productImage;
     }
-    
 }

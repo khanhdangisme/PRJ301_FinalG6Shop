@@ -1,10 +1,5 @@
-<%-- 
-    Document   : showNotification
-    Created on : Jun 18, 2025, 4:26:47 PM
-    Author     : KhanhDang
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <c:if test="${not empty sessionScope.message}">
     <c:set var="type" value="${sessionScope.messageType != null ? sessionScope.messageType : 'success'}" />
 

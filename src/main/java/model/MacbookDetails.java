@@ -57,8 +57,6 @@ public class MacbookDetails extends Product {
         this.MacQuantity = MacQuantity;
     }
 
-
-
     public int getMacDetailId() {
         return MacDetailId;
     }

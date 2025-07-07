@@ -27,6 +27,8 @@ import model.User;
 @WebServlet(name = "LoginController", urlPatterns = {"/login"})
 public class LoginServlet extends HttpServlet {
 
+    private static final String REDIRECT_ATTR = "redirectAfterLogin";
+
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -65,6 +67,17 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Đọc cookie username
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName()) && !c.getValue().isEmpty()) {
+                    request.setAttribute("savedUsername", c.getValue());
+                    break;
+                }
+            }
+        }
+
         request.getRequestDispatcher(PathConstant.URL_LOGIN).forward(request, response);
     }
 
@@ -79,48 +92,54 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
+        // 1. Lấy dữ liệu
         String username = request.getParameter(ParamConstant.USERNAME);
         String password = request.getParameter(ParamConstant.PASSWORD);
-        String remember = request.getParameter(ParamConstant.REMEMBER_ME); // null nếu không tích
+        String remember = request.getParameter(ParamConstant.REMEMBER_ME);
 
         UserDAO dao = new UserDAO();
         User loggedUser = dao.login(username, password);
         HttpSession session = request.getSession();
 
+        /* ====================  ĐĂNG NHẬP THÀNH CÔNG  ==================== */
         if (loggedUser != null) {
-            // Tạo session
+            // Lưu session
             session.setAttribute(AttributeConstant.LOGGEDUSER, loggedUser);
-//            request.getSession().setMaxInactiveInterval(1 * 60);
 
-            // Xử lý Remember Me
-            if ("remember-me".equals(remember)) {
-                // Người dùng đã tích checkbox -> tạo cookie
-                Cookie usernameCookie = new Cookie("username", username);
-                usernameCookie.setMaxAge(7 * 24 * 60 * 60); // 7 ngày
-                response.addCookie(usernameCookie);
-            } else {
-                // Không tích -> xóa cookie (nếu từng có)
-                Cookie usernameCookie = new Cookie("username", "");
-                usernameCookie.setMaxAge(0); // xóa cookie
-                response.addCookie(usernameCookie);
-            }
+            /* ---- Remember‑me ---- */
+            Cookie usernameCookie = new Cookie("username", "remember-me".equals(remember) ? username : "");
+            usernameCookie.setMaxAge("remember-me".equals(remember) ? 7 * 24 * 60 * 60 : 0);
+            response.addCookie(usernameCookie);
 
-            // (Tùy chọn) Cookie theme
+            /* ---- (tuỳ chọn) Giao diện dark ---- */
             Cookie themeCookie = new Cookie("theme", "dark");
-            themeCookie.setMaxAge(24 * 60 * 60); // 1 ngày
+            themeCookie.setMaxAge(24 * 60 * 60);
             response.addCookie(themeCookie);
 
+            /* ---- Thông báo ---- */
             session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.LOGIN_SUCCESSFULLY);
-            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS); 
-            // Chuyển về trang chủ
-            response.sendRedirect(request.getContextPath());
-        } else {
-            // Đăng nhập thất bại
-            request.setAttribute(AttributeConstant.USERNAME, username);
-            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.LOGIN_ERROR);
-            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-            request.getRequestDispatcher(PathConstant.URL_LOGIN).forward(request, response);
+            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+
+            /* ---- Chuyển hướng ---- */
+            String redirect = (String) session.getAttribute(REDIRECT_ATTR);
+            if (redirect != null) {
+                session.removeAttribute(REDIRECT_ATTR);
+                response.sendRedirect(redirect);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/index.jsp");
+            }
+            return;            // 🔑 dừng tại đây
         }
+
+        /* ====================  ĐĂNG NHẬP THẤT BẠI  ==================== */
+        request.setAttribute(AttributeConstant.USERNAME, username);
+        session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.LOGIN_ERROR);
+        session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+
+        // forward về trang login; KHÔNG redirect nữa
+        request.getRequestDispatcher(PathConstant.URL_LOGIN).forward(request, response);
+        // không cần return – forward đã kết thúc luồng
     }
 
     /**

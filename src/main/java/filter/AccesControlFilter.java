@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package filter;
 
 import constant.AttributeConstant;
@@ -32,8 +28,11 @@ public class AccesControlFilter implements Filter {
     // Danh sách các đường dẫn yêu cầu phải đăng nhập
     private static final List<String> PROTECTED_PATHS = Arrays.asList(
             "/admin",
-            "/user"
+            "/user",
+            "/checkout" // <- bảo vệ bước thanh toán
     );
+    // Hằng khoá session
+    private static final String REDIRECT_ATTR = "redirectAfterLogin";
 
     @Override
     public void doFilter(ServletRequest sr, ServletResponse srp, FilterChain fc)
@@ -54,9 +53,30 @@ public class AccesControlFilter implements Filter {
             }
         }
 
+//        // 0. Chưa đăng nhập nhưng truy cập URL cần bảo vệ
+//        if (user == null && protectedPath) {
+//
+//            // ⬇ lưu lại URL đầy đủ (gồm query) để quay lại
+//            String fullURL = req.getRequestURI()
+//                    + (req.getQueryString() == null ? "" : "?" + req.getQueryString());
+//            req.getSession(true).setAttribute(REDIRECT_ATTR, fullURL);
+//
+//            HttpSession newSes = req.getSession();
+//            newSes.setAttribute(AttributeConstant.MESSAGE, MessageConstant.FILTER_BLOCK_NOT_LOGIN);
+//            newSes.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+//            res.sendRedirect(req.getContextPath() + PathConstant.URL_SERVLET_LOGIN);
+//            return;
+//        }
+
         // 1. Chặn nếu chưa đăng nhập
         if (user == null && protectedPath) {
+            // lưu lại URL đích + query để quay lại sau login
+            String target = req.getRequestURI()
+                    + (req.getQueryString() != null ? "?" + req.getQueryString() : "");
+            req.getSession(true).setAttribute("redirectAfterLogin", target);
+
             HttpSession newSession = req.getSession(true);
+
             newSession.setAttribute(AttributeConstant.MESSAGE, MessageConstant.FILTER_BLOCK_NOT_LOGIN);
             newSession.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
             res.sendRedirect(req.getContextPath() + PathConstant.URL_SERVLET_LOGIN);
@@ -70,7 +90,7 @@ public class AccesControlFilter implements Filter {
             res.sendRedirect(req.getContextPath() + "/index.jsp");
             return;
         }
-        
+
         // 2. Không cho người đã login quay lại login.jsp
         if ("/register".equals(path) && user != null && session != null) {
             session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.FILTER_BLOCK_LOGIN);
@@ -111,5 +131,4 @@ public class AccesControlFilter implements Filter {
         // Nếu không bị chặn, cho qua
         fc.doFilter(sr, srp);
     }
-
 }

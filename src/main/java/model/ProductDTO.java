@@ -1,13 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
-/**
- *
- * @author email
- */
+import java.util.Date;
+
 public class ProductDTO {
 
     private int productId;
@@ -21,11 +15,15 @@ public class ProductDTO {
     private int categoryId;
     private int quantity;
     private int detailId;
+    private double subTotal;
+    private String username; // Thêm để hỗ trợ cột Customer cho admin
+    private Date orderDate;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(int productId, String productName, String image, String version, String color, String storage, double price, String categoryName, int categoryId, int quantity, int detailId) {
+    public ProductDTO(int productId, String productName, String image, String version, String color, String storage,
+            double price, String categoryName, int categoryId, int quantity, int detailId, double subTotal, String username) {
         this.productId = productId;
         this.productName = productName;
         this.image = image;
@@ -37,6 +35,8 @@ public class ProductDTO {
         this.categoryId = categoryId;
         this.quantity = quantity;
         this.detailId = detailId;
+        this.subTotal = subTotal;
+        this.username = username;
     }
 
     public int getProductId() {
@@ -127,7 +127,30 @@ public class ProductDTO {
         this.detailId = detailId;
     }
 
-    
+    public double getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(double subTotal) {
+        this.subTotal = subTotal;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
+    }
+
     @Override
     public String toString() {
         return "ProductDTO{"
@@ -137,11 +160,13 @@ public class ProductDTO {
                 + ", version='" + version + '\''
                 + ", color='" + color + '\''
                 + ", storage='" + storage + '\''
-                + ", price=" + price + '\''
+                + ", price=" + price
                 + ", categoryName='" + categoryName + '\''
-                + ", categoryId=" + categoryId + '\''
+                + ", categoryId=" + categoryId
                 + ", quantity=" + quantity
+                + ", detailId=" + detailId
+                + ", subTotal=" + subTotal
+                + ", username='" + username + '\''
                 + '}';
     }
-
 }

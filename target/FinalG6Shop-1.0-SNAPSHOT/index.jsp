@@ -1,9 +1,3 @@
-<%-- 
-    Document   : index
-    Created on : Jun 18, 2025, 6:08:57 PM
-    Author     : KhanhDang
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/header.jsp" %>
 <%@include file="/WEB-INF/include/showNotification.jsp" %>
@@ -30,7 +24,7 @@
                                 <h3>Premium performance at just 36 million VND</h3>
                                 <h3 class="h2">Power, Precision, and Style. Built for your digital lifestyle</h3>
 
-                                <a href="shop.jsp" class="btn btn-dark btn-lg mt-3">Shop Now</a>
+                                <a href="shop" class="btn btn-dark btn-lg mt-3">Shop Now</a>
                             </div>
                         </div>
                     </div>
@@ -47,7 +41,7 @@
                                 <h1 class="h1 text-dark"><b>iPad Pro M4 - 13 inch</b></h1>
                                 <h3>Premium performance at just 32 million VND</h3>
                                 <h3 class="h2">The ultimate creative powerhouse, now within your reach</h3>
-                                <a href="shop.jsp" class="btn btn-dark btn-lg mt-3">Shop Now</a>
+                                <a href="shop" class="btn btn-dark btn-lg mt-3">Shop Now</a>
                             </div>
                         </div>
                     </div>
@@ -64,7 +58,7 @@
                                 <h1 class="h1 text-dark"><b>Macbook Pro M4 - 16 inch</b></h1>
                                 <h3>Premium performance at just 90 million VND</h3>
                                 <h3 class="h2">Built for creators. Powered for professionals </h3>
-                                <a href="shop.jsp" class="btn btn-dark btn-lg mt-3">Shop Now</a>
+                                <a href="shop" class="btn btn-dark btn-lg mt-3">Shop Now</a>
                             </div>
                         </div>
                     </div>

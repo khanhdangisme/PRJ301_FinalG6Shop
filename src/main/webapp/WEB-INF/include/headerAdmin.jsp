@@ -14,7 +14,6 @@
 %>
 
 <html>
-
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
@@ -29,6 +28,7 @@
         <!-- Load fonts style after rendering the layout styles -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
         <link rel="stylesheet" href="assets/css/fontawesome.min.css">
+     
     </head>
     <body>
         <!-- Header -->
@@ -105,7 +105,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </nav>
 
@@ -145,11 +144,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#" style="font-size: 18px !important; font-weight: 500 !important;">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=orderlist"
+                                   style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="layers"></span>
-                                    Integrations
+                                    Order history
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </nav>
+            

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import constant.AttributeConstant;
@@ -17,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,11 +70,23 @@ public class ShopServlet extends HttpServlet {
             throws ServletException, IOException {
         String view = request.getParameter(ParamConstant.VIEW);
         ShopProductDAO dao = new ShopProductDAO();
+
         if ("details".equals(view)) {
             try {
-                int id = Integer.parseInt(request.getParameter(ParamConstant.ID));
+                //int id = Integer.parseInt(request.getParameter(ParamConstant.ID));
+
+                String idRaw = request.getParameter(ParamConstant.ID);
                 String color = request.getParameter(ParamConstant.COLOR);
                 String storage = request.getParameter(ParamConstant.STORAGE);
+
+                if (idRaw == null || idRaw.trim().isEmpty()
+                        || color == null || color.trim().isEmpty()
+                        || storage == null || storage.trim().isEmpty()) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing required parameters");
+                    return;
+                }
+
+                int id = Integer.parseInt(idRaw);
 
                 List<Product> cate = dao.getAllCategory();
                 request.setAttribute(AttributeConstant.LIST, cate);
@@ -108,7 +118,7 @@ public class ShopServlet extends HttpServlet {
         } else if ("search".equals(view)) {
             try {
                 String keyword = request.getParameter("query").toLowerCase();  // Lấy từ khóa tìm kiếm
-                
+
                 List<Product> cate = dao.getAllCategory();
                 request.setAttribute(AttributeConstant.LIST, cate);
                 // 2. Lấy product của từng category
@@ -126,22 +136,38 @@ public class ShopServlet extends HttpServlet {
                 // Duyệt qua tất cả sản phẩm và kiểm tra xem tên, version, hay storage có chứa từ khóa tìm kiếm không
                 for (ProductDTO dto : allProducts) {
                     if (dto.getProductName().toLowerCase().contains(keyword)
-                        || (dto.getVersion() != null && dto.getVersion().toLowerCase().contains(keyword))
-                        || (dto.getStorage() != null && dto.getStorage().toLowerCase().contains(keyword))) {
+                            || (dto.getVersion() != null && dto.getVersion().toLowerCase().contains(keyword))
+                            || (dto.getStorage() != null && dto.getStorage().toLowerCase().contains(keyword))) {
                         searchResults.add(dto);
                     }
                 }
+
+                // Sắp xếp: còn hàng lên trước
+                Collections.sort(searchResults, new Comparator<ProductDTO>() {
+                    @Override
+                    public int compare(ProductDTO a, ProductDTO b) {
+                        if (a.getQuantity() == 0 && b.getQuantity() > 0) {
+                            return 1;
+                        }
+                        if (a.getQuantity() > 0 && b.getQuantity() == 0) {
+                            return -1;
+                        }
+                        return 0;
+                    }
+                });
 
                 // Gửi kết quả tìm kiếm về view
                 request.setAttribute("productDetail", searchResults);
                 request.setAttribute("searchKeyword", keyword);  // Thêm từ khóa tìm kiếm vào để hiển thị
                 request.getRequestDispatcher("/WEB-INF/view/shop.jsp").forward(request, response);
+
             } catch (SQLException e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Search failed");
             }
             return;
         }
+        // if else: bắt [Buy_path] bị null/invalid -> "Path bị sai"
         try {
             // 1. Lấy danh sách category
             List<Product> cate = dao.getAllCategory();
@@ -157,15 +183,34 @@ public class ShopServlet extends HttpServlet {
 
             // 3. nếu có productId thì show chi tiết
             String pidRaw = request.getParameter("productId");
-            if (pidRaw != null) {
-                int pid = Integer.parseInt(pidRaw);
-                List<ProductDTO> detail = dao.getProductItem(pid);
-                request.setAttribute("productDetail", detail);
+            List<ProductDTO> productList;
+
+            if (pidRaw != null && !pidRaw.trim().isEmpty()) {
+                try {
+                    int pid = Integer.parseInt(pidRaw);
+                    productList = dao.getProductItem(pid);
+                } catch (NumberFormatException e) {
+                    productList = dao.getProduct(null); // fallback
+                    request.setAttribute("error", "Invalid product ID format");
+                }
             } else {
-                // nếu chưa chọn productId, load toàn bộ sản phẩm
-                List<ProductDTO> allProducts = dao.getProduct(null);
-                request.setAttribute("productDetail", allProducts);
+                productList = dao.getProduct(null);
             }
+
+            // Sắp xếp: còn hàng lên trước (Java 7)
+            Collections.sort(productList, new Comparator<ProductDTO>() {
+                @Override
+                public int compare(ProductDTO a, ProductDTO b) {
+                    if (a.getQuantity() == 0 && b.getQuantity() > 0) {
+                        return 1;
+                    }
+                    if (a.getQuantity() > 0 && b.getQuantity() == 0) {
+                        return -1;
+                    }
+                    return 0;
+                }
+            });
+            request.setAttribute("productDetail", productList);
 
             request.getRequestDispatcher(PathConstant.URL_SHOP).forward(request, response);
 
@@ -197,5 +242,4 @@ public class ShopServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

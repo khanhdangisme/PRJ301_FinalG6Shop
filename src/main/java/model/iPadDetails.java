@@ -8,13 +8,14 @@ package model;
  *
  * @author email
  */
-public class iPadDetails extends Product{
+public class iPadDetails extends Product {
+
     private int iPadDetailId;
     private String iPadVersion;
     private String iPadColor;
     private String iPadStorage;
     private double iPadPrice;
-    private  int iPadQuantity;
+    private int iPadQuantity;
     private String iPadScreenSize;
     private String iPadRearCamera;
     private String iPadFrontCamera;
@@ -57,8 +58,6 @@ public class iPadDetails extends Product{
     public void setiPadQuantity(int iPadQuantity) {
         this.iPadQuantity = iPadQuantity;
     }
-
-    
 
     public int getiPadDetailId() {
         return iPadDetailId;
@@ -188,5 +187,4 @@ public class iPadDetails extends Product{
         this.iPadImageUrl = iPadImageUrl;
     }
 
-    
 }

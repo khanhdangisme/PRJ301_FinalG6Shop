@@ -9,21 +9,25 @@ package constant;
  * @author email
  */
 public class ParamConstant {
+
     //User
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
     public static final String FULLNAME = "fullname";
     public static final String EMAIL = "email";
     public static final String PHONE = "phone";
-    
+
     //Login 
     public static final String REMEMBER_ME = "remember";
-    
+
     //JSP gui ve servlet
     public static final String VIEW = "view";
     public static final String ACTION = "action";
-    
+
     public static final String ID = "id";
     public static final String COLOR = "color";
     public static final String STORAGE = "storage";
+
+    public static final String COUPON = "coupon";
+    public static final String QUANTITY = "quantity";
 }

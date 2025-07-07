@@ -1,42 +1,35 @@
-<%-- 
-    Document   : header
-    Created on : Jun 16, 2025, 1:13:18 PM
-    Author     : KhanhDang
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="model.User" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@include file="/WEB-INF/include/showNotification.jsp" %>
 
-<% User loggedUser = (User) session.getAttribute("loggedUser");
+<%
+    User loggedUser = (User) session.getAttribute("loggedUser");
     boolean loggedIn = loggedUser != null;
 %>
 
 <html>
-
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-        <link rel="apple-touch-icon" href="assets/img/logo_G6.png">
-        <link rel="shortcut icon" type="image/x-icon" href="assets/img/mini_logo.png">
+        <link rel="apple-touch-icon" href="${pageContext.request.contextPath}/assets/img/logo_G6.png">
+        <link rel="shortcut icon" type="image/x-icon" href="${pageContext.request.contextPath}/assets/img/mini_logo.png">
 
-        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-        <link rel="stylesheet" href="assets/css/templatemo.css">
-        <link rel="stylesheet" href="assets/css/custom.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/templatemo.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/custom.css">
 
         <!-- Load fonts style after rendering the layout styles -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
-        <link rel="stylesheet" href="assets/css/fontawesome.min.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/fontawesome.min.css">
     </head>
     <body>
-        <!-- Header -->
         <nav class="navbar navbar-expand-lg navbar-light shadow fixed-top bg-white">
             <div class="container d-flex justify-content-between align-items-center">
 
-               
-                <a class="navbar-brand align-self-center" href="index.jsp">
-                    <img src="assets/img/logo_G6.png" alt="G6Shop Logo" height="70">
+                <!-- Logo -->
+                <a class="navbar-brand align-self-center" href="${pageContext.request.contextPath}/index.jsp">
+                    <img src="${pageContext.request.contextPath}/assets/img/logo_G6.png" alt="G6Shop Logo" height="70">
                 </a>
 
                 <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#templatemo_main_nav">
@@ -47,54 +40,50 @@
                     <!-- Main menu -->
                     <div class="flex-fill">
                         <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
-                            <li class="nav-item"><a class="nav-link" href="index.jsp">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="<%=request.getContextPath()%>/shop">Shop</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/index.jsp">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/shop">Shop</a></li>
                             <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                         </ul>
                     </div>
 
                     <!-- Icons: Search / Cart / User -->
                     <div class="navbar align-self-center d-flex">
-                        <!-- Search icon (large screen) -->
+
+                        <!-- Search icon (mặc định shop) -->
                         <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#templatemo_search">
                             <i class="fa fa-fw fa-search text-dark mr-2"></i>
                         </a>
 
                         <!-- Cart icon -->
-                        <a class="nav-icon position-relative text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#cartModal">
+                        <a class="nav-icon position-relative text-decoration-none"
+                           href="${pageContext.request.contextPath}/cart?action=view">
                             <i class="fa fa-fw fa-cart-arrow-down text-dark mr-1"></i>
-                            <span class="position-absolute top-0 left-100 translate-middle badge rounded-pill bg-light text-dark">7</span>
+                            <c:if test="${sessionScope.cartCount != null && sessionScope.cartCount > 0}">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-light text-dark">
+                                    ${sessionScope.cartCount}
+                                </span>
+                            </c:if>
                         </a>
 
                         <!-- User account -->
                         <% if (loggedIn) { %>
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <!-- Avatar icon -->
-                                <!-- Avatar icon -->
                                 <div class="avatar-placeholder me-2">
                                     <%= loggedUser.getUserFullname().toUpperCase().charAt(0) %>
                                 </div>
-
-                                <!-- Greeting -->
                                 <span class="fw-semibold">Hi, <%= loggedUser.getUserFullname() %></span>
                             </a>
-
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="userDropdown" style="min-width: 260px;">
-                                <!-- User Info -->
                                 <li class="px-3 py-2 border-bottom">
                                     <div class="fw-bold text-dark mb-1"><%= loggedUser.getUserName() %></div>
                                     <div class="text-muted small"><%= loggedUser.getUserEmail() %></div>
                                 </li>
-
-                                <!-- Profile -->
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2" href="user?view=profile">
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/user?view=profile">
                                         <i class="fa fa-user me-2" style="color: #343a40;"></i> My Profile
                                     </a>
                                 </li>
-
-                                <!-- Admin Dashboard -->
                                 <c:if test="${sessionScope.loggedUser.userRole == 0}">
                                     <li>
                                         <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/admin?view=dashboard">
@@ -103,29 +92,56 @@
                                     </li>
                                 </c:if>
 
-                                <!-- Order History -->
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2" href="#">
-                                        <i class="fa fa-history me-2" style="color: #198754;"></i> Order History
-                                    </a>
+                                    <c:if test="${sessionScope.loggedUser.userRole != 0}">
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/history/orders">
+                                            <i class="fa fa-history me-2" style="color: #198754;"></i> Order History
+                                        </a>
+                                    </li>
+                                </c:if>
                                 </li>
 
-                                <!-- Logout -->
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center py-2" href="<%=request.getContextPath()%>/logout">
-                                        <i class="fa fa-sign-out-alt me-2" style="color: #dc3545;"></i> 
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/logout">
+                                        <i class="fa fa-sign-out-alt me-2" style="color: #dc3545;"></i>
                                         <span class="text-danger">Sign Out</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
                         <% } else { %>
-                        <a class="nav-icon position-relative text-decoration-none" href="<%=request.getContextPath()%>/login">
+                        <a class="nav-icon position-relative text-decoration-none"
+                           href="${pageContext.request.contextPath}/login">
                             <i class="fa fa-fw fa-user text-dark mr-3"></i>
                         </a>
                         <% } %>
                     </div>
                 </div>
-
             </div>
         </nav>
+
+        <!-- Search Modal (dùng cho Shop mặc định) -->
+        <div class="modal fade" id="templatemo_search" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+            <div class="modal-dialog mt-3">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="searchModalLabel">Search</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="${pageContext.request.contextPath}/shop" method="get">
+                            <input type="hidden" name="view" value="search" />
+                            <div class="input-group">
+                                <input type="text" name="query" class="form-control" placeholder="Type to search..." required>
+                                <button class="btn btn-success" type="submit">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

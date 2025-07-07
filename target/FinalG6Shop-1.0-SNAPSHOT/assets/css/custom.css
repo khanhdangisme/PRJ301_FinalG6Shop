@@ -48,10 +48,14 @@ Custom Css
     user-select: none;
 }
 
+.out-of-stock {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
 @media (min-width: 768px) {
     .bd-placeholder-img-lg {
         font-size: 3.5rem;
     }
 }
-
-
