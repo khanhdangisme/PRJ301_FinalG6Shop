@@ -268,7 +268,7 @@
             <div class="modal-body text-center">
                 <p>Thank you for shopping at <strong>G6Shop</strong>!</p>
                 <p>A confirmation email has been sent to you.</p>
-                <p>You can check your order status in <a href="${pageContext.request.contextPath}/history/orders">My Orders</a>.</p>
+                <p>You can check your order status in <a href="${pageContext.request.contextPath}/history">My Orders</a>.</p>
             </div>
             <div class="modal-footer justify-content-center">
                 <a href="${pageContext.request.contextPath}/shop" class="btn btn-dark">

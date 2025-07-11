@@ -93,13 +93,9 @@
                                 </c:if>
 
                                 <li>
-                                    <c:if test="${sessionScope.loggedUser.userRole != 0}">
-                                    <li>
-                                        <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/history/orders">
-                                            <i class="fa fa-history me-2" style="color: #198754;"></i> Order History
-                                        </a>
-                                    </li>
-                                </c:if>
+                                    <a class="dropdown-item d-flex align-items-center py-2" href="${pageContext.request.contextPath}/history">
+                                        <i class="fa fa-history me-2" style="color: #198754;"></i> Order History
+                                    </a>
                                 </li>
 
                                 <li>

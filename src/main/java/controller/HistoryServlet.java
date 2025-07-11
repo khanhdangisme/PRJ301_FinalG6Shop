@@ -15,7 +15,7 @@ import java.util.List;
 import model.ProductDTO;
 import model.User;
 
-@WebServlet(name = "HistoryServlet", urlPatterns = {"/history/orders", "/admin/orders"})
+@WebServlet(name = "HistoryServlet", urlPatterns = {"/history"})
 public class HistoryServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -30,17 +30,11 @@ public class HistoryServlet extends HttpServlet {
 
         try {
             OrderDAO orderDAO = new OrderDAO();
-            if (user.getUserRole() == 0) {
-                // Admin: Xem tất cả đơn hàng
-                List<ProductDTO> history = orderDAO.getAllOrderHistories();
-                request.setAttribute("orders", history);
-                request.getRequestDispatcher("/WEB-INF/admin/order_list.jsp").forward(request, response);
-            } else {
-                // User: Xem lịch sử đơn hàng cá nhân
-                List<ProductDTO> history = orderDAO.getOrderHistoryByUser(user.getUserID());
-                request.setAttribute("orderHistories", history);
-                request.getRequestDispatcher("/WEB-INF/view/history.jsp").forward(request, response);
-            }
+            // User: Xem lịch sử đơn hàng cá nhân
+            List<ProductDTO> history = orderDAO.getOrderHistoryByUser(user.getUserID());
+            request.setAttribute("orderHistories", history);
+            request.getRequestDispatcher("/WEB-INF/view/history.jsp").forward(request, response);
+
         } catch (SQLException e) {
             e.printStackTrace();
             request.setAttribute("errorMessage", e.getMessage());
