@@ -5,7 +5,6 @@
 %>
 <%@include file="/WEB-INF/include/header.jsp" %>
 <title>G6Shop - Profile</title>
-
 <div class="page-content-wrapper">
     <div class="container py-5">
         <div class="container" style="margin-top: 120px; margin-bottom: 20px">
@@ -16,8 +15,8 @@
                      style="background-color: #e5e7eb; width: 110px; height: 110px; overflow: hidden; font-weight: 600;">
 
                     <c:choose>
-                        <c:when test="${not empty user.avatarUrl}">
-                            <img src="${pageContext.request.contextPath}/${user.avatarUrl}"
+                        <c:when test="${not empty loggedUser.avatar}">
+                            <img src="${pageContext.request.contextPath}/${loggedUser.avatar}"
                                  alt="Avatar"
                                  style="width: 100%; height: 100%; object-fit: cover;" />
                         </c:when>

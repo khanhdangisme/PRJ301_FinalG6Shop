@@ -61,7 +61,6 @@ public class UserServlet extends HttpServlet {
         }
     }
 
-    
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -110,7 +109,6 @@ public class UserServlet extends HttpServlet {
         UserDAO dao = new UserDAO();
 
         if ("save-profile".equals(action)) {
-
             // Lấy dữ liệu từ form
             String username = request.getParameter(ParamConstant.USERNAME);
             String fullname = request.getParameter(ParamConstant.FULLNAME);
@@ -124,7 +122,8 @@ public class UserServlet extends HttpServlet {
             Part avatarPart = request.getPart("avatar");
 
             if (avatarPart != null && avatarPart.getSize() > 0) {
-                String uploadPath = request.getServletContext().getRealPath("/assets/uploads");
+                // Lưu vào src/main/webapp/assets/uploads
+                String uploadPath = getServletContext().getRealPath("/") + "../../src/main/webapp/assets/uploads";
                 File dir = new File(uploadPath);
                 if (!dir.exists()) {
                     dir.mkdirs();
@@ -235,4 +234,3 @@ public class UserServlet extends HttpServlet {
     }// </editor-fold>
 
 }
-

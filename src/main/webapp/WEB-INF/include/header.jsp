@@ -70,7 +70,18 @@
                         <div class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-dark d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <div class="avatar-placeholder me-2">
-                                    <%= loggedUser.getUserFullname().toUpperCase().charAt(0) %>
+                                    <!-- Kiểm tra nếu có ảnh thì hiển thị ảnh, nếu không sẽ lấy chữ cái đầu tiên của tên người dùng -->
+                                    <c:choose>
+                                        <c:when test="${not empty loggedUser.avatar}">
+                                            <img src="${pageContext.request.contextPath}/${loggedUser.avatar}" alt="Avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;" />
+                                        </c:when>
+                                        <c:otherwise>
+                                            <!-- Nếu không có ảnh, hiển thị chữ cái đầu tiên của tên người dùng -->
+                                            <div class="text-dark d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 20px; background-color: #e5e7eb; border-radius: 50%; font-weight: 700;">
+                                                <%= loggedUser.getUserFullname().toUpperCase().charAt(0) %>
+                                            </div>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                                 <span class="fw-semibold">Hi, <%= loggedUser.getUserFullname() %></span>
                             </a>

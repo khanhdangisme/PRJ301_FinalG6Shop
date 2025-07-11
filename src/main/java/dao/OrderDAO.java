@@ -100,74 +100,76 @@ public class OrderDAO extends DBContext {
 //        return list;
 //    }
     public List<ProductDTO> getOrderHistoryByUser(int userId) throws SQLException {
-        List<ProductDTO> list = new ArrayList<>();
+    List<ProductDTO> list = new ArrayList<>();
 
-        // ➊  LinkedHashMap giữ nguyên thứ tự INSERT (SQL đã ORDER BY DESC)
-        Map<String, ProductDTO> productMap = new LinkedHashMap<>();
+    // ➊ LinkedHashMap giữ nguyên thứ tự INSERT (SQL đã ORDER BY DESC)
+    Map<String, ProductDTO> productMap = new LinkedHashMap<>();
 
-        String sql = "SELECT o.ID AS OrderID, o.OrderDate, "
-                + "       d.ProductID, d.Quantity, d.Price, "
-                + "       p.Name AS ProductName, p.MainImage, p.CategoryID, "
-                + "       c.Name AS CategoryName, "
-                + "       ip.Version  AS iPhoneVersion,  ip.Color  AS iPhoneColor,  ip.Storage  AS iPhoneStorage, "
-                + "       ipad.Version AS iPadVersion, ipad.Color AS iPadColor, ipad.Storage AS iPadStorage, "
-                + "       mac.Version AS MacVersion, mac.Color AS MacColor, mac.Storage AS MacStorage "
-                + "FROM Orders o "
-                + "JOIN OrderDetails d ON o.ID = d.OrderID "
-                + "JOIN Products p ON d.ProductID = p.ID "
-                + "JOIN Categories c ON p.CategoryID = c.ID "
-                + "LEFT JOIN iPhone_Details  ip   ON d.ProductID = ip.ProductID "
-                + "LEFT JOIN iPad_Details    ipad ON d.ProductID = ipad.ProductID "
-                + "LEFT JOIN MacBook_Details mac  ON d.ProductID = mac.ProductID "
-                + "WHERE o.UserID = ? "
-                + "ORDER BY o.OrderDate DESC, o.ID DESC";
+    String sql = "SELECT o.ID AS OrderID, o.OrderDate, "
+            + "       d.ProductID, d.Quantity, d.Price, "
+            + "       p.Name AS ProductName, "
+            + "       COALESCE(ip.ImageURL, ipad.ImageURL, mac.ImageURL) AS ImageURL, "
+            + "       p.CategoryID, "
+            + "       c.Name AS CategoryName, "
+            + "       ip.Version  AS iPhoneVersion, ip.Color  AS iPhoneColor, ip.Storage  AS iPhoneStorage, "
+            + "       ipad.Version AS iPadVersion, ipad.Color AS iPadColor, ipad.Storage AS iPadStorage, "
+            + "       mac.Version AS MacVersion, mac.Color AS MacColor, mac.Storage AS MacStorage, "
+            + "       (SELECT TOP 1 Status FROM OrderStatusHistory OSH WHERE OSH.OrderID = o.ID ORDER BY OSH.ChangedAt DESC) AS OrderStatus "
+            + "FROM Orders o "
+            + "JOIN OrderDetails d ON o.ID = d.OrderID "
+            + "JOIN Products p ON d.ProductID = p.ID "
+            + "JOIN Categories c ON p.CategoryID = c.ID "
+            + "LEFT JOIN iPhone_Details ip ON d.ProductID = ip.ProductID "
+            + "LEFT JOIN iPad_Details ipad ON d.ProductID = ipad.ProductID "
+            + "LEFT JOIN MacBook_Details mac ON d.ProductID = mac.ProductID "
+            + "WHERE o.UserID = ? "
+            + "ORDER BY o.OrderDate DESC, o.ID DESC";
 
-        try ( Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+    try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, userId);
 
-            ps.setInt(1, userId);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                // ➋ Key duy nhất cho mỗi chi tiết đơn hàng (OrderID‑ProductID)
+                String key = rs.getInt("OrderID") + "-" + rs.getInt("ProductID");
+                ProductDTO dto = productMap.get(key);
 
-            try ( ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    // ➋  Key duy nhất cho mỗi chi tiết đơn hàng (OrderID‑ProductID)
-                    String key = rs.getInt("OrderID") + "-" + rs.getInt("ProductID");
-                    ProductDTO dto = productMap.get(key);
-
-                    if (dto == null) {
-                        dto = new ProductDTO();
-                        dto.setOrderDate(rs.getTimestamp("OrderDate"));
-                        dto.setProductId(rs.getInt("ProductID"));
-                        dto.setProductName(rs.getString("ProductName"));
-                        dto.setImage(rs.getString("MainImage"));
-                        dto.setCategoryId(rs.getInt("CategoryID"));
-                        dto.setCategoryName(rs.getString("CategoryName"));
-                        dto.setQuantity(rs.getInt("Quantity"));
-                        dto.setPrice(rs.getDouble("Price"));
-                        productMap.put(key, dto);
-                    }
-
-                    // Cập nhật version / color / storage chỉ 1 lần
-                    if (dto.getVersion() == null) {
-                        dto.setVersion(
-                                firstNonNull(rs, "iPhoneVersion", "iPadVersion", "MacVersion"));
-                    }
-                    if (dto.getColor() == null) {
-                        dto.setColor(
-                                firstNonNull(rs, "iPhoneColor", "iPadColor", "MacColor"));
-                    }
-                    if (dto.getStorage() == null) {
-                        dto.setStorage(
-                                firstNonNull(rs, "iPhoneStorage", "iPadStorage", "MacStorage"));
-                    }
-
-                    dto.setSubTotal(dto.getPrice() * dto.getQuantity());
+                if (dto == null) {
+                    dto = new ProductDTO();
+                    dto.setOrderDate(rs.getTimestamp("OrderDate"));
+                    dto.setProductId(rs.getInt("ProductID"));
+                    dto.setProductName(rs.getString("ProductName"));
+                    dto.setImage(rs.getString("ImageURL"));  // Lấy ImageURL từ chi tiết sản phẩm
+                    dto.setCategoryId(rs.getInt("CategoryID"));
+                    dto.setCategoryName(rs.getString("CategoryName"));
+                    dto.setQuantity(rs.getInt("Quantity"));
+                    dto.setPrice(rs.getDouble("Price"));
+                    dto.setStatus(rs.getString("OrderStatus"));  // Lưu trạng thái đơn hàng
+                    productMap.put(key, dto);
                 }
+
+                // Cập nhật version / color / storage chỉ 1 lần
+                if (dto.getVersion() == null) {
+                    dto.setVersion(firstNonNull(rs, "iPhoneVersion", "iPadVersion", "MacVersion"));
+                }
+                if (dto.getColor() == null) {
+                    dto.setColor(firstNonNull(rs, "iPhoneColor", "iPadColor", "MacColor"));
+                }
+                if (dto.getStorage() == null) {
+                    dto.setStorage(firstNonNull(rs, "iPhoneStorage", "iPadStorage", "MacStorage"));
+                }
+
+                dto.setSubTotal(dto.getPrice() * dto.getQuantity());
             }
         }
-
-        // ➌  LinkedHashMap → giữ nguyên thứ tự DESC khi addAll
-        list.addAll(productMap.values());
-        return list;
     }
+
+    // ➌ LinkedHashMap → giữ nguyên thứ tự DESC khi addAll
+    list.addAll(productMap.values());
+    return list;
+}
+
+
 
     /* Helper ngắn gọn lấy cột đầu tiên khác null */
     private String firstNonNull(ResultSet rs, String... cols) throws SQLException {

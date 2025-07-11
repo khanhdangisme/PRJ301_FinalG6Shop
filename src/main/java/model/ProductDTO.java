@@ -18,12 +18,12 @@ public class ProductDTO {
     private double subTotal;
     private String username; // Thêm để hỗ trợ cột Customer cho admin
     private Date orderDate;
+    private String status;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(int productId, String productName, String image, String version, String color, String storage,
-            double price, String categoryName, int categoryId, int quantity, int detailId, double subTotal, String username) {
+    public ProductDTO(int productId, String productName, String image, String version, String color, String storage, double price, String categoryName, int categoryId, int quantity, int detailId, double subTotal, String username, Date orderDate, String status) {
         this.productId = productId;
         this.productName = productName;
         this.image = image;
@@ -37,6 +37,8 @@ public class ProductDTO {
         this.detailId = detailId;
         this.subTotal = subTotal;
         this.username = username;
+        this.orderDate = orderDate;
+        this.status = status;
     }
 
     public int getProductId() {
@@ -150,6 +152,16 @@ public class ProductDTO {
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
     }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    
 
     @Override
     public String toString() {

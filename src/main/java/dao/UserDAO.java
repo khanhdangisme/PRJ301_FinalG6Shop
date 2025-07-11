@@ -61,7 +61,7 @@ public class UserDAO extends DBContext {
                         rs.getString("Email"),
                         rs.getString("Phone"),
                         rs.getInt("Role"),
-                        rs.getString("avatar"),
+                        rs.getString("Avatar"),
                         rs.getString("status")
                 );
             } else {

@@ -20,9 +20,10 @@
             <div onclick="document.getElementById('avatarInput').click()" 
                  class="rounded-circle text-dark mx-auto d-flex align-items-center justify-content-center shadow"
                  style="cursor: pointer; background-color: #e5e7eb; width: 110px; height: 110px; font-size: 2rem !important; font-weight: 700; overflow: hidden;">
-                <img id="avatarPreview" src="${user.avatarUrl != null ? user.avatarUrl : ''}" 
-                     style="width: 100%; height: 100%; object-fit: cover; display: ${user.avatarUrl != null ? 'block' : 'none'};" />
-                <span id="avatarLetter" style="display: ${user.avatarUrl == null ? 'block' : 'none'};">
+                <img id="avatarPreview" 
+                     src="${not empty user.avatar ? pageContext.request.contextPath + '/' + user.avatar : ''}" 
+                     style="width: 100%; height: 100%; object-fit: cover; display: ${not empty user.avatar ? 'block' : 'none'};" />
+                <span id="avatarLetter" style="display: ${empty user.avatar ? 'block' : 'none'};">
                     <%= user.getUserFullname().toUpperCase().charAt(0) %>
                 </span>
             </div>
@@ -78,7 +79,7 @@
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                preview.src = e.target.result;
+                preview.src = e.target.result;  // Cập nhật ảnh mới vào thẻ img
                 preview.style.display = "block";
                 letter.style.display = "none";
             };
