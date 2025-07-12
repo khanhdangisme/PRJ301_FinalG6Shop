@@ -4,7 +4,7 @@
 <%@ include file="/WEB-INF/include/header.jsp" %>
 
 <main class="container py-5 mt-5">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center" style="margin-top: 45px;">
         <div class="col-lg-12">
             <div class="card shadow border-0">
                 <div class="card-header bg-primary text-white">
