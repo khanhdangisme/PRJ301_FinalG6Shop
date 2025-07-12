@@ -65,6 +65,7 @@ public class OrderDAO extends DBContext {
 
                     if (dto == null) {
                         dto = new ProductDTO();
+                        dto.setOrderId(rs.getInt("OrderID"));
                         dto.setOrderDate(rs.getTimestamp("OrderDate"));
                         dto.setProductId(rs.getInt("ProductID"));
                         dto.setProductName(rs.getString("ProductName"));
@@ -103,7 +104,8 @@ public class OrderDAO extends DBContext {
                 + "END AS ImageURL, "
                 + "p.CategoryID, c.Name AS CategoryName, "
                 + "d.Version, d.Color, d.Storage, "
-                + "d.DetailID "
+                + "d.DetailID, "
+                + "(SELECT TOP 1 Status FROM OrderStatusHistory OSH WHERE OSH.OrderID = o.ID ORDER BY OSH.ChangedAt DESC) AS OrderStatus "
                 + "FROM Orders o "
                 + "JOIN Users u ON o.UserID = u.ID "
                 + "JOIN OrderDetails d ON o.ID = d.OrderID "
@@ -128,6 +130,7 @@ public class OrderDAO extends DBContext {
 
                 if (dto == null) {
                     dto = new ProductDTO();
+                    dto.setOrderId(rs.getInt("OrderID"));
                     dto.setOrderDate(rs.getTimestamp("OrderDate"));
                     dto.setProductId(rs.getInt("ProductID"));
                     dto.setProductName(rs.getString("ProductName"));
@@ -142,6 +145,7 @@ public class OrderDAO extends DBContext {
                     dto.setUsername(rs.getString("Username"));
                     dto.setDetailId(rs.getInt("DetailID"));
                     dto.setSubTotal(dto.getPrice() * dto.getQuantity());
+                    dto.setStatus(rs.getString("OrderStatus"));
                     orderProductMap.put(key, dto);
                 }
             }
@@ -212,6 +216,72 @@ public class OrderDAO extends DBContext {
         }
 
         return dto;
+    }
+
+    public void markOrderAsReturnRequested(int orderId, int productId, int detailId) throws SQLException {
+        String sql = "UPDATE Orders "
+                + "SET OrderStatus = 'Return Requested' "
+                + "WHERE ID = ? AND ID IN (SELECT OrderID FROM OrderDetails WHERE ProductID = ? AND DetailID = ?)";
+
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            ps.setInt(2, productId);
+            ps.setInt(3, detailId);
+
+            ps.executeUpdate();
+        }
+    }
+
+    public boolean updateOrderStatus(int orderId, String status) throws SQLException {
+        String sql = "INSERT INTO OrderStatusHistory (OrderID, Status, ChangedAt) VALUES (?, ?, ?)";
+        try ( Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, orderId);
+            ps.setString(2, status);
+            ps.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    // ✅ Hàm cập nhật lại số lượng hàng sau khi cancel / return
+    public void restoreStockFromOrder(int orderId) throws SQLException {
+        String sql = "SELECT d.ProductID, d.DetailID, d.Quantity, p.CategoryID "
+                + "FROM OrderDetails d JOIN Products p ON d.ProductID = p.ID "
+                + "WHERE d.OrderID = ?";
+
+        try ( Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int productId = rs.getInt("ProductID");
+                int detailId = rs.getInt("DetailID");
+                int quantity = rs.getInt("Quantity");
+                int categoryId = rs.getInt("CategoryID"); // ✅ dùng getInt thay vì getString
+
+                String updateSql = null;
+                switch (categoryId) {
+                    case 1:
+                        updateSql = "UPDATE iPhone_Details SET Quantity = Quantity + ? WHERE DetailID = ?";
+                        break;
+                    case 2:
+                        updateSql = "UPDATE iPad_Details SET Quantity = Quantity + ? WHERE DetailID = ?";
+                        break;
+                    case 3:
+                        updateSql = "UPDATE MacBook_Details SET Quantity = Quantity + ? WHERE DetailID = ?";
+                        break;
+                }
+
+                if (updateSql != null) {
+                    try ( PreparedStatement psUpdate = conn.prepareStatement(updateSql)) {
+                        psUpdate.setInt(1, quantity);
+                        psUpdate.setInt(2, detailId);
+                        psUpdate.executeUpdate();
+                    }
+                }
+            }
+        }
     }
 
 }

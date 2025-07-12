@@ -19,11 +19,12 @@ public class ProductDTO {
     private String username; // Thêm để hỗ trợ cột Customer cho admin
     private Date orderDate;
     private String status;
+    private int orderId;
 
     public ProductDTO() {
     }
 
-    public ProductDTO(int productId, String productName, String image, String version, String color, String storage, double price, String categoryName, int categoryId, int quantity, int detailId, double subTotal, String username, Date orderDate, String status) {
+    public ProductDTO(int productId, String productName, String image, String version, String color, String storage, double price, String categoryName, int categoryId, int quantity, int detailId, double subTotal, String username, Date orderDate, String status, int orderId) {
         this.productId = productId;
         this.productName = productName;
         this.image = image;
@@ -39,8 +40,19 @@ public class ProductDTO {
         this.username = username;
         this.orderDate = orderDate;
         this.status = status;
+        this.orderId = orderId;
     }
 
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    
     public int getProductId() {
         return productId;
     }

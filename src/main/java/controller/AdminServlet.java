@@ -325,6 +325,124 @@ public class AdminServlet extends HttpServlet {
                 } catch (SQLException ignore) {
                 }
             }
+        } else if ("confirm-order".equals(action)) {
+            String orderIdRaw = request.getParameter("orderId");
+            if (orderIdRaw == null || orderIdRaw.isBlank()) {
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+                return;
+            }
+
+            try {
+                int orderId = Integer.parseInt(orderIdRaw);
+                OrderDAO orderDAO = new OrderDAO();
+                boolean updated = orderDAO.updateOrderStatus(orderId, "Confirmed");
+
+                if (updated) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Order confirmed successfully.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                } else {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Failed to confirm order.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                }
+
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            } catch (Exception ex) {
+                Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Error: " + ex.getMessage());
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            }
+
+        } else if ("ship-order".equals(action)) {
+            String orderIdRaw = request.getParameter("orderId");
+            try {
+                int orderId = Integer.parseInt(orderIdRaw);
+                OrderDAO orderDAO = new OrderDAO();
+                boolean updated = orderDAO.updateOrderStatus(orderId, "Shipping");
+
+                if (updated) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Order is now Shipping.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                } else {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Failed to update order to Shipping.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                }
+
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            } catch (Exception ex) {
+                Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Error: " + ex.getMessage());
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            }
+        } else if ("complete-order".equals(action)) {
+            String orderIdRaw = request.getParameter("orderId");
+            try {
+                int orderId = Integer.parseInt(orderIdRaw);
+                OrderDAO orderDAO = new OrderDAO();
+                boolean updated = orderDAO.updateOrderStatus(orderId, "Completed");
+
+                if (updated) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Order completed successfully.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                } else {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Failed to complete order.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                }
+
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            } catch (Exception ex) {
+                Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Error: " + ex.getMessage());
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            }
+        } else if ("cancel-order-confirm".equals(action)) {
+            String orderIdRaw = request.getParameter("orderId");
+            try {
+                int orderId = Integer.parseInt(orderIdRaw);
+                OrderDAO orderDAO = new OrderDAO();
+                boolean updated = orderDAO.updateOrderStatus(orderId, "Cancelled");
+
+                if (updated) {
+                    orderDAO.restoreStockFromOrder(orderId); // <-- cập nhật tồn kho
+                    session.setAttribute(AttributeConstant.MESSAGE, "Order has been cancelled and stock restored.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                } else {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Failed to cancel order.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                }
+
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            } catch (Exception ex) {
+                Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Error: " + ex.getMessage());
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            }
+        } else if ("return-order-confirm".equals(action)) {
+            String orderIdRaw = request.getParameter("orderId");
+            try {
+                int orderId = Integer.parseInt(orderIdRaw);
+                OrderDAO orderDAO = new OrderDAO();
+                boolean updated = orderDAO.updateOrderStatus(orderId, "Returned");
+
+                if (updated) {
+                    orderDAO.restoreStockFromOrder(orderId);
+                    session.setAttribute(AttributeConstant.MESSAGE, "Order return confirmed.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                } else {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Failed to update return status.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                }
+
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            } catch (Exception ex) {
+                Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Error: " + ex.getMessage());
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
+            }
         }
     }
 

@@ -20,30 +20,27 @@
                         </c:when>
                         <c:otherwise>
                             <div class="table-responsive">
-
                                 <table class="table table-hover align-middle">
                                     <thead class="table-light">
                                         <tr>
-                                            <th scope="col">Image</th>
-                                            <th scope="col">Product</th>
-                                            <th scope="col">Version</th>
-                                            <th scope="col">Color</th>
-                                            <th scope="col">Storage</th>
-                                            <th scope="col">Category</th>
-                                            <th scope="col">Qty</th>
-                                            <th scope="col">Price</th>
-                                            <th scope="col">Subtotal</th>
-                                            <th scope="col">Date</th>
+                                            <th>Image</th>
+                                            <th>Product</th>
+                                            <th>Version</th>
+                                            <th>Color</th>
+                                            <th>Storage</th>
+                                            <th>Category</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Subtotal</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <c:forEach var="item" items="${orderHistories}">
                                             <tr>
-                                                <td>
-                                                    <img src="${pageContext.request.contextPath}/assets/img/${item.image}"
-                                                         alt="${item.productName}" width="60" height="60"
-                                                         class="rounded shadow-sm border" />
-                                                </td>
+                                                <td><img src="${pageContext.request.contextPath}/assets/img/${item.image}" alt="${item.productName}" width="60" height="60" class="rounded shadow-sm border" /></td>
                                                 <td class="fw-semibold">${item.productName}</td>
                                                 <td>${item.version}</td>
                                                 <td>${item.color}</td>
@@ -51,12 +48,77 @@
                                                 <td><span class="badge bg-secondary">${item.categoryName}</span></td>
                                                 <td>${item.quantity}</td>
                                                 <td><fmt:formatNumber value="${item.price}" pattern="#,##0"/> ₫</td>
-                                                <td class="fw-bold text-danger">
-                                                    <fmt:formatNumber value="${item.subTotal}" pattern="#,##0"/> ₫
-                                                </td>
+                                                <td class="fw-bold text-danger"><fmt:formatNumber value="${item.subTotal}" pattern="#,##0"/> ₫</td>
                                                 <td>
                                                     <fmt:formatDate value="${item.orderDate}" pattern="HH:mm:ss" /><br/>
                                                     <fmt:formatDate value="${item.orderDate}" pattern="dd/MM/yyyy" />
+                                                </td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${item.status == 'Pending'}">
+                                                            <span class="badge bg-warning text-dark">Pending</span>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Confirmed'}">
+                                                            <span class="badge bg-primary">Confirmed</span>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Shipping'}">
+                                                            <span class="badge bg-info text-dark">Shipping</span>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Completed'}">
+                                                            <span class="badge bg-success">Completed</span>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Cancelled'}">
+                                                            <span class="badge bg-danger">Cancelled</span>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Cancel Requested'}">
+                                                            <span class="badge bg-warning text-dark">Cancel Requested</span>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Return Requested'}">
+                                                            <span class="badge bg-secondary">Return Requested</span>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Returned'}">
+                                                            <span class="badge bg-dark">Returned</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="badge bg-secondary">Unknown</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${item.status == 'Pending'}">
+                                                            <form action="${pageContext.request.contextPath}/history" method="post" style="display:inline;">
+                                                                <input type="hidden" name="action" value="cancel-order" />
+                                                                <input type="hidden" name="orderId" value="${item.orderId}" />
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                        onclick="return confirm('Are you sure you want to cancel this order?');">
+                                                                    Cancel
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Confirmed'}">
+                                                            <form action="${pageContext.request.contextPath}/history" method="post" style="display:inline;">
+                                                                <input type="hidden" name="action" value="cancel-order" />
+                                                                <input type="hidden" name="orderId" value="${item.orderId}" />
+                                                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                                        onclick="return confirm('Are you sure you want to cancel this order?');">
+                                                                    Cancel
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
+                                                        <c:when test="${item.status == 'Completed'}">
+                                                            <form action="${pageContext.request.contextPath}/history" method="post" style="display:inline;">
+                                                                <input type="hidden" name="action" value="request-return" />
+                                                                <input type="hidden" name="orderId" value="${item.orderId}" />
+                                                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                                                    Request Return
+                                                                </button>
+                                                            </form>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <span class="text-muted">–</span>
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </td>
                                             </tr>
                                         </c:forEach>

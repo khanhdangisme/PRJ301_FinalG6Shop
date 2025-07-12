@@ -1,12 +1,10 @@
 controller\ProductAdminServlet.class
-controller\ShopServlet$2.class
 dao\OrderDAO.class
 controller\CartServlet.class
 constant\PathConstant.class
 model\iPadDetails.class
 dao\AdminDAO.class
 model\Product.class
-controller\ShopServlet$1.class
 dao\UserDAO.class
 dao\ShopProductDAO.class
 model\iPhoneDetails.class

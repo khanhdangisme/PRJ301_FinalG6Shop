@@ -42,9 +42,40 @@ public class HistoryServlet extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        doGet(request, response);
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("loggedUser");
+
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/login");
+            return;
+        }
+
+        String action = request.getParameter("action");
+        int orderId = Integer.parseInt(request.getParameter("orderId"));
+
+        OrderDAO dao = new OrderDAO();
+
+        try {
+            if ("cancel-order".equals(action)) {
+                // Gửi yêu cầu hủy tới admin
+                dao.updateOrderStatus(orderId, "Cancel Requested");
+
+            } else if ("request-return".equals(action)) {
+                // Gửi yêu cầu hoàn hàng tới admin
+                dao.updateOrderStatus(orderId, "Return Requested");
+            }
+
+            // Redirect lại trang lịch sử để hiển thị trạng thái mới
+            response.sendRedirect(request.getContextPath() + "/history");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", e.getMessage());
+            request.getRequestDispatcher("/WEB-INF/view/error.jsp").forward(request, response);
+        }
     }
 
     public String getServletInfo() {
