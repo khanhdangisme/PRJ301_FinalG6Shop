@@ -15,20 +15,28 @@ import model.User;
  *
  * @author email
  */
-public class AdminDAO extends DBContext{
+public class AdminDAO extends DBContext {
+
     public static void main(String[] args) throws SQLException {
         AdminDAO dao = new AdminDAO();
-        System.out.println(dao.getAll());
+        System.out.println(dao.getAll(1, 10));
     }
-    
-    public static final String SELECT_CUSTOMERS = "select Username, FullName, Email, Phone, Role, status from Users";
+
+    public static final String SELECT_CUSTOMERS = "SELECT Username, FullName, Email, Phone, Role, status FROM Users \n"
+            + "ORDER BY ID\n"
+            + "OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
     public static final String UPDATE_STATUS = "UPDATE Users SET status = CASE WHEN status = 'Enable' THEN 'Disable' ELSE 'Enable' END WHERE Username = ?";
-            
-    public List<User> getAll() throws SQLException {
+
+    public List<User> getAll(int page, int pagesize) throws SQLException {
         List<User> list = new ArrayList<>();
-        ResultSet rs = executeSelectQuery(SELECT_CUSTOMERS, null);
-        
-        while (rs.next()) {            
+
+        // Tính toán OFFSET dựa trên trang hiện tại và kích thước trang
+        int offset = (page - 1) * pagesize;
+
+        // Thực hiện truy vấn với tham số OFFSET và FETCH NEXT
+        ResultSet rs = executeSelectQuery(SELECT_CUSTOMERS, new Object[]{offset, pagesize});
+
+        while (rs.next()) {
             User user = new User();
             user.setUserName(rs.getString("Username"));
             user.setUserFullname(rs.getString("Fullname"));
@@ -38,12 +46,22 @@ public class AdminDAO extends DBContext{
             user.setStatus(rs.getString("status"));
             list.add(user);
         }
-        
+
         return list;
     }
-    
-    public boolean updateStatus(String username) throws SQLException{
+
+    // Phương thức để đếm tổng số khách hàng
+    public int getTotalCustomers() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Users";
+        ResultSet rs = executeSelectQuery(sql, null);
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    public boolean updateStatus(String username) throws SQLException {
         return this.executeQuery(UPDATE_STATUS, new Object[]{username}) > 0;
     }
-    
+
 }

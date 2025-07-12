@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 import model.Product;
 import model.ProductDTO;
 import model.User;
+import ultil.PaginationUtil;
 
 /**
  *
@@ -89,8 +90,26 @@ public class AdminServlet extends HttpServlet {
             case "customer":
                 AdminDAO dao = new AdminDAO();
                 try {
-                    List<User> customers = dao.getAll();
+                    // Lấy số trang hiện tại từ request, mặc định là trang 1 nếu không có tham số trang
+                    String pageRaw = request.getParameter("page");
+                    int page = (pageRaw == null || pageRaw.isEmpty()) ? 1 : Integer.parseInt(pageRaw);
+
+                    // Đặt kích thước trang (số lượng khách hàng mỗi trang)
+                    int pageSize = PaginationUtil.NUMBER_OF_ACCOUNT;  // Ví dụ, hiển thị 10 khách hàng mỗi trang
+
+                    // Lấy danh sách khách hàng cho trang hiện tại
+                    List<User> customers = dao.getAll(page, pageSize);
+
+                    // Tính tổng số trang
+                    int totalCustomers = dao.getTotalCustomers();  // Phương thức này cần phải được tạo trong AdminDAO để đếm tổng số khách hàng
+                    int totalPages = (int) Math.ceil((double) totalCustomers / pageSize);
+
+                    // Truyền dữ liệu vào request
                     request.setAttribute(AttributeConstant.LIST, customers);
+                    request.setAttribute("totalPages", totalPages);
+                    request.setAttribute("currentPage", page);
+
+                    // Chuyển tiếp đến JSP
                     request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
                 } catch (SQLException ex) {
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -100,25 +119,45 @@ public class AdminServlet extends HttpServlet {
                 AdminProductDAO productCate = new AdminProductDAO();
                 try {
                     // 1. Lấy danh sách category
-                    List<Product> cate = productCate.getAllCategory(); // Product chỉ chứa CategoryID + Name
+                    List<Product> cate = productCate.getAllCategory(); // Lấy danh sách danh mục
                     request.setAttribute(AttributeConstant.LIST, cate);
 
-                    // 2. Lấy sản phẩm cho từng category
+                    // 2. Lấy thông tin phân trang từ request
+                    String pageRaw = request.getParameter("page"); // Lấy số trang từ request
+                    int page = (pageRaw == null || pageRaw.isEmpty()) ? 1 : Integer.parseInt(pageRaw); // Trang mặc định là 1
+                    int pageSize = PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE_PRODUCT; // Định nghĩa số sản phẩm mỗi trang
+
+                    // 3. Lấy sản phẩm cho từng category (phân trang)
                     Map<Integer, List<ProductDTO>> productsMap = new HashMap<>();
                     for (Product p : cate) {
-                        List<ProductDTO> prodList = productCate.getProduct(p.getCategoryID());
+                        // Lấy sản phẩm theo phân trang cho từng category
+                        List<ProductDTO> prodList = productCate.getProduct(p.getCategoryID(), page, pageSize);
                         productsMap.put(p.getCategoryID(), prodList);
                     }
 
-                    // 3. Gửi sang JSP
+                    // 4. Tính toán tổng số trang cho mỗi category
+                    Map<Integer, Integer> totalPagesMap = new HashMap<>();
+                    for (Product p : cate) {
+                        // Lấy số lượng sản phẩm theo category
+                        int totalProduct = productCate.countProductByCategory(p.getCategoryID());
+
+                        // Tính toán số trang cho mỗi category
+                        int totalPages = (int) Math.ceil((double) totalProduct / pageSize);
+                        totalPagesMap.put(p.getCategoryID(), totalPages);
+                    }
+
+                    // 5. Truyền dữ liệu phân trang vào request
                     request.setAttribute("productsMap", productsMap);
-                    System.out.println("→ list size: " + (cate != null ? cate.size() : "null"));
-                    System.out.println("→ map size: " + productsMap.size());
+                    request.setAttribute("totalPagesMap", totalPagesMap);
+                    request.setAttribute("currentPage", page);
+
+                    // 6. Chuyển tiếp tới JSP
                     request.getRequestDispatcher(PathConstant.URL_ADMIN_PRODUCT).forward(request, response);
                 } catch (SQLException ex) {
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
+
             case "orderlist":       // ← menu Integrations sẽ gọi ?view=integrations
                 try {
                 OrderDAO orderDAO = new OrderDAO();

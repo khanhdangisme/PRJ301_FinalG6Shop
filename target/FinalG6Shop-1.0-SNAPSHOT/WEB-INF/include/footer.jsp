@@ -32,18 +32,17 @@
             <div class="col-md-4 pt-5">
                 <h2 class="h2 text-light border-bottom pb-3 border-light">Products</h2>
                 <ul class="list-unstyled text-light footer-link-list">
-                    <li><a class="text-decoration-none" href="#">iPhone</a></li>
-                    <li><a class="text-decoration-none" href="#">iPad</a></li>
-                    <li><a class="text-decoration-none" href="#">Macbook</a></li>
+                    <li><a class="text-decoration-none" href="shop?view=search&query=iPhone">iPhone</a></li>
+                    <li><a class="text-decoration-none" href="shop?view=search&query=iPad">iPad</a></li>
+                    <li><a class="text-decoration-none" href="shop?view=search&query=Macbook">Macbook</a></li>
                 </ul>
             </div>
 
             <div class="col-md-4 pt-5">
                 <h2 class="h2 text-light border-bottom pb-3 border-light">Further Info</h2>
                 <ul class="list-unstyled text-light footer-link-list">
-                    <li><a class="text-decoration-none" href="#">Home</a></li>
-                    <li><a class="text-decoration-none" href="#">Shop</a></li>
-                    <li><a class="text-decoration-none" href="#">Contact</a></li>
+                    <li><a class="text-decoration-none" href="index.jsp">Home</a></li>
+                    <li><a class="text-decoration-none" href="shop">Shop</a></li>
                 </ul>
             </div>
         </div>

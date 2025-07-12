@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Product;
 import model.ProductDTO;
+import ultil.PaginationUtil;
 
 /**
  *
@@ -117,11 +118,15 @@ public class ShopServlet extends HttpServlet {
             return;
         } else if ("search".equals(view)) {
             try {
-                String keyword = request.getParameter("query").toLowerCase();  // Lấy từ khóa tìm kiếm
+                String keyword = request.getParameter("query");
+                String pageRaw = request.getParameter("page");
+                int page = (pageRaw == null || pageRaw.isEmpty()) ? 1 : Integer.parseInt(pageRaw);
+                int pageSize = PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE;
 
+                // 1. Lấy danh mục + products map
                 List<Product> cate = dao.getAllCategory();
                 request.setAttribute(AttributeConstant.LIST, cate);
-                // 2. Lấy product của từng category
+
                 Map<Integer, List<ProductDTO>> productsMap = new HashMap<>();
                 for (Product c : cate) {
                     List<ProductDTO> prods = dao.getProductsForCategory(c.getCategoryID());
@@ -129,38 +134,18 @@ public class ShopServlet extends HttpServlet {
                 }
                 request.setAttribute("productsMap", productsMap);
 
-                // Lấy tất cả sản phẩm
-                List<ProductDTO> allProducts = dao.getAllProducts();
-                List<ProductDTO> searchResults = new ArrayList<>();
+                // 2. Lấy danh sách theo phân trang search
+                int totalProduct = dao.countProductByFilter(keyword, null);
+                int totalPages = (int) Math.ceil((double) totalProduct / pageSize);
 
-                // Duyệt qua tất cả sản phẩm và kiểm tra xem tên, version, hay storage có chứa từ khóa tìm kiếm không
-                for (ProductDTO dto : allProducts) {
-                    if (dto.getProductName().toLowerCase().contains(keyword)
-                            || (dto.getVersion() != null && dto.getVersion().toLowerCase().contains(keyword))
-                            || (dto.getStorage() != null && dto.getStorage().toLowerCase().contains(keyword))) {
-                        searchResults.add(dto);
-                    }
-                }
+                List<ProductDTO> searchResults = dao.getProductsPaging(keyword, page, pageSize);
 
-                // Sắp xếp: còn hàng lên trước
-                Collections.sort(searchResults, new Comparator<ProductDTO>() {
-                    @Override
-                    public int compare(ProductDTO a, ProductDTO b) {
-                        if (a.getQuantity() == 0 && b.getQuantity() > 0) {
-                            return 1;
-                        }
-                        if (a.getQuantity() > 0 && b.getQuantity() == 0) {
-                            return -1;
-                        }
-                        return 0;
-                    }
-                });
-
-                // Gửi kết quả tìm kiếm về view
                 request.setAttribute("productDetail", searchResults);
-                request.setAttribute("searchKeyword", keyword);  // Thêm từ khóa tìm kiếm vào để hiển thị
-                request.getRequestDispatcher("/WEB-INF/view/shop.jsp").forward(request, response);
+                request.setAttribute("searchKeyword", keyword);
+                request.setAttribute("totalPages", totalPages);
+                request.setAttribute("currentPage", page);
 
+                request.getRequestDispatcher(PathConstant.URL_SHOP).forward(request, response);
             } catch (SQLException e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Search failed");
@@ -181,41 +166,58 @@ public class ShopServlet extends HttpServlet {
             }
             request.setAttribute("productsMap", productsMap);
 
-            // 3. nếu có productId thì show chi tiết
+            // 3. Xử lý phân trang hoặc chi tiết
             String pidRaw = request.getParameter("productId");
-            List<ProductDTO> productList;
+            String pageRaw = request.getParameter("page");
+            List<ProductDTO> productList = new ArrayList<>();
 
             if (pidRaw != null && !pidRaw.trim().isEmpty()) {
+                // Ưu tiên hiển thị chi tiết 1 product
                 try {
                     int pid = Integer.parseInt(pidRaw);
+
+                    // Lấy sản phẩm chi tiết
                     productList = dao.getProductItem(pid);
+
+                    // Tính toán phân trang cho sản phẩm cụ thể
+                    int totalProduct = productList.size();  // Số lượng sản phẩm cho productId cụ thể
+                    int page = (pageRaw == null || pageRaw.isEmpty()) ? 1 : Integer.parseInt(pageRaw);
+                    int totalPages = (int) Math.ceil((double) totalProduct / PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE);
+
+                    // Truyền giá trị phân trang cho chi tiết sản phẩm
+                    request.setAttribute("productDetail", productList);
+                    request.setAttribute("totalPages", totalPages);
+                    request.setAttribute("currentPage", page);
+
+                    // Truyền thêm thông tin điều kiện của productId vào request
+                    request.setAttribute("isProductDetail", true);
+                    request.setAttribute("productId", pid);
+
                 } catch (NumberFormatException e) {
-                    productList = dao.getProduct(null); // fallback
                     request.setAttribute("error", "Invalid product ID format");
                 }
             } else {
-                productList = dao.getProduct(null);
+                // Phân trang mặc định cho tất cả sản phẩm
+                int page = (pageRaw == null || pageRaw.isEmpty()) ? 1 : Integer.parseInt(pageRaw);
+                int totalProduct = dao.countProductByFilter(null, null);
+                int totalPages = (int) Math.ceil((double) totalProduct / PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE);
+
+                productList = dao.getProductsPaging(null, page, PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE);
+
+                request.setAttribute("productDetail", productList);
+                request.setAttribute("totalPages", totalPages);
+                request.setAttribute("currentPage", page);
+
+                // Truyền thêm thông tin cho "showAll"
+                request.setAttribute("isProductDetail", false);
             }
 
-            // Sắp xếp: còn hàng lên trước (Java 7)
-            Collections.sort(productList, new Comparator<ProductDTO>() {
-                @Override
-                public int compare(ProductDTO a, ProductDTO b) {
-                    if (a.getQuantity() == 0 && b.getQuantity() > 0) {
-                        return 1;
-                    }
-                    if (a.getQuantity() > 0 && b.getQuantity() == 0) {
-                        return -1;
-                    }
-                    return 0;
-                }
-            });
-            request.setAttribute("productDetail", productList);
-
+            // 4. Forward trang shop
             request.getRequestDispatcher(PathConstant.URL_SHOP).forward(request, response);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Database error");
         }
     }
 

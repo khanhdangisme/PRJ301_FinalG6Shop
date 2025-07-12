@@ -22,8 +22,7 @@ import model.iPhoneDetails;
  * @author email
  */
 public class ShopProductDAO extends DBContext {
-
-    public static final String SELECT_CATEGORY_PRODUCT = "{CALL SearchProducts(?, null, null, null, null)}";
+    
     public static final String SELECT_CATEGORY = "select distinct a.ID,  a.Name from Categories a join Products b on a.ID = b.CategoryID";
     public static final String SELECT_CATEGORY_MENU = "{CALL GetProductsByCategory(?)}";
     public static final String SELECT_DETAIL = "{CALL GetProductDetail(?, ?, ?)}";
@@ -64,27 +63,7 @@ public class ShopProductDAO extends DBContext {
         }
         return list;
     }
-
-    public List<ProductDTO> getProduct(Integer categoryId) throws SQLException {
-        List<ProductDTO> list = new ArrayList<>();
-        Object param = (categoryId != null && categoryId > 0) ? categoryId : null;
-        ResultSet rs = executeSelectQuery(SELECT_CATEGORY_PRODUCT, new Object[]{categoryId});
-        while (rs.next()) {
-            ProductDTO dto = new ProductDTO();
-            dto.setProductId(rs.getInt("ProductID"));
-            dto.setProductName(rs.getString("ProductName"));
-            dto.setVersion(rs.getString("Version"));
-            dto.setColor(rs.getString("Color"));
-            dto.setStorage(rs.getString("Storage"));
-            dto.setPrice(rs.getDouble("Price"));
-            dto.setImage(rs.getString("Image"));
-            dto.setCategoryId(rs.getInt("CategoryID"));
-            dto.setCategoryName(rs.getString("CategoryName"));
-            dto.setQuantity(rs.getInt("Quantity"));
-            list.add(dto);
-        }
-        return list;
-    }
+    
 
     public List<ProductDTO> getProductsForCategory(int categoryId) throws SQLException {
         List<ProductDTO> list = new ArrayList<>();
@@ -359,4 +338,47 @@ public class ShopProductDAO extends DBContext {
 
         return list;
     }
+
+    public List<ProductDTO> getProductsPaging(String keyword, int page, int pageSize) throws SQLException {
+        List<ProductDTO> list = new ArrayList<>();
+
+        String sql = "{CALL PhanTrang(null, null, null, null, ?, ?, ?)}";
+        Object[] params = new Object[]{
+            keyword == null ? null : keyword,
+            page,
+            pageSize
+        };
+
+        ResultSet rs = executeSelectQuery(sql, params);
+
+        while (rs.next()) {
+            ProductDTO dto = new ProductDTO();
+            dto.setProductId(rs.getInt("ProductID"));
+            dto.setProductName(rs.getString("ProductName"));
+            dto.setVersion(rs.getString("Version"));
+            dto.setColor(rs.getString("Color"));
+            dto.setStorage(rs.getString("Storage"));
+            dto.setPrice(rs.getDouble("Price"));
+            dto.setImage(rs.getString("Image"));
+            dto.setCategoryId(rs.getInt("CategoryID"));
+            dto.setCategoryName(rs.getString("CategoryName"));
+            dto.setQuantity(rs.getInt("Quantity"));
+            dto.setDetailId(rs.getInt("DetailID"));
+            list.add(dto);
+        }
+
+        return list;
+    }
+
+    public int countProductByFilter(String keyword, Integer categoryId) throws SQLException {
+        String sql = "{CALL CountProductsByFilter(?, NULL, NULL, NULL, ?)}";
+        Object[] params = new Object[]{categoryId, keyword};
+
+        ResultSet rs = executeSelectQuery(sql, params);
+        if (rs.next()) {
+            return rs.getInt("Total");
+        }
+        return 0;
+    }
+
 }

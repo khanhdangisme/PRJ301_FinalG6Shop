@@ -9,6 +9,32 @@
 <%@include file="/WEB-INF/include/headerAdmin.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<style>
+    .pagination .page-item .page-link {
+        border: none;
+        color: black;
+        background: transparent;
+        padding: 8px 12px;
+        margin: 0 2px;
+        transition: all 0.2s ease;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: black;
+        color: white !important;
+        border-radius: 4px;
+    }
+
+    .pagination .page-item .page-link:hover {
+        background-color: rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="margin-top: 110px;">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Product</h1>
@@ -89,6 +115,28 @@
                         </table>
                     </div>
                 </c:if>
+                <!-- Pagination for this category -->
+                <nav class="pagination-container mt-4">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous -->
+                        <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+                            <a class="page-link" href="admin?view=product&page=${currentPage - 1}&categoryId=${cate.categoryID}">&laquo;</a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <c:forEach begin="1" end="${totalPagesMap[cate.categoryID]}" var="i">
+                            <li class="page-item ${currentPage == i ? 'active' : ''}">
+                                <a class="page-link" href="admin?view=product&page=${i}&categoryId=${cate.categoryID}">${i}</a>
+                            </li>
+                        </c:forEach>
+
+                        <!-- Next -->
+                        <li class="page-item ${currentPage >= totalPagesMap[cate.categoryID] ? 'disabled' : ''}">
+                            <a class="page-link" href="admin?view=product&page=${currentPage + 1}&categoryId=${cate.categoryID}">&raquo;</a>
+                        </li>
+                    </ul>
+                </nav>
+
             </div>
         </c:forEach>
     </div>

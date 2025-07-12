@@ -24,7 +24,7 @@
                                 <h3>Premium performance at just 36 million VND</h3>
                                 <h3 class="h2">Power, Precision, and Style. Built for your digital lifestyle</h3>
 
-                                <a href="shop" class="btn btn-dark btn-lg mt-3">Shop Now</a>
+                                <a href="shop?view=search&query=IPhone+16+Pro+Max" class="btn btn-dark btn-lg mt-3">Shop Now</a>
                             </div>
                         </div>
                     </div>
@@ -38,10 +38,10 @@
                         </div>
                         <div class="col-lg-6 mb-0 d-flex align-items-center">
                             <div class="text-align-left">
-                                <h1 class="h1 text-dark"><b>iPad Pro M4 - 13 inch</b></h1>
+                                <h1 class="h1 text-dark"><b>iPad Pro M4</b></h1>
                                 <h3>Premium performance at just 32 million VND</h3>
                                 <h3 class="h2">The ultimate creative powerhouse, now within your reach</h3>
-                                <a href="shop" class="btn btn-dark btn-lg mt-3">Shop Now</a>
+                                <a href="shop?view=search&query=Ipad+Pro" class="btn btn-dark btn-lg mt-3">Shop Now</a>
                             </div>
                         </div>
                     </div>
@@ -55,10 +55,10 @@
                         </div>
                         <div class="col-lg-6 mb-0 d-flex align-items-center">
                             <div class="text-align-left">
-                                <h1 class="h1 text-dark"><b>Macbook Pro M4 - 16 inch</b></h1>
+                                <h1 class="h1 text-dark"><b>Macbook Pro M4</b></h1>
                                 <h3>Premium performance at just 90 million VND</h3>
                                 <h3 class="h2">Built for creators. Powered for professionals </h3>
-                                <a href="shop" class="btn btn-dark btn-lg mt-3">Shop Now</a>
+                                <a href="shop?view=search&query=Macbook+Pro" class="btn btn-dark btn-lg mt-3">Shop Now</a>
                             </div>
                         </div>
                     </div>
@@ -87,103 +87,21 @@
         <div class="col-12 col-md-4 p-5 mt-3">
             <a href="#"><img src="./assets/img/iPhone.webp" class="rounded-circle img-fluid border"></a>
             <h5 class="text-center mt-3 mb-3">iPhone</h5>
-            <p class="text-center"><a class="btn btn-success">Go Shop</a></p>
+            <p class="text-center"><a class="btn btn-dark" href="shop?view=search&query=iPhone">Go Shop</a></p>
         </div>
         <div class="col-12 col-md-4 p-5 mt-3">
             <a href="#"><img src="./assets/img/iPad.webp" class="rounded-circle img-fluid border"></a>
             <h2 class="h5 text-center mt-3 mb-3">iPad</h2>
-            <p class="text-center"><a class="btn btn-success">Go Shop</a></p>
+            <p class="text-center"><a class="btn btn-dark" href="shop?view=search&query=Ipad">Go Shop</a></p>
         </div>
         <div class="col-12 col-md-4 p-5 mt-3">
             <a href="#"><img src="./assets/img/macbook.webp" class="rounded-circle img-fluid border"></a>
             <h2 class="h5 text-center mt-3 mb-3">Macbook</h2>
-            <p class="text-center"><a class="btn btn-success">Go Shop</a></p>
+            <p class="text-center"><a class="btn btn-dark" href="shop?view=search&query=Macbook">Go Shop</a></p>
         </div>
     </div>
 </section>
 <!-- End Categories of The Month -->
 
-
-<!-- Start Featured Product -->
-<section class="bg-light">
-    <div class="container py-5">
-        <div class="row text-center py-3">
-            <div class="col-lg-6 m-auto">
-                <h1 class="h1">Featured Product</h1>
-            </div>
-        </div>
-        <div class="row" style="margin-top: 20px">
-            <c:forEach var="p" items="${featuredProducts}">
-                <div class="col-12 col-md-4 mb-4">
-                    <div class="card h-100">
-                        <a href="shop-single.jsp?id=${p.productId}">
-                            <img src="${p.mainImage}" class="card-img-top" alt="${p.name}">
-                        </a>
-                        <div class="card-body">
-                            <ul class="list-unstyled d-flex justify-content-between">
-                                <li class="text-muted text-center">$${p.price}</li>
-                            </ul>
-                            <a href="shop-single.jsp?id=${p.productId}" class="h2 text-decoration-none text-dark">
-                                ${p.name}
-                            </a>
-                            <p class="card-text">
-                                ${p.version} ${p.color} ${p.category}
-                            </p>
-                            <p class="text-muted">Reviews (24)</p> 
-                        </div>
-                    </div>
-                </div>
-            </c:forEach>
-            <div class="col-12 col-md-4 mb-4">
-                <div class="card h-100">
-                    <a href="shop-single.html">
-                        <img src="./assets/img/feature_prod_02.jpg" class="card-img-top" alt="...">
-                    </a>
-                    <div class="card-body">
-                        <ul class="list-unstyled d-flex justify-content-between">
-                            <li>
-                                <i class="text-warning fa fa-star"></i>
-                                <i class="text-warning fa fa-star"></i>
-                                <i class="text-warning fa fa-star"></i>
-                                <i class="text-muted fa fa-star"></i>
-                                <i class="text-muted fa fa-star"></i>
-                            </li>
-                            <li class="text-muted text-right">$480.00</li>
-                        </ul>
-                        <a href="shop-single.html" class="h2 text-decoration-none text-dark">Cloud Nike Shoes</a>
-                        <p class="card-text">
-                            Aenean gravida dignissim finibus. Nullam ipsum diam, posuere vitae pharetra sed, commodo ullamcorper.
-                        </p>
-                        <p class="text-muted">Reviews (48)</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-4 mb-4">
-                <div class="card h-100">
-                    <a href="shop-single.html">
-                        <img src="./assets/img/feature_prod_03.jpg" class="card-img-top" alt="...">
-                    </a>
-                    <div class="card-body">
-                        <ul class="list-unstyled d-flex justify-content-between">
-                            <li>
-                                <i class="text-warning fa fa-star"></i>
-                                <i class="text-warning fa fa-star"></i>
-                                <i class="text-warning fa fa-star"></i>
-                                <i class="text-warning fa fa-star"></i>
-                                <i class="text-warning fa fa-star"></i>
-                            </li>
-                            <li class="text-muted text-right">$360.00</li>
-                        </ul>
-                        <a href="shop-single.html" class="h2 text-decoration-none text-dark">Summer Addides Shoes</a>
-                        <p class="card-text">
-                            Curabitur ac mi sit amet diam luctus porta. Phasellus pulvinar sagittis diam, et scelerisque ipsum lobortis nec.
-                        </p>
-                        <p class="text-muted">Reviews (74)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <%@include file="/WEB-INF/include/footer.jsp" %>

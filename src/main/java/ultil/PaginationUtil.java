@@ -10,8 +10,6 @@ package ultil;
  */
 public class PaginationUtil {
     public static final int NUMBER_OF_ITEMS_PAER_PAGE = 6;
-    
-    public static int getTotalPages(int countItem){
-        return (int) Math.ceil((double) countItem / PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE);
-    }
+    public static final int NUMBER_OF_ITEMS_PAER_PAGE_PRODUCT = 10;
+    public static final int NUMBER_OF_ACCOUNT = 20;
 }

@@ -13,7 +13,7 @@
 <main class="d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 160px); padding-top: 135px; padding-bottom: 40px;">
     <div class="border rounded shadow p-4 bg-white" style="max-width: 450px; width: 100%;">
         <form action="register" method="POST">
-            <h2 class="h3 mb-4 fw-bold text-center text-primary">Create Your Account</h2>
+            <h2 class="h3 mb-4 fw-bold text-center text-dark">Create Your Account</h2>
 
             <!-- Username -->
             <div class="form-floating mb-3">
@@ -46,7 +46,7 @@
             </div>
 
             <!-- Submit -->
-            <button class="w-100 btn btn-lg btn-primary mb-2" type="submit">Sign Up</button>
+            <button class="w-100 btn btn-lg btn-dark mb-2" type="submit">Sign Up</button>
 
             <!-- Link to login -->
             <p class="text-center small">

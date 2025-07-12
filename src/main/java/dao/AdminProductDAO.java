@@ -29,11 +29,10 @@ public class AdminProductDAO extends DBContext {
         AdminProductDAO dao = new AdminProductDAO();
         System.out.println(dao.getProductDetail(2, "Black", "512GB"));
     }
-    public static final String SELECT_CATEGORY_PRODUCT = "{CALL SearchProducts(?, null, null, null, null)}";
+    public static final String SELECT_CATEGORY_PRODUCT = "{CALL SearchProducts(?, null, null, null, null, ?, ?)}";
     public static final String SELECT_ALL_PRODUCT = "{CALL SearchProducts(null, null, null, null, null)}";
     public static final String SELECT_CATEGORY = "select distinct a.ID,  a.Name from Categories a join Products b on a.ID = b.CategoryID";
     public static final String SELECT_DETAIL = "{CALL GetProductDetail(?, ?, ?)}";
-    
 
     public List<Product> getAllCategory() throws SQLException {
         List<Product> list = new ArrayList<>();
@@ -190,9 +189,6 @@ public class AdminProductDAO extends DBContext {
         if (product == null || product.getProductID() == 0 || product.getProductName() == null) {
             throw new IllegalArgumentException("Product or required fields are null");
         }
-        
-        
-        
 
         int cat = product.getCategoryID();
 
@@ -283,7 +279,7 @@ public class AdminProductDAO extends DBContext {
             params[5] = mac.getMacColor();
             params[6] = mac.getMacStorage();
             params[7] = mac.getMacPrice();
-            params[8] = mac.getMacQuantity();         
+            params[8] = mac.getMacQuantity();
             params[9] = product.getProductImage();
             params[10] = mac.getMacImageUrl();
             params[11] = mac.getMacScreenSize();
@@ -459,4 +455,37 @@ public class AdminProductDAO extends DBContext {
         }
     }
 
+    public List<ProductDTO> getProduct(int categoryId, int page, int pagezie) throws SQLException {
+        List<ProductDTO> list = new ArrayList<>();
+        ResultSet rs = executeSelectQuery(SELECT_CATEGORY_PRODUCT, new Object[]{categoryId, page, pagezie});
+        while (rs.next()) {
+            ProductDTO dto = new ProductDTO();
+            dto.setProductId(rs.getInt("ProductID"));
+            dto.setProductName(rs.getString("ProductName"));
+            dto.setVersion(rs.getString("Version"));
+            dto.setColor(rs.getString("Color"));
+            dto.setStorage(rs.getString("Storage"));
+            dto.setPrice(rs.getDouble("Price"));
+            dto.setImage(rs.getString("Image"));
+            dto.setCategoryId(rs.getInt("CategoryID"));
+            dto.setCategoryName(rs.getString("CategoryName"));
+            dto.setQuantity(rs.getInt("Quantity"));
+            list.add(dto);
+        }
+        return list;
+    }
+
+    public int countProductByCategory(int categoryId) throws SQLException {
+        String query = "{CALL CountProductsByCategory(?)}";  // Gọi stored procedure đếm sản phẩm
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setInt(1, categoryId);  // Gán giá trị cho tham số @categoryId
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("TotalProducts");  // Trả về số lượng chi tiết sản phẩm
+            }
+        }
+        return 0;
+    }
 }

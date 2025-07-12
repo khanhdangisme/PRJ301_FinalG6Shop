@@ -53,3 +53,13 @@ body {
 form.form-signin .form-floating > label {
     font-size: 14px !important;
 }
+
+.custom-checkbox:checked {
+    background-color: #000000; /* Màu nền đen */
+    border-color: #000000; /* Đường viền màu đen */
+}
+
+/* Thay đổi màu của dấu tick khi được chọn */
+.custom-checkbox:checked::after {
+    background-color: #ffffff; /* Màu dấu tick là trắng */
+}

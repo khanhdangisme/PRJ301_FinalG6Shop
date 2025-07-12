@@ -3,7 +3,33 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/header.jsp" %>
 <title>G6Shop - Shop</title>
+<style>
+    .pagination .page-item .page-link {
+        border: none;
+        color: black;
+        background: transparent;
+        font-weight: bold;
+        padding: 8px 12px;
+        margin: 0 2px;
+        transition: all 0.2s ease;
+    }
 
+    .pagination .page-item.active .page-link {
+        background-color: black;
+        color: white !important;
+        border-radius: 4px;
+    }
+
+    .pagination .page-item .page-link:hover {
+        background-color: rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
 <div class="container py-5" style="margin-top: 100px;">
     <div class="row">
         <!-- CATEGORY MENU -->
@@ -61,7 +87,7 @@
                                             <!--lớp phủ: đã hết hàng-->
                                             <c:if test="${p.quantity == 0}">
                                                 <div class="position-absolute top-50 start-50 translate-middle text-center text-white bg-dark bg-opacity-75 px-3 py-2 rounded">
-                                                    <strong>Đã hết hàng</strong>
+                                                    <strong>Out of stock</strong>
                                                 </div>
                                             </c:if>
 
@@ -133,7 +159,7 @@
                                                     class="btn btn-secondary btn-sm w-100"
                                                     onclick="alertOutOfStock()"
                                                     style="background-color: gray; border-color: gray;">
-                                                <i class="fas fa-ban"></i> Đã hết hàng
+                                                <i class="fas fa-ban"></i> Out of stock
                                             </button>
                                         </c:otherwise>
                                     </c:choose>
@@ -149,30 +175,58 @@
                 <p class="text-center text-muted mt-5">Please select a product from the left menu.</p>
             </c:if>
 
-            <nav aria-label="Page navigation example">
+            <nav class="pagination-container mt-4">
                 <ul class="pagination justify-content-center">
                     <!-- Previous -->
-                    <li class="page-item ${param.page <= 1 || empty param.page ? 'disabled' : ''}">
-                        <a class="page-link" href="shop?page=1" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
+                    <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+                        <c:choose>
+                            <c:when test="${not empty searchKeyword}">
+                                <a class="page-link" href="shop?view=search&query=${searchKeyword}&page=${currentPage - 1}">&laquo;</a>
+                            </c:when>
+                            <c:when test="${not empty productId}">
+                                <a class="page-link" href="shop?productId=${productId}&page=${currentPage - 1}">&laquo;</a>
+                            </c:when>
+                            <c:otherwise>
+                                <a class="page-link" href="shop?page=${currentPage - 1}">&laquo;</a>
+                            </c:otherwise>
+                        </c:choose>
                     </li>
 
                     <!-- Page Numbers -->
                     <c:forEach begin="1" end="${totalPages}" var="i">
-                        <li class="page-item ${param.page == i || (empty param.page && i == 1) ? 'active' : ''}">
-                            <a class="page-link" href="shop?page=${i}">${i}</a>
+                        <li class="page-item ${currentPage == i ? 'active' : ''}">
+                            <c:choose>
+                                <c:when test="${not empty searchKeyword}">
+                                    <a class="page-link" href="shop?view=search&query=${searchKeyword}&page=${i}">${i}</a>
+                                </c:when>
+                                <c:when test="${not empty productId}">
+                                    <a class="page-link" href="shop?productId=${productId}&page=${i}">${i}</a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a class="page-link" href="shop?page=${i}">${i}</a>
+                                </c:otherwise>
+                            </c:choose>
                         </li>
                     </c:forEach>
 
                     <!-- Next -->
-                    <li class="page-item ${param.page >= totalPages ? 'disabled' : ''}">
-                        <a class="page-link" href="shop?page=${totalPages}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
+                    <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
+                        <c:choose>
+                            <c:when test="${not empty searchKeyword}">
+                                <a class="page-link" href="shop?view=search&query=${searchKeyword}&page=${currentPage + 1}">&raquo;</a>
+                            </c:when>
+                            <c:when test="${not empty productId}">
+                                <a class="page-link" href="shop?productId=${productId}&page=${currentPage + 1}">&raquo;</a>
+                            </c:when>
+                            <c:otherwise>
+                                <a class="page-link" href="shop?page=${currentPage + 1}">&raquo;</a>
+                            </c:otherwise>
+                        </c:choose>
                     </li>
                 </ul>
             </nav>
+
+
         </div>
     </div>
 </div>

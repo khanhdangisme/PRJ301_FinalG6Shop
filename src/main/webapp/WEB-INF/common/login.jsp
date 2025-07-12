@@ -13,7 +13,7 @@
     <div class="border rounded shadow p-4 bg-white" style="max-width: 400px; width: 100%;">
 
         <form action="login" method="POST">
-            <h1 class="h3 mb-4 fw-bold text-center text-primary">Please sign in</h1>
+            <h1 class="h3 mb-4 fw-bold text-center text-black">Please sign in</h1>
 
             <!-- Username -->
             <div class="form-floating mb-3">
@@ -39,7 +39,7 @@
             </div>
 
             <!-- Sign in button -->
-            <button class="w-100 btn btn-lg btn-primary mb-2" type="submit">Sign in</button>
+            <button class="w-100 btn btn-lg btn-dark mb-2" type="submit">Sign in</button>
 
             <!-- Create account -->
             <p class="text-center small mt-3">

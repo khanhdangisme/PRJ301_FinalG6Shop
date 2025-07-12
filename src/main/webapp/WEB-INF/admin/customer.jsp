@@ -7,6 +7,33 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <title>G6Shop - Customers</title>
 <%@include file="/WEB-INF/include/headerAdmin.jsp" %>
+
+<style>
+    .pagination .page-item .page-link {
+        border: none;
+        color: black;
+        background: transparent;
+        padding: 8px 12px;
+        margin: 0 2px;
+        transition: all 0.2s ease;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: black;
+        color: white !important;
+        border-radius: 4px;
+    }
+
+    .pagination .page-item .page-link:hover {
+        background-color: rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="margin-top: 110px;">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2">Customers</h1>
@@ -60,8 +87,30 @@
                 </c:choose>
             </tbody>
         </table>
+        <!-- Pagination - đặt xuống dưới -->
+        <div class="d-flex justify-content-center mt-4">
+            <nav class="pagination-container">
+                <ul class="pagination justify-content-center">
+                    <!-- Previous -->
+                    <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="admin?view=customer&page=${currentPage - 1}">&laquo;</a>
+                    </li>
 
-    </div>
+                    <!-- Page Numbers -->
+                    <c:forEach begin="1" end="${totalPages}" var="i">
+                        <li class="page-item ${currentPage == i ? 'active' : ''}">
+                            <a class="page-link" href="admin?view=customer&page=${i}">${i}</a>
+                        </li>
+                    </c:forEach>
+
+                    <!-- Next -->
+                    <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="admin?view=customer&page=${currentPage + 1}">&raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
 </main>
 </div>
 </div>
