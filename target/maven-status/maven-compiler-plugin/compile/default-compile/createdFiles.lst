@@ -20,7 +20,6 @@ ultil\PaginationUtil.class
 controller\LoginServlet.class
 controller\CheckoutServlet.class
 controller\ShopServlet.class
-controller\OrderServlet.class
 controller\ImageListServlet.class
 constant\AttributeConstant.class
 constant\MessageConstant.class

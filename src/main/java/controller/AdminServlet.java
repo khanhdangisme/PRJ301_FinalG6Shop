@@ -126,13 +126,13 @@ public class AdminServlet extends HttpServlet {
                 request.setAttribute("orders", allOrders);
                 request.getRequestDispatcher("/WEB-INF/admin/order_list.jsp")
                         .forward(request, response);
-                } catch (SQLException ex) {
+            } catch (SQLException ex) {
                 Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
                 request.setAttribute("errorMessage", ex.getMessage());
                 request.getRequestDispatcher("/WEB-INF/view/error.jsp")
                         .forward(request, response);
-                }
-                break;
+            }
+            break;
         }
     }
 
@@ -208,7 +208,7 @@ public class AdminServlet extends HttpServlet {
 
         } else if ("create-order".equals(action)) {
 
-            if (user == null) {                         // bảo vệ đăng nhập
+            if (user == null) {
                 response.sendRedirect(request.getContextPath() + "/login");
                 return;
             }
@@ -219,63 +219,66 @@ public class AdminServlet extends HttpServlet {
                 conn = orderDAO.getConnection();
                 conn.setAutoCommit(false);
 
-                /* -------- 1. Lấy & kiểm tra input -------- */
+                // Lấy và kiểm tra tham số
                 String idRaw = request.getParameter("productId");
+                String categoryRaw = request.getParameter("categoryId");
+                String detailRaw = request.getParameter("detailId");
                 String qtyRaw = request.getParameter("quantity");
-                if (idRaw == null || qtyRaw == null || idRaw.isBlank() || qtyRaw.isBlank()) {
-                    request.setAttribute("errorMessage", "Missing product information");
-                    request.getRequestDispatcher("/WEB-INF/view/error.jsp").forward(request, response);
-                    return;
-                }
-                int productId, quantity;
-                try {
-                    productId = Integer.parseInt(idRaw);
-                    quantity = Integer.parseInt(qtyRaw);
-                    if (quantity <= 0) {
-                        throw new NumberFormatException();
-                    }
-                } catch (NumberFormatException e) {
-                    request.setAttribute("errorMessage", "Invalid product ID or quantity");
+
+                if (idRaw == null || categoryRaw == null || detailRaw == null || qtyRaw == null
+                        || idRaw.isBlank() || categoryRaw.isBlank() || detailRaw.isBlank() || qtyRaw.isBlank()) {
+                    request.setAttribute("errorMessage", "Thiếu thông tin sản phẩm.");
                     request.getRequestDispatcher("/WEB-INF/view/error.jsp").forward(request, response);
                     return;
                 }
 
-                /* -------- 2. Ghi bảng Orders -------- */
+                int productId = Integer.parseInt(idRaw);
+                String categoryId = categoryRaw;
+                int detailId = Integer.parseInt(detailRaw);
+                int quantity = Integer.parseInt(qtyRaw);
+
+                if (quantity <= 0) {
+                    throw new NumberFormatException("Quantity must be > 0");
+                }
+
+                // Ghi bảng Orders
                 String sqlOrder = "INSERT INTO Orders (UserID, OrderDate) VALUES (?, ?)";
                 PreparedStatement psO = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
                 psO.setInt(1, user.getUserID());
                 psO.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
                 psO.executeUpdate();
+
                 ResultSet rsKey = psO.getGeneratedKeys();
                 int orderId = rsKey.next() ? rsKey.getInt(1) : -1;
                 psO.close();
 
-                /* -------- 3. Ghi bảng OrderDetails -------- */
-                ProductDTO product = orderDAO.getProductById(productId);
-                double price = product.getPrice();
+                // Lấy đúng sản phẩm theo biến thể
+                ProductDTO product = orderDAO.getProductById(productId, categoryId, detailId);
 
-                String sqlDetail = "INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price) VALUES (?, ?, ?, ?)";
+                // Ghi bảng OrderDetails
+                String sqlDetail = "INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price, Version, Color, Storage) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement psD = conn.prepareStatement(sqlDetail);
-                for (int i = 0; i < quantity; i++) {
-                    psD.setInt(1, orderId);
-                    psD.setInt(2, productId);
-                    psD.setInt(3, 1);
-                    psD.setDouble(4, price);
-                    psD.addBatch();
-                }
-                psD.executeBatch();
+                psD.setInt(1, orderId);
+                psD.setInt(2, productId);
+                psD.setInt(3, quantity);
+                psD.setDouble(4, product.getPrice());
+                psD.setString(5, product.getVersion());
+                psD.setString(6, product.getColor());
+                psD.setString(7, product.getStorage());
+                psD.executeUpdate();
                 psD.close();
 
                 conn.commit();
                 response.sendRedirect(request.getContextPath() + "/history/orders");
 
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 if (conn != null) try {
                     conn.rollback();
                 } catch (SQLException ignore) {
                 }
                 Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
-                request.setAttribute("errorMessage", "Error processing order: " + ex.getMessage());
+                request.setAttribute("errorMessage", "Lỗi khi xử lý đơn hàng: " + ex.getMessage());
                 request.getRequestDispatcher("/WEB-INF/view/error.jsp").forward(request, response);
             } finally {
                 if (conn != null) try {

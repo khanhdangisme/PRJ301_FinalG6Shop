@@ -22,11 +22,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -92,8 +94,10 @@ public class CheckoutServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AttributeConstant.LOGGEDUSER);
+
         if (user == null) {
             session.setAttribute(AttributeConstant.ERROR, "Please login to checkout");
             response.sendRedirect(PathConstant.URL_LOGIN);
@@ -101,73 +105,49 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         try {
-//            String[] selectedIds = request.getParameterValues("selectedIds");
             String[] rawSel = request.getParameterValues("selectedIds");
 
-            if (rawSel == null || rawSel.length == 0
-                    || // không có gì
-                    (rawSel.length == 1 && rawSel[0].isBlank())) {
+            if (rawSel == null || rawSel.length == 0 || (rawSel.length == 1 && rawSel[0].isBlank())) {
                 session.setAttribute(AttributeConstant.ERROR, "No products selected");
                 response.sendRedirect(request.getContextPath() + "/cart?action=view");
                 return;
             }
 
-            String[] selectedIds;
-            if (rawSel.length == 1 && rawSel[0].contains(",")) {
-                selectedIds = rawSel[0].split("\\s*,\\s*");
-            } else {
-                selectedIds = rawSel;
-            }
+            String[] selectedIds = rawSel.length == 1 && rawSel[0].contains(",")
+                    ? rawSel[0].split("\\s*,\\s*")
+                    : rawSel;
 
-            String couponCode = request.getParameter(ParamConstant.COUPON);
+            String couponCode = Optional.ofNullable(request.getParameter(ParamConstant.COUPON))
+                    .orElse(request.getParameter("voucherCode"));
 
-            if (couponCode == null || couponCode.isBlank()) {
-                couponCode = request.getParameter("voucherCode"); // dùng cho Buy Now
-            }
-
-            if (selectedIds == null || selectedIds.length == 0) {
-                session.setAttribute(AttributeConstant.ERROR, "No products selected");
-                response.sendRedirect(request.getContextPath() + "/cart?action=view");
-                return;
-            }
-
-            // Lấy giỏ hàng từ session
             @SuppressWarnings("unchecked")
             Map<String, Integer> sessionCart = (Map<String, Integer>) session.getAttribute(AttributeConstant.CART);
-            Map<String, Integer> cart = new HashMap<String, Integer>();
+            Map<String, Integer> cart = new HashMap<>();
 
             String source = request.getParameter("source");
-
             boolean fromBuyButton = "direct".equals(source)
-                    || (selectedIds.length == 1 && (sessionCart == null
-                    || !sessionCart.containsKey(selectedIds[0])));
-//            boolean fromBuyButton = "direct".equals(source);
+                    || (selectedIds.length == 1 && (sessionCart == null || !sessionCart.containsKey(selectedIds[0])));
 
             if (fromBuyButton) {
                 cart.put(selectedIds[0], 1);
-            } else {
-                // Tạo bản sao chỉ chứa các sản phẩm được chọn từ giỏ session
-                if (sessionCart != null) {
-                    for (int i = 0; i < selectedIds.length; i++) {
-                        String key = selectedIds[i];
-                        if (sessionCart.containsKey(key)) {
-                            cart.put(key, sessionCart.get(key));
-                        }
+            } else if (sessionCart != null) {
+                for (String key : selectedIds) {
+                    if (sessionCart.containsKey(key)) {
+                        cart.put(key, sessionCart.get(key));
                     }
                 }
             }
 
-            // Nếu không phải Buy trực tiếp và cart rỗng ⇒ báo lỗi
-            if (!fromBuyButton && (cart == null || cart.isEmpty())) {
+            if (!fromBuyButton && cart.isEmpty()) {
                 session.setAttribute(AttributeConstant.ERROR, "Cart is empty");
                 response.sendRedirect(request.getContextPath() + "/cart?action=view");
                 return;
             }
 
-            // Tạo danh sách sản phẩm được chọn
             ShopProductDAO dao = new ShopProductDAO();
             List<ProductDTO> selectedItems = new ArrayList<>();
             double totalPrice = 0;
+
             for (String id : selectedIds) {
                 String[] keys = id.split(":");
                 if (keys.length != 3) {
@@ -175,31 +155,24 @@ public class CheckoutServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/cart?action=view");
                     return;
                 }
-                int productId;
-                try {
-                    productId = Integer.parseInt(keys[0]);
-                } catch (NumberFormatException e) {
-                    session.setAttribute(AttributeConstant.ERROR, "Invalid product ID format");
-                    response.sendRedirect(request.getContextPath() + "/cart?action=view");
-                    return;
-                }
 
+                int productId = Integer.parseInt(keys[0]);
                 String color = keys[1];
                 String storage = keys[2];
+
                 ProductDTO product = dao.getProductDetailDTO(productId, color, storage);
 
                 if (product != null) {
-                    int requestedQuantity = (cart != null && cart.containsKey(id))
-                            ? cart.get(id) // đặt từ Cart
-                            : 1;               // bấm Buy trực tiếp
-                    if (product.getQuantity() < requestedQuantity) {
+                    int qty = cart.getOrDefault(id, 1);
+                    if (product.getQuantity() < qty) {
                         session.setAttribute(AttributeConstant.ERROR,
                                 "Product " + product.getProductName() + " is out of stock");
                         response.sendRedirect(request.getContextPath() + "/shop");
                         return;
                     }
-                    product.setQuantity(requestedQuantity);
-                    product.setSubTotal(product.getPrice() * requestedQuantity);
+
+                    product.setQuantity(qty);
+                    product.setSubTotal(product.getPrice() * qty);
                     selectedItems.add(product);
                     totalPrice += product.getSubTotal();
                 }
@@ -211,7 +184,6 @@ public class CheckoutServlet extends HttpServlet {
                 return;
             }
 
-            // Kiểm tra và áp dụng mã giảm giá
             Integer couponId = null;
             double discount = 0;
 
@@ -221,179 +193,152 @@ public class CheckoutServlet extends HttpServlet {
                 if (voucher != null && voucher.getExpiryDate().after(new Date())) {
                     discount = totalPrice * voucher.getDiscountPercent() / 100.0;
                     couponId = voucher.getId();
-
-                    // Nếu hợp lệ thì xóa lỗi cũ nếu có
                     session.removeAttribute("voucherError");
                 } else {
                     session.setAttribute("voucherError", "Invalid or expired coupon");
                 }
             } else {
-                // Nếu không nhập gì, cũng xóa lỗi cũ (tránh hiện modal hoài)
                 session.removeAttribute("voucherError");
             }
 
             double finalTotal = totalPrice - discount;
 
-            // Lấy thông tin người nhận từ User
             String receiverName = request.getParameter("fullname");
             String receiverPhone = request.getParameter("phone");
             String receiverAddress = request.getParameter("address");
             String receiverCity = request.getParameter("city");
             String receiverProvince = request.getParameter("province");
-            String receiverPostalCode = "000000"; // Có thể mở rộng thêm
 
-            if (receiverName == null || receiverName.trim().isEmpty()
-                    || receiverPhone == null || receiverPhone.trim().isEmpty()
-                    || receiverAddress == null || receiverAddress.trim().isEmpty()
-                    || receiverCity == null || receiverCity.trim().isEmpty()
-                    || receiverProvince == null || receiverProvince.trim().isEmpty()) {
+            if (receiverName == null || receiverPhone == null || receiverAddress == null
+                    || receiverCity == null || receiverProvince == null
+                    || receiverName.isBlank() || receiverPhone.isBlank()
+                    || receiverAddress.isBlank() || receiverCity.isBlank() || receiverProvince.isBlank()) {
+
                 session.setAttribute(AttributeConstant.ERROR, "Please fill in all required shipping information.");
                 response.sendRedirect(request.getContextPath() + "/shop");
                 return;
             }
 
-            // Lưu đơn hàng vào cơ sở dữ liệu
-            Connection conn = DBContext.getConnection();
-            conn.setAutoCommit(false);
+            Connection conn = null;
             try {
-                // Thêm đơn hàng vào bảng Orders
+                conn = DBContext.getConnection();
+                conn.setAutoCommit(false);
+
+                // Insert Order
                 String insertOrderSQL = "INSERT INTO Orders (UserID, OrderDate, TotalPrice, CouponID, ReceiverName, ReceiverPhone, ReceiverAddress, ReceiverCity, ReceiverProvince, ReceiverPostalCode) VALUES (?, GETDATE(), ?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement stmt = conn.prepareStatement(insertOrderSQL, Statement.RETURN_GENERATED_KEYS);
-                try {
-                    stmt.setInt(1, user.getUserID());
-                    stmt.setDouble(2, finalTotal);
-                    if (couponId != null) {
-                        stmt.setInt(3, couponId);
-                    } else {
-                        stmt.setNull(3, java.sql.Types.INTEGER);
-                    }
-                    stmt.setString(4, receiverName);
-                    stmt.setString(5, receiverPhone);
-                    stmt.setString(6, receiverAddress);
-                    stmt.setString(7, receiverCity);
-                    stmt.setString(8, receiverProvince);
-                    stmt.setString(9, receiverPostalCode);
-                    stmt.executeUpdate();
-
-                    ResultSet rs = stmt.getGeneratedKeys();
-                    int orderId = 0;
-                    if (rs.next()) {
-                        orderId = rs.getInt(1);
-                    }
-                    rs.close();
-                    stmt.close();
-
-                    // Thêm chi tiết đơn hàng vào bảng OrderDetails
-                    String insertOrderDetailSQL = "INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price) VALUES (?, ?, ?, ?)";
-                    PreparedStatement detailStmt = conn.prepareStatement(insertOrderDetailSQL);
-                    try {
-                        for (ProductDTO item : selectedItems) {
-                            detailStmt.setInt(1, orderId);
-                            detailStmt.setInt(2, item.getProductId());
-                            detailStmt.setInt(3, item.getQuantity());
-                            detailStmt.setDouble(4, item.getPrice());
-                            detailStmt.addBatch();
-                        }
-                        detailStmt.executeBatch();
-                    } catch (SQLException ex) {
-                        throw ex;
-                    } finally {
-                        detailStmt.close();
-                    }
-
-                    // Cập nhật số lượng tồn kho
-                    String updateStockSQL = "UPDATE %s SET Quantity = Quantity - ? WHERE ProductID = ? AND Color = ? AND Storage = ?";
-                    for (ProductDTO item : selectedItems) {
-                        String tableName;
-                        switch (item.getCategoryId()) {
-                            case 1:
-                                tableName = "iPhone_Details";
-                                break;
-                            case 2:
-                                tableName = "iPad_Details";
-                                break;
-                            case 3:
-                                tableName = "MacBook_Details";
-                                break;
-                            default:
-                                throw new SQLException("Invalid category");
-                        }
-                        PreparedStatement stockStmt = conn.prepareStatement(String.format(updateStockSQL, tableName));
-                        try {
-                            stockStmt.setInt(1, item.getQuantity());
-                            stockStmt.setInt(2, item.getProductId());
-                            stockStmt.setString(3, item.getColor());
-                            stockStmt.setString(4, item.getStorage());
-                            int rows = stockStmt.executeUpdate();
-                            if (rows == 0) {
-                                throw new SQLException("Product not found in stock");
-                            }
-                        } catch (SQLException ex) {
-                            throw ex;
-                        } finally {
-                            stockStmt.close();
-                        }
-                    }
-
-                    // Thêm trạng thái "Pending" vào OrderStatusHistory
-                    String insertStatusSQL = "INSERT INTO OrderStatusHistory (OrderID, Status, ChangedAt) VALUES (?, ?, GETDATE())";
-                    PreparedStatement statusStmt = conn.prepareStatement(insertStatusSQL);
-                    try {
-                        statusStmt.setInt(1, orderId);
-                        statusStmt.setString(2, "Pending");
-                        statusStmt.executeUpdate();
-                    } catch (SQLException ex) {
-                        throw ex;
-                    } finally {
-                        statusStmt.close();
-                    }
-
-                    conn.commit();
-
-                    // Xóa giỏ hàng trong session
-                    if (!fromBuyButton) {
-                        for (String id : selectedIds) {
-                            sessionCart.remove(id); // Xóa từng mục đã chọn
-                        }
-                        if (sessionCart.isEmpty()) {
-                            session.removeAttribute(AttributeConstant.CART);
-                            session.removeAttribute(AttributeConstant.CART_COUNT);
-                        } else {
-                            session.setAttribute(AttributeConstant.CART, sessionCart);
-                            updateCartCount(session, sessionCart); // Cập nhật số lượng
-                        }
-                    }
-
-                    session.removeAttribute(AttributeConstant.COUPON);
-
-                    // session.setAttribute(AttributeConstant.SUCCESS, "Order placed successfully");
-                    // response.sendRedirect(PathConstant.URL_ORDER_CONFIRMATION);
-                    session.setAttribute("orderSuccess", true);
-                    session.removeAttribute("voucherError");
-
-                    String back = request.getHeader("referer");
-                    if (back == null || back.isBlank()) {
-                        back = request.getContextPath() + "/shop";
-                    }
-                    response.sendRedirect(back);
-                    return;
-
-                } catch (SQLException ex) {
-                    throw ex;
+                stmt.setInt(1, user.getUserID());
+                stmt.setDouble(2, finalTotal);
+                if (couponId != null) {
+                    stmt.setInt(3, couponId);
+                } else {
+                    stmt.setNull(3, Types.INTEGER);
                 }
+                stmt.setString(4, receiverName);
+                stmt.setString(5, receiverPhone);
+                stmt.setString(6, receiverAddress);
+                stmt.setString(7, receiverCity);
+                stmt.setString(8, receiverProvince);
+                stmt.setString(9, "000000");
+                stmt.executeUpdate();
+
+                ResultSet rs = stmt.getGeneratedKeys();
+                int orderId = rs.next() ? rs.getInt(1) : 0;
+                rs.close();
+                stmt.close();
+
+                // Insert OrderDetails
+                String insertDetailSQL = "INSERT INTO OrderDetails (OrderID, ProductID, DetailID, Version, Color, Storage, Quantity, Price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                PreparedStatement detailStmt = conn.prepareStatement(insertDetailSQL);
+                for (ProductDTO item : selectedItems) {
+                    detailStmt.setInt(1, orderId);
+                    detailStmt.setInt(2, item.getProductId());
+                    detailStmt.setInt(3, item.getDetailId());
+                    detailStmt.setString(4, item.getVersion());
+                    detailStmt.setString(5, item.getColor());
+                    detailStmt.setString(6, item.getStorage());
+                    detailStmt.setInt(7, item.getQuantity());
+                    detailStmt.setDouble(8, item.getPrice());
+                    detailStmt.addBatch();
+                }
+                detailStmt.executeBatch();
+                detailStmt.close();
+
+                // Update stock
+                String updateSQL = "UPDATE %s SET Quantity = Quantity - ? WHERE ProductID = ? AND Color = ? AND Storage = ?";
+                for (ProductDTO item : selectedItems) {
+                    String table;
+                    switch (item.getCategoryId()) {
+                        case 1:
+                            table = "iPhone_Details";
+                            break;
+                        case 2:
+                            table = "iPad_Details";
+                            break;
+                        case 3:
+                            table = "MacBook_Details";
+                            break;
+                        default:
+                            throw new SQLException("Invalid category");
+                    }
+
+                    PreparedStatement stockStmt = conn.prepareStatement(String.format(updateSQL, table));
+                    stockStmt.setInt(1, item.getQuantity());
+                    stockStmt.setInt(2, item.getProductId());
+                    stockStmt.setString(3, item.getColor());
+                    stockStmt.setString(4, item.getStorage());
+                    stockStmt.executeUpdate();
+                    stockStmt.close();
+                }
+
+                // Insert status
+                String insertStatusSQL = "INSERT INTO OrderStatusHistory (OrderID, Status, ChangedAt) VALUES (?, ?, GETDATE())";
+                PreparedStatement statusStmt = conn.prepareStatement(insertStatusSQL);
+                statusStmt.setInt(1, orderId);
+                statusStmt.setString(2, "Pending");
+                statusStmt.executeUpdate();
+                statusStmt.close();
+
+                conn.commit();
+
+                // Update cart session
+                if (!fromBuyButton && sessionCart != null) {
+                    for (String id : selectedIds) {
+                        sessionCart.remove(id);
+                    }
+                    if (sessionCart.isEmpty()) {
+                        session.removeAttribute(AttributeConstant.CART);
+                        session.removeAttribute(AttributeConstant.CART_COUNT);
+                    } else {
+                        session.setAttribute(AttributeConstant.CART, sessionCart);
+                        updateCartCount(session, sessionCart);
+                    }
+                }
+
+                session.removeAttribute(AttributeConstant.COUPON);
+                session.setAttribute("orderSuccess", true);
+                session.removeAttribute("voucherError");
+
+                String back = request.getHeader("referer");
+                response.sendRedirect(back != null && !back.isBlank() ? back : request.getContextPath() + "/shop");
+
             } catch (SQLException ex) {
-                conn.rollback();
+                if (conn != null) {
+                    conn.rollback();
+                }
                 Logger.getLogger(CheckoutServlet.class.getName()).log(Level.SEVERE, null, ex);
                 session.setAttribute(AttributeConstant.ERROR, "Checkout failed: " + ex.getMessage());
                 response.sendRedirect(request.getContextPath() + "/cart?action=view");
             } finally {
-                conn.setAutoCommit(true);
-                conn.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
             }
 
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(CheckoutServlet.class.getName()).log(Level.SEVERE, null, ex);
-            session.setAttribute(AttributeConstant.ERROR, "Database error");
+            session.setAttribute(AttributeConstant.ERROR, "Unexpected error");
             response.sendRedirect(request.getContextPath() + "/cart?action=view");
         }
     }

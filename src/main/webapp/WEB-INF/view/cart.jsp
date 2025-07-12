@@ -53,6 +53,12 @@
     th.remove-col{
         width:1px;
     }
+    .product-image {
+    width: 60px;  /* Điều chỉnh chiều rộng */
+    height: 80px; /* Điều chỉnh chiều cao */
+    object-fit: cover; /* Đảm bảo hình ảnh không bị kéo dãn */
+    border-radius: 5px; /* Thêm góc bo tròn (tuỳ chọn) */
+}
 </style>
 
 <div class="container py-4">
@@ -76,6 +82,7 @@
             <thead>
                 <tr>
                     <th><input type="checkbox" id="selectAll" class="form-check-input"></th>
+                    <th>Image</th>
                     <th>Product</th>
                     <th>Version</th>
                     <th>Color</th>
@@ -97,10 +104,11 @@
                                    data-id="${item.productId}:${item.color}:${item.storage}"
                                    checked>
                         </td>
-
+                        <td><img src="${pageContext.request.contextPath}/assets/img/${item.image}" alt="${item.productName}" class="product-image"></td>
                         <!-- Thông tin sản phẩm -->
                         <td class="text-start">${item.productName}</td>
                         <td>${item.version}</td>
+                        
                         <td>${item.color}</td>
                         <td>${item.storage}</td>
 
@@ -141,7 +149,6 @@
                         <td class="fw-bold text-danger">
                             <fmt:formatNumber value="${item.subTotal}" pattern="#,##0"/>₫
                         </td>
-
                         <!-- REMOVE -->
                         <td>
                             <form action="cart" method="post">
