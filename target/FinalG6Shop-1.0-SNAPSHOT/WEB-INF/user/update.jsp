@@ -20,12 +20,19 @@
             <div onclick="document.getElementById('avatarInput').click()" 
                  class="rounded-circle text-dark mx-auto d-flex align-items-center justify-content-center shadow"
                  style="cursor: pointer; background-color: #e5e7eb; width: 110px; height: 110px; font-size: 2rem !important; font-weight: 700; overflow: hidden;">
-                <img id="avatarPreview" 
-                     src="${not empty user.avatar ? pageContext.request.contextPath + '/' + user.avatar : ''}" 
-                     style="width: 100%; height: 100%; object-fit: cover; display: ${not empty user.avatar ? 'block' : 'none'};" />
-                <span id="avatarLetter" style="display: ${empty user.avatar ? 'block' : 'none'};">
-                    <%= user.getUserFullname().toUpperCase().charAt(0) %>
-                </span>
+                <c:choose>
+                    <c:when test="${not empty loggedUser.avatar}">
+                        <img id="avatarPreview" src="${pageContext.request.contextPath}/${loggedUser.avatar}"
+                             alt="Avatar"
+                             style="width: 100%; height: 100%; object-fit: cover;" />
+                    </c:when>
+                    <c:otherwise>
+                        <div class="text-dark d-flex align-items-center justify-content-center"
+                             style="width: 100%; height: 100%; font-size: 2rem !important;">
+                            <%= user.getUserFullname().toUpperCase().charAt(0) %>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
 
             <div class="mt-4 position-relative d-inline-block">

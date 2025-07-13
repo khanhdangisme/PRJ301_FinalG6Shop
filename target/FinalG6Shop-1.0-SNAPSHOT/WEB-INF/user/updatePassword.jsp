@@ -13,22 +13,30 @@
 <title>G6Shop - Update Profile</title>
 
 <div class="container py-5" style="margin-top: 120px; margin-bottom: 20px">
-    <form action="user?action=save-profile" method="post" enctype="multipart/form-data">
+    <form action="user?action=change-password" method="post" enctype="multipart/form-data">
         <!-- Avatar upload -->
         <div class="text-center mb-5">
-            <input type="file" name="avatar" id="avatarInput" accept="image/*" hidden onchange="previewAvatar(this)">
-            <div onclick="document.getElementById('avatarInput').click()" 
-                 class="rounded-circle text-dark mx-auto d-flex align-items-center justify-content-center shadow"
-                 style="cursor: pointer; background-color: #e5e7eb; width: 110px; height: 110px; font-size: 2rem !important; font-weight: 700; overflow: hidden;">
-                <img id="avatarPreview" src="${user.avatarUrl != null ? user.avatarUrl : ''}" 
-                     style="width: 100%; height: 100%; object-fit: cover; display: ${user.avatarUrl != null ? 'block' : 'none'};" />
-                <span id="avatarLetter" style="display: ${user.avatarUrl == null ? 'block' : 'none'};">
-                    <%= user.getUserFullname().toUpperCase().charAt(0) %>
-                </span>
-            </div>
+                <!-- Avatar lớn -->
+                <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow"
+                     style="background-color: #e5e7eb; width: 110px; height: 110px; overflow: hidden; font-weight: 600;">
+
+                    <c:choose>
+                        <c:when test="${not empty loggedUser.avatar}">
+                            <img src="${pageContext.request.contextPath}/${loggedUser.avatar}"
+                                 alt="Avatar"
+                                 style="width: 100%; height: 100%; object-fit: cover;" />
+                        </c:when>
+                        <c:otherwise>
+                            <div class="text-dark d-flex align-items-center justify-content-center"
+                                 style="width: 100%; height: 100%; font-size: 2rem !important;">
+                                <%= user.getUserFullname().toUpperCase().charAt(0) %>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
 
             <div class="mt-4 position-relative d-inline-block">
-                <span class="fw-semibold" style="font-size: 1.25rem; color: #2563eb;">Edit Profile</span>
+                <span class="fw-semibold" style="font-size: 1.25rem; color: #2563eb;">Change Password</span>
                 <div style="height: 2px; background-color: #2563eb; width: 100%; position: absolute; left: 0; bottom: -2px;"></div>
             </div>
         </div>
@@ -39,7 +47,7 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Full Name</label>
-                        <input type="text" name="fullname" value="<%= user.getUserFullname() %>" class="form-control" required>
+                        <input type="text" name="fullname" value="<%= user.getUserFullname() %>" class="form-control" readonly>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Username</label>
@@ -47,11 +55,19 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" value="<%= user.getUserEmail() %>" class="form-control" required>
+                        <input type="email" name="email" value="<%= user.getUserEmail() %>" class="form-control" readonly>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Phone</label>
-                        <input type="text" name="phone" value="<%= user.getUserPhone() %>" class="form-control" required>
+                        <input type="text" name="phone" value="<%= user.getUserPhone() %>" class="form-control" readonly>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="currentPassword" value="" class="form-control" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="newPassword" value="" class="form-control" required>
                     </div>
                 </div>
 

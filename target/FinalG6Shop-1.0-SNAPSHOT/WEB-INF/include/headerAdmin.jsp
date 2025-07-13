@@ -127,12 +127,6 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=order" style="font-size: 18px !important; font-weight: 500 !important;">
-                                    <span data-feather="file"></span>
-                                    Orders
-                                </a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=product" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="shopping-cart"></span>
                                     Products
@@ -145,7 +139,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=report" style="font-size: 18px !important; font-weight: 500 !important;">
+                                <a class="nav-link" href="#" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="bar-chart-2"></span>
                                     Reports
                                 </a>
@@ -153,7 +147,7 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=orderlist"
                                    style="font-size: 18px !important; font-weight: 500 !important;">
-                                    <span data-feather="layers"></span>
+                                    <span data-feather="file"></span>
                                     Order history
                                 </a>
                             </li>

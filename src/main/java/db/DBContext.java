@@ -23,7 +23,7 @@ public class DBContext {
     private Connection conn;
     private static final String DB_URL = "jdbc:sqlserver://127.0.0.1:1433;databaseName=G6Shop;encrypt=false";
     private static final String DB_USER = "sa";
-    private static final String DB_PWD = "040425";
+    private static final String DB_PWD = "khanhdang17052004";
 
     public DBContext() {
         try {

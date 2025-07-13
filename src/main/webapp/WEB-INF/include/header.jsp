@@ -42,7 +42,6 @@
                         <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto">
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/index.jsp">Home</a></li>
                             <li class="nav-item"><a class="nav-link" href="${pageContext.request.contextPath}/shop">Shop</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
                         </ul>
                     </div>
 

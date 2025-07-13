@@ -162,6 +162,9 @@ public class UserServlet extends HttpServlet {
         } else if ("change-password".equals(action)) {
 
             String username = request.getParameter(AttributeConstant.USERNAME);
+            String fullname = request.getParameter(ParamConstant.FULLNAME);
+            String email = request.getParameter(ParamConstant.EMAIL);
+            String phone = request.getParameter(ParamConstant.PHONE);
             String currentPassword = request.getParameter(AttributeConstant.CURRENT_PASSWORD);
             String newPassword = request.getParameter(AttributeConstant.NEW_PASSWORD);
 

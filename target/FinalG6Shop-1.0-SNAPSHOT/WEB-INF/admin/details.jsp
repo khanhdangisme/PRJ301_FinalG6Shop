@@ -86,11 +86,10 @@
                         <input type="number"
                                name="price"
                                class="form-control text-start"
-                               value="${price * 1}"
+                               value="${not empty price ? price.intValue() : 0}"
                                min="0"
                                step="1000"
                                required />
-
                         <span class="input-group-text">₫</span>
                     </div>
                 </div>

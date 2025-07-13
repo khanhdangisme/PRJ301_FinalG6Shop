@@ -443,7 +443,7 @@ public class AdminServlet extends HttpServlet {
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
             }
-        }
+        } 
     }
 
     /**

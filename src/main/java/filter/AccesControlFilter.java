@@ -29,7 +29,9 @@ public class AccesControlFilter implements Filter {
     private static final List<String> PROTECTED_PATHS = Arrays.asList(
             "/admin",
             "/user",
-            "/checkout" // <- bảo vệ bước thanh toán
+            "/checkout", // <- bảo vệ bước thanh toán
+            "/product",
+            "/image-list"
     );
     // Hằng khoá session
     private static final String REDIRECT_ATTR = "redirectAfterLogin";
@@ -114,6 +116,20 @@ public class AccesControlFilter implements Filter {
 
         // 4.1 Role admin
         if (path.startsWith("/admin") && role != 0 && session != null) {
+            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.FILTER_BLOCK_NOT_ADMIN);
+            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+            res.sendRedirect(req.getContextPath() + "/index.jsp");
+            return;
+        }
+        
+        if (path.startsWith("/product") && role != 0 && session != null) {
+            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.FILTER_BLOCK_NOT_ADMIN);
+            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+            res.sendRedirect(req.getContextPath() + "/index.jsp");
+            return;
+        }
+        
+        if (path.startsWith("/image-list") && role != 0 && session != null) {
             session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.FILTER_BLOCK_NOT_ADMIN);
             session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
             res.sendRedirect(req.getContextPath() + "/index.jsp");

@@ -7,7 +7,7 @@
     <div class="row justify-content-center" style="margin-top: 45px;">
         <div class="col-lg-12">
             <div class="card shadow border-0">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-dark text-white">
                     <h4 class="mb-0"><i class="fa fa-history me-2"></i> Your Order History</h4>
                 </div>
                 <div class="card-body">
