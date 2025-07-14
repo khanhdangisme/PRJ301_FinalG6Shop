@@ -70,26 +70,6 @@ public class AdminProductDAO extends DBContext {
         return list;
     }
 
-    public List<ProductDTO> getProduct(int categoryId) throws SQLException {
-        List<ProductDTO> list = new ArrayList<>();
-        ResultSet rs = executeSelectQuery(SELECT_CATEGORY_PRODUCT, new Object[]{categoryId});
-        while (rs.next()) {
-            ProductDTO dto = new ProductDTO();
-            dto.setProductId(rs.getInt("ProductID"));
-            dto.setProductName(rs.getString("ProductName"));
-            dto.setVersion(rs.getString("Version"));
-            dto.setColor(rs.getString("Color"));
-            dto.setStorage(rs.getString("Storage"));
-            dto.setPrice(rs.getDouble("Price"));
-            dto.setImage(rs.getString("Image"));
-            dto.setCategoryId(rs.getInt("CategoryID"));
-            dto.setCategoryName(rs.getString("CategoryName"));
-            dto.setQuantity(rs.getInt("Quantity"));
-            list.add(dto);
-        }
-        return list;
-    }
-
     public Product getProductDetail(int productId, String color, String storage) throws SQLException {
         ResultSet rs = executeSelectQuery(SELECT_DETAIL, new Object[]{productId, color, storage});
 

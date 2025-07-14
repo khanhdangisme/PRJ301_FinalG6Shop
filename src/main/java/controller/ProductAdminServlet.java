@@ -72,7 +72,7 @@ public class ProductAdminServlet extends HttpServlet {
                     boolean deleted = dao.deleteProduct(categoryId, id, color, storage);
 
                     if (deleted) {
-                        response.sendRedirect("product?view=list&categoryId=" + categoryId + "&msg=deleted");
+                        response.sendRedirect(request.getContextPath() + "/admin?view=product");
                     } else {
                         response.sendError(HttpServletResponse.SC_NOT_FOUND, "Product not found or already deleted.");
                     }
@@ -82,26 +82,26 @@ public class ProductAdminServlet extends HttpServlet {
                 }
                 break;
             }
-            case "list": {
-                AdminProductDAO dao = new AdminProductDAO();
-                try {
-                    List<Product> categories = dao.getAllCategory();
-                    Map<Integer, List<ProductDTO>> productsMap = new HashMap<>();
-
-                    for (Product c : categories) {
-                        List<ProductDTO> list = dao.getProduct(c.getCategoryID());
-                        productsMap.put(c.getCategoryID(), list);
-                    }
-
-                    request.setAttribute("list", categories);
-                    request.setAttribute("productsMap", productsMap);
-                    request.getRequestDispatcher("/WEB-INF/admin/product.jsp").forward(request, response);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading product list.");
-                }
-                break;
-            }
+//            case "list": {
+//                AdminProductDAO dao = new AdminProductDAO();
+//                try {
+//                    List<Product> categories = dao.getAllCategory();
+//                    Map<Integer, List<ProductDTO>> productsMap = new HashMap<>();
+//
+//                    for (Product c : categories) {
+//                        List<ProductDTO> list = dao.getProduct(c.getCategoryID());
+//                        productsMap.put(c.getCategoryID(), list);
+//                    }
+//
+//                    request.setAttribute("list", categories);
+//                    request.setAttribute("productsMap", productsMap);
+//                    request.getRequestDispatcher("/WEB-INF/admin/product.jsp").forward(request, response);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading product list.");
+//                }
+//                break;
+//            }
             case "add": {
                 try {
                     AdminProductDAO dao = new AdminProductDAO();
@@ -197,7 +197,7 @@ public class ProductAdminServlet extends HttpServlet {
                 );
 
                 if (inserted) {
-                    response.sendRedirect("product?view=list&msg=inserted");
+                    response.sendRedirect(request.getContextPath() + "/admin?view=product");
                 } else {
                     response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Insert failed");
                 }
@@ -318,7 +318,7 @@ public class ProductAdminServlet extends HttpServlet {
                 // Gọi DAO cập nhật
                 boolean updated = dao.updateProductDetail(existing, detail);
                 if (updated) {
-                    response.sendRedirect("product?view=list&categoryId=" + categoryId + "&msg=updated");
+                    response.sendRedirect(request.getContextPath() + "/admin?view=product");
                 } else {
                     request.setAttribute("error", "Update failed");
                     request.setAttribute("getDetail", existing);

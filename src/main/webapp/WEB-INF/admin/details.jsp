@@ -222,7 +222,7 @@
             <button type="submit" style="padding-left: 10px;" class="btn btn-primary me-2">
                 <i class="bi bi-save"></i> Save Changes
             </button>
-            <a href="product?view=list&categoryId=${getDetail.categoryID}" class="btn btn-outline-secondary me-2">
+            <a href="admin?view=product" class="btn btn-outline-secondary me-2">
                 <i class="bi bi-arrow-left-circle"></i> Cancel
             </a>
             <a href="product?view=delete&id=${getDetail.productID}&categoryId=${getDetail.categoryID}&color=${color}&storage=${storage}"
