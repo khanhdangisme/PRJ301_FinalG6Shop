@@ -115,50 +115,71 @@ public class UserServlet extends HttpServlet {
             String email = request.getParameter(ParamConstant.EMAIL);
             String phone = request.getParameter(ParamConstant.PHONE);
 
-            // Giữ nguyên avatar hiện tại
-            String avatar = user.getAvatar();
+            if (username != null && !username.isEmpty()
+                    && fullname != null && !fullname.isEmpty()
+                    && email != null && !email.isEmpty()
+                    && phone != null && !phone.isEmpty()) {
 
-            // Xử lý ảnh mới nếu có
-            Part avatarPart = request.getPart("avatar");
+                if (!dao.isValidGmail(email)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Email must be a valid @gmail.com address.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PROFILE).forward(request, response);
+                    return;
+                }
+                if (!dao.isValidPhone(phone)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Phone number must start with 0 and have exactly 10 digits.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PROFILE).forward(request, response);
+                    return;
+                }
+                // Giữ nguyên avatar hiện tại
+                String avatar = user.getAvatar();
 
-            if (avatarPart != null && avatarPart.getSize() > 0) {
-                // Lưu vào src/main/webapp/assets/uploads
-                String uploadPath = getServletContext().getRealPath("/") + "../../src/main/webapp/assets/uploads";
-                File dir = new File(uploadPath);
-                if (!dir.exists()) {
-                    dir.mkdirs();
+                // Xử lý ảnh mới nếu có
+                Part avatarPart = request.getPart("avatar");
+
+                if (avatarPart != null && avatarPart.getSize() > 0) {
+                    // Lưu vào src/main/webapp/assets/uploads
+                    String uploadPath = getServletContext().getRealPath("/") + "../../src/main/webapp/assets/uploads";
+                    File dir = new File(uploadPath);
+                    if (!dir.exists()) {
+                        dir.mkdirs();
+                    }
+
+                    String filename = UUID.randomUUID() + "_" + Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
+                    avatarPart.write(uploadPath + File.separator + filename);
+                    avatar = "assets/uploads/" + filename;
                 }
 
-                String filename = UUID.randomUUID() + "_" + Paths.get(avatarPart.getSubmittedFileName()).getFileName().toString();
-                avatarPart.write(uploadPath + File.separator + filename);
-                avatar = "assets/uploads/" + filename;
-            }
+                // Gán lại thông tin cho user hiện tại
+                user.setUserName(username);
+                user.setUserFullname(fullname);
+                user.setUserEmail(email);
+                user.setUserPhone(phone);
+                user.setAvatar(avatar);
 
-            // Gán lại thông tin cho user hiện tại
-            user.setUserName(username);
-            user.setUserFullname(fullname);
-            user.setUserEmail(email);
-            user.setUserPhone(phone);
-            user.setAvatar(avatar);
-
-            // Gọi DAO để cập nhật
-            boolean updated = false;
-            try {
-                updated = dao.updateUser(user);
-            } catch (SQLException ex) {
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-            }
-
-            if (updated) {
-                session.setAttribute(AttributeConstant.LOGGEDUSER, user);
-                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_SUCCESSFULLY);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
-                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_USER_PROFILE);
+                // Gọi DAO để cập nhật
+                boolean updated = false;
+                try {
+                    if (dao.updateUser(user)) {
+                        session.setAttribute(AttributeConstant.LOGGEDUSER, user);
+                        session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_SUCCESSFULLY);
+                        session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                        response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_USER_PROFILE);
+                    } else {
+                        session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_UNSUCCESSFULLY);
+                        session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                        request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PROFILE).forward(request, response);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_UNSUCCESSFULLY);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PROFILE).forward(request, response);
             }
+
         } else if ("change-password".equals(action)) {
 
             String username = request.getParameter(AttributeConstant.USERNAME);
@@ -168,30 +189,47 @@ public class UserServlet extends HttpServlet {
             String currentPassword = request.getParameter(AttributeConstant.CURRENT_PASSWORD);
             String newPassword = request.getParameter(AttributeConstant.NEW_PASSWORD);
 
-            boolean correct = dao.checkExistsPassword(username, currentPassword);
+            if (username != null && !username.trim().isEmpty()
+                    && currentPassword != null && !currentPassword.trim().isEmpty()
+                    && newPassword != null && !newPassword.trim().isEmpty()
+                    && fullname != null && !fullname.trim().isEmpty()
+                    && email != null && !email.trim().isEmpty()
+                    && phone != null && !phone.trim().isEmpty()) {
 
-            if (!correct) {
-                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_CURRENTPASSWORD_ERROR);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
-            } else {
-                boolean updated = false;
-                try {
-                    updated = dao.updateUserPassword(username, newPassword);
-                } catch (SQLException ex) {
-                    Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                if (updated) {
-                    session.setAttribute(AttributeConstant.LOGGEDUSER, user);
-                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD);
-                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
-                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_USER_PROFILE);
-                } else {
-                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD_ERROR);
+                if (!dao.isValidPassword(newPassword)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Password must start with an uppercase letter and contain at least 1 digit.");
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                     request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
+                    return;
                 }
+                boolean correct = dao.checkExistsPassword(username, currentPassword);
 
+                if (!correct) {
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_CURRENTPASSWORD_ERROR);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
+                } else {
+                    boolean updated = false;
+                    try {
+                        updated = dao.updateUserPassword(username, newPassword);
+                        if (updated) {
+                            session.setAttribute(AttributeConstant.LOGGEDUSER, user);
+                            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD);
+                            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                            response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_USER_PROFILE);
+                        } else {
+                            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD_ERROR);
+                            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                            request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            } else {
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_PASSWORD_ERROR);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
             }
         } else if ("delete".equals(action)) {
             String username = request.getParameter(AttributeConstant.USERNAME);
@@ -206,8 +244,10 @@ public class UserServlet extends HttpServlet {
                 boolean updated = false;
                 try {
                     updated = dao.deleteUser(username, password);
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(UserServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UserServlet.class
+                            .getName()).log(Level.SEVERE, null, ex);
                 }
                 if (updated) {
                     session.invalidate();

@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<title>G6Shop ‑ Order History</title>
 <%@ include file="/WEB-INF/include/header.jsp" %>
 
 <main class="container py-5 mt-5">

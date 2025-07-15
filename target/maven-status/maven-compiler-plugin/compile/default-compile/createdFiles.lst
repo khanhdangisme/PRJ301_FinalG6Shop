@@ -18,7 +18,9 @@ ultil\PaginationUtil.class
 controller\LoginServlet.class
 controller\CheckoutServlet.class
 controller\ShopServlet.class
+model\RevenueReport.class
 controller\ImageListServlet.class
+dao\ReportDAO.class
 constant\AttributeConstant.class
 constant\MessageConstant.class
 model\ProductDTO.class

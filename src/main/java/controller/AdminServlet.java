@@ -12,6 +12,7 @@ import dao.AdminDAO;
 import dao.AdminProductDAO;
 import dao.UserDAO;
 import dao.OrderDAO;
+import dao.ReportDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -20,12 +21,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -172,6 +175,10 @@ public class AdminServlet extends HttpServlet {
                         .forward(request, response);
             }
             break;
+            case "reports":
+                request.getRequestDispatcher("/WEB-INF/admin/reports.jsp")
+                        .forward(request, response);
+                break;
         }
     }
 
@@ -199,27 +206,53 @@ public class AdminServlet extends HttpServlet {
             String fullname = request.getParameter(ParamConstant.FULLNAME);
             String email = request.getParameter(ParamConstant.EMAIL);
             String phone = request.getParameter(ParamConstant.PHONE);
+            if (username != null && !username.trim().isEmpty()
+                    && password != null && !password.trim().isEmpty()
+                    && fullname != null && !fullname.trim().isEmpty()
+                    && email != null && !email.trim().isEmpty()
+                    && phone != null && !phone.trim().isEmpty()) {
+                if (!dao.isValidPassword(password)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Password must start with an uppercase letter and contain at least 1 digit.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    return;
+                }
+                if (!dao.isValidGmail(email)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Email must be a valid @gmail.com address.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    return;
+                }
+                if (!dao.isValidPhone(phone)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Phone number must start with 0 and have exactly 10 digits.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    return;
+                }
 
-            // Kiểm tra người dùng đã tồn tại chưa
-            if (dao.checkUserExists(username)) {
-                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
-                return;
-            }
-            User newUser = new User(0, username, password, fullname, email, phone, 0, null, "Enable"); // Role = 1 là customer
+                // Kiểm tra người dùng đã tồn tại chưa
+                if (dao.checkUserExists(username)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    return;
+                }
+                User newUser = new User(0, username, password, fullname, email, phone, 0, null, "Enable"); // Role = 1 là customer
 
-            boolean inserted = false;
-            try {
-                inserted = dao.insertUser(newUser);
-            } catch (SQLException ex) {
-                Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            if (inserted) {
-                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_SUCCESSFULLY);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
-                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                boolean inserted = false;
+                try {
+                    if (dao.insertUser(newUser)) {
+                        session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_SUCCESSFULLY);
+                        session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                        response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    } else {
+                        session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
+                        session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                        response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
@@ -232,17 +265,20 @@ public class AdminServlet extends HttpServlet {
             boolean inserted = false;
             try {
                 inserted = adminDAO.updateStatus(username);
+                if (inserted) {
+                    User refreshedUser = adminDAO.getUserByUsername(username);
+                    session.setAttribute(AttributeConstant.LOGGEDUSER, refreshedUser);
+                    
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_STATUS);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                } else {
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_STATUS_ERROR);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            if (inserted) {
-                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_STATUS);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
-                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
-            } else {
-                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_STATUS_ERROR);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
             }
 
         } else if ("create-order".equals(action)) {
@@ -443,7 +479,29 @@ public class AdminServlet extends HttpServlet {
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
             }
-        } 
+        } else if ("report".equals(action)) {
+            String startDateStr = request.getParameter("startDate");
+            String endDateStr = request.getParameter("endDate");
+            if (startDateStr != null && endDateStr != null) {
+                LocalDate fromDate = LocalDate.parse(startDateStr);
+                LocalDate toDate = LocalDate.parse(endDateStr);
+
+                ReportDAO rDao = new ReportDAO();
+                BigDecimal totalRevenue;
+                try {
+                    totalRevenue = rDao.getReport(fromDate, toDate);
+                    request.setAttribute("fromDate", Timestamp.valueOf(fromDate.atStartOfDay()));
+                    request.setAttribute("toDate", Timestamp.valueOf(toDate.atTime(23, 59, 59)));
+                    request.setAttribute("total", totalRevenue);
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                request.setAttribute("error", "Please select both start date and end date.");
+            }
+
+            request.getRequestDispatcher("/WEB-INF/admin/reports.jsp").forward(request, response);
+        }
     }
 
     /**

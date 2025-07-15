@@ -139,7 +139,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#" style="font-size: 18px !important; font-weight: 500 !important;">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=reports" style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="bar-chart-2"></span>
                                     Reports
                                 </a>

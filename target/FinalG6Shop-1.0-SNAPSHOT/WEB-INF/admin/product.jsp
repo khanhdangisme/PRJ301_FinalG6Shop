@@ -60,7 +60,7 @@
     <div class="tab-content mt-3" id="productTabContent">
         <div class="d-flex justify-content-between ...">
             <h1 class="h2">Product</h1>
-            <a href="image-list" class="btn btn-success">
+            <a href="image-list" class="btn btn-success" style="margin-bottom: 10px;">
                 <i class="bi bi-plus-circle"></i> Add Product
             </a>
         </div>

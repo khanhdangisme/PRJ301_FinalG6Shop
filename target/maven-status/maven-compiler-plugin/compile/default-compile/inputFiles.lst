@@ -2,7 +2,9 @@ D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\jav
 D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\controller\HistoryServlet.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\dao\UserDAO.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\filter\AccesControlFilter.java
+D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\model\RevenueReport.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\controller\UserServlet.java
+D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\dao\ReportDAO.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\ultil\PaginationUtil.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\controller\LoginServlet.java
 D:\CodeJava\JavaForNeatBeans\PRJ301\PRJ301_clone\PRJ301_FinalG6Shop\src\main\java\model\iPhoneDetails.java

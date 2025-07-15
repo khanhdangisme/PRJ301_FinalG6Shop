@@ -98,38 +98,42 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter(ParamConstant.PASSWORD);
         String remember = request.getParameter(ParamConstant.REMEMBER_ME);
 
-        UserDAO dao = new UserDAO();
-        User loggedUser = dao.login(username, password);
         HttpSession session = request.getSession();
+        
+        if (username != null && !username.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
+            UserDAO dao = new UserDAO();
+            User loggedUser = dao.login(username, password);
 
-        /* ====================  ĐĂNG NHẬP THÀNH CÔNG  ==================== */
-        if (loggedUser != null) {
-            // Lưu session
-            session.setAttribute(AttributeConstant.LOGGEDUSER, loggedUser);
+            /* ====================  ĐĂNG NHẬP THÀNH CÔNG  ==================== */
+            if (loggedUser != null) {
+                // Lưu session
+                session.setAttribute(AttributeConstant.LOGGEDUSER, loggedUser);
+                session.setMaxInactiveInterval(15 * 60);
 
-            /* ---- Remember‑me ---- */
-            Cookie usernameCookie = new Cookie("username", "remember-me".equals(remember) ? username : "");
-            usernameCookie.setMaxAge("remember-me".equals(remember) ? 7 * 24 * 60 * 60 : 0);
-            response.addCookie(usernameCookie);
+                /* ---- Remember‑me ---- */
+                Cookie usernameCookie = new Cookie("username", "remember-me".equals(remember) ? username : "");
+                usernameCookie.setMaxAge("remember-me".equals(remember) ? 7 * 24 * 60 * 60 : 0);
+                response.addCookie(usernameCookie);
 
-            /* ---- (tuỳ chọn) Giao diện dark ---- */
-            Cookie themeCookie = new Cookie("theme", "dark");
-            themeCookie.setMaxAge(24 * 60 * 60);
-            response.addCookie(themeCookie);
+                /* ---- (tuỳ chọn) Giao diện dark ---- */
+                Cookie themeCookie = new Cookie("theme", "dark");
+                themeCookie.setMaxAge(24 * 60 * 60);
+                response.addCookie(themeCookie);
 
-            /* ---- Thông báo ---- */
-            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.LOGIN_SUCCESSFULLY);
-            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                /* ---- Thông báo ---- */
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.LOGIN_SUCCESSFULLY);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
 
-            /* ---- Chuyển hướng ---- */
-            String redirect = (String) session.getAttribute(REDIRECT_ATTR);
-            if (redirect != null) {
-                session.removeAttribute(REDIRECT_ATTR);
-                response.sendRedirect(redirect);
-            } else {
-                response.sendRedirect(request.getContextPath() + "/index.jsp");
+                /* ---- Chuyển hướng ---- */
+                String redirect = (String) session.getAttribute(REDIRECT_ATTR);
+                if (redirect != null) {
+                    session.removeAttribute(REDIRECT_ATTR);
+                    response.sendRedirect(redirect);
+                } else {
+                    response.sendRedirect(request.getContextPath() + "/index.jsp");
+                }
+                return;
             }
-            return;            // 🔑 dừng tại đây
         }
 
         /* ====================  ĐĂNG NHẬP THẤT BẠI  ==================== */

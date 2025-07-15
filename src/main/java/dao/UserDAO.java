@@ -127,9 +127,32 @@ public class UserDAO extends DBContext {
             return false;
         }
     }
-    
-    public boolean deleteUser(String username, String password) throws SQLException{
+
+    public boolean deleteUser(String username, String password) throws SQLException {
         String hashedPwd = hashMd5(password);
         return this.executeQuery(DELETE_USER, new Object[]{username, hashedPwd}) > 0;
+    }
+
+    public static boolean isValidPhone(String phone) {
+        if (phone == null) {
+            return false;
+        }
+        return phone.matches("^0\\d{9}$");
+    }
+
+    public static boolean isValidGmail(String email) {
+        if (email == null) {
+            return false;
+        }
+        // Regex: bắt đầu bằng ký tự, chỉ cho phép chữ cái, số, dấu chấm, dấu gạch dưới
+        return email.matches("^[a-zA-Z0-9._%+-]+@gmail\\.com$");
+    }
+
+    public static boolean isValidPassword(String password) {
+        if (password == null || password.length() < 6) {
+            return false;
+        }
+        // Regex: bắt đầu bằng chữ in hoa, sau đó bất kỳ ký tự nào, và phải có ít nhất 1 số
+        return password.matches("^[A-Z].*\\d+.*$");
     }
 }

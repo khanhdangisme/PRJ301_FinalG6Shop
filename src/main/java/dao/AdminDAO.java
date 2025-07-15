@@ -66,5 +66,25 @@ public class AdminDAO extends DBContext {
         return this.executeQuery(UPDATE_STATUS, new Object[]{username}) > 0;
     }
 
-   
+    public User getUserByUsername(String username) throws SQLException {
+        String sql = "SELECT * FROM Users WHERE Username = ?";
+        Object[] params = {username};
+
+        ResultSet rs = executeSelectQuery(sql, params);
+        if (rs.next()) {
+            return new User(
+                    rs.getInt("ID"),
+                    rs.getString("Username"),
+                    null,
+                    rs.getString("FullName"),
+                    rs.getString("Email"),
+                    rs.getString("Phone"),
+                    rs.getInt("Role"),
+                    rs.getString("Avatar"),
+                    rs.getString("Status")
+            );
+        }
+        return null;
+    }
+
 }

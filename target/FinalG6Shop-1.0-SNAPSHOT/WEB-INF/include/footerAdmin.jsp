@@ -126,6 +126,35 @@
     });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.querySelector("form");
+        const startDateInput = document.getElementById("startDate");
+        const endDateInput = document.getElementById("endDate");
+
+        form.addEventListener("submit", function (e) {
+            if (!startDateInput.value || !endDateInput.value) {
+                alert("Please select both start date and end date.");
+                e.preventDefault();
+                return;
+            }
+
+            const startDate = new Date(startDateInput.value + "T00:00:00");
+            const endDate = new Date(endDateInput.value + "T00:00:00");
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Reset giờ phút giây milli giây
+
+            if (startDate > today || endDate > today) {
+                alert("Start date and end date cannot be in the future.");
+                e.preventDefault();
+            } else if (startDate > endDate) {
+                alert("Start date cannot be after end date.");
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>

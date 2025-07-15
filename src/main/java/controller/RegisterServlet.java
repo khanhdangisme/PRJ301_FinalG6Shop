@@ -89,30 +89,76 @@ public class RegisterServlet extends HttpServlet {
 
         UserDAO dao = new UserDAO();
         HttpSession session = request.getSession();
-        // Kiểm tra người dùng đã tồn tại chưa
-        if (dao.checkUserExists(username)) {
-            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
-            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-            request.setAttribute(AttributeConstant.USERNAME, username);
-            request.setAttribute(AttributeConstant.FULLNAME, fullname);
-            request.setAttribute(AttributeConstant.EMAIL, email);
-            request.setAttribute(AttributeConstant.PHONE, phone);
-            request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
-            return;
-        }
-        User newUser = new User(0, username, password, fullname, email, phone, 1, null, "Enable"); // Role = 1 là customer
 
-        boolean inserted = false;
-        try {
-            inserted = dao.insertUser(newUser);
-        } catch (SQLException ex) {
-            Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        if (username != null && !username.trim().isEmpty()
+                && password != null && !password.trim().isEmpty()
+                && fullname != null && !fullname.trim().isEmpty()
+                && email != null && !email.trim().isEmpty()
+                && phone != null && !phone.trim().isEmpty()) {
+            if (!dao.isValidPassword(password)) {
+                session.setAttribute(AttributeConstant.MESSAGE, "Password must start with an uppercase letter and contain at least 1 digit.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.setAttribute(AttributeConstant.USERNAME, username);
+                request.setAttribute(AttributeConstant.FULLNAME, fullname);
+                request.setAttribute(AttributeConstant.EMAIL, email);
+                request.setAttribute(AttributeConstant.PHONE, phone);
+                request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                return;
+            }
+            if (!dao.isValidGmail(email)) {
+                session.setAttribute(AttributeConstant.MESSAGE, "Email must be a valid @gmail.com address.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.setAttribute(AttributeConstant.USERNAME, username);
+                request.setAttribute(AttributeConstant.FULLNAME, fullname);
+                request.setAttribute(AttributeConstant.EMAIL, email);
+                request.setAttribute(AttributeConstant.PHONE, phone);
+                request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                return;
+            }
+            if (!dao.isValidPhone(phone)) {
+                session.setAttribute(AttributeConstant.MESSAGE, "Phone number must start with 0 and have exactly 10 digits.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.setAttribute(AttributeConstant.USERNAME, username);
+                request.setAttribute(AttributeConstant.FULLNAME, fullname);
+                request.setAttribute(AttributeConstant.EMAIL, email);
+                request.setAttribute(AttributeConstant.PHONE, phone);
+                request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                return;
+            }
+            // Kiểm tra người dùng đã tồn tại chưa
+            if (dao.checkUserExists(username)) {
+                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.setAttribute(AttributeConstant.USERNAME, username);
+                request.setAttribute(AttributeConstant.FULLNAME, fullname);
+                request.setAttribute(AttributeConstant.EMAIL, email);
+                request.setAttribute(AttributeConstant.PHONE, phone);
+                request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                return;
+            }
+            User newUser = new User(0, username, password, fullname, email, phone, 1, null, "Enable"); // Role = 1 là customer
 
-        if (inserted) {
-            session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_SUCCESSFULLY);
-            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
-            response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_LOGIN);
+            boolean inserted = false;
+            try {
+                if (dao.insertUser(newUser)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_SUCCESSFULLY);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
+                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_LOGIN);
+                } else {
+                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.setAttribute(AttributeConstant.USERNAME, username);
+                    request.setAttribute(AttributeConstant.FULLNAME, fullname);
+                    request.setAttribute(AttributeConstant.EMAIL, email);
+                    request.setAttribute(AttributeConstant.PHONE, phone);
+                    request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
             session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
             session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
@@ -121,6 +167,7 @@ public class RegisterServlet extends HttpServlet {
             request.setAttribute(AttributeConstant.EMAIL, email);
             request.setAttribute(AttributeConstant.PHONE, phone);
             request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+
         }
     }
 
