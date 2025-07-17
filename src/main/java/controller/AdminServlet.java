@@ -268,7 +268,7 @@ public class AdminServlet extends HttpServlet {
                 if (inserted) {
                     User refreshedUser = adminDAO.getUserByUsername(username);
                     session.setAttribute(AttributeConstant.LOGGEDUSER, refreshedUser);
-                    
+
                     session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.UPDATE_STATUS);
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
                     response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
@@ -479,17 +479,18 @@ public class AdminServlet extends HttpServlet {
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 response.sendRedirect(request.getContextPath() + "/admin?view=orderlist");
             }
-        } else if ("report".equals(action)) {
+        } else if ("revenue".equals(action)) {
             String startDateStr = request.getParameter("startDate");
             String endDateStr = request.getParameter("endDate");
+            request.setAttribute("action", "revenue");
+            request.setAttribute("startDate", startDateStr); // giữ lại input đã nhập
+            request.setAttribute("endDate", endDateStr);
             if (startDateStr != null && endDateStr != null) {
                 LocalDate fromDate = LocalDate.parse(startDateStr);
                 LocalDate toDate = LocalDate.parse(endDateStr);
-
                 ReportDAO rDao = new ReportDAO();
-                BigDecimal totalRevenue;
                 try {
-                    totalRevenue = rDao.getReport(fromDate, toDate);
+                    BigDecimal totalRevenue = rDao.getReport(fromDate, toDate);
                     request.setAttribute("fromDate", Timestamp.valueOf(fromDate.atStartOfDay()));
                     request.setAttribute("toDate", Timestamp.valueOf(toDate.atTime(23, 59, 59)));
                     request.setAttribute("total", totalRevenue);
@@ -499,9 +500,32 @@ public class AdminServlet extends HttpServlet {
             } else {
                 request.setAttribute("error", "Please select both start date and end date.");
             }
-
+            request.getRequestDispatcher("/WEB-INF/admin/reports.jsp").forward(request, response);
+        } else if ("bestselling".equals(action)) {
+            String startDateStr = request.getParameter("startDate");
+            String endDateStr = request.getParameter("endDate");
+            request.setAttribute("action", "bestselling");
+            request.setAttribute("startDate", startDateStr);
+            request.setAttribute("endDate", endDateStr);
+            if (startDateStr != null && endDateStr != null) {
+                LocalDate fromDate = LocalDate.parse(startDateStr);
+                LocalDate toDate = LocalDate.parse(endDateStr);
+                ReportDAO rDao = new ReportDAO();
+                try {
+                    // ĐỔI HÀM Ở ĐÂY: lấy bản full info
+                    List<ProductDTO> topProducts = rDao.getTop5BestSellingProductsFullInfo(fromDate, toDate);
+                    request.setAttribute("topProducts", topProducts);
+                    request.setAttribute("fromDate", Timestamp.valueOf(fromDate.atStartOfDay()));
+                    request.setAttribute("toDate", Timestamp.valueOf(toDate.atTime(23, 59, 59)));
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } else {
+                request.setAttribute("error", "Please select both start date and end date.");
+            }
             request.getRequestDispatcher("/WEB-INF/admin/reports.jsp").forward(request, response);
         }
+
     }
 
     /**
