@@ -4,7 +4,6 @@
     Author     : KhanhDang
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ page import="model.User" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@include file="/WEB-INF/include/showNotification.jsp" %>
@@ -149,6 +148,12 @@
                                    style="font-size: 18px !important; font-weight: 500 !important;">
                                     <span data-feather="file"></span>
                                     Order history
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="${pageContext.request.contextPath}/admin?view=voucher" style="font-size: 18px !important; font-weight: 500 !important;">
+                                    <span data-feather="gift"></span>
+                                    Vouchers
                                 </a>
                             </li>
                         </ul>

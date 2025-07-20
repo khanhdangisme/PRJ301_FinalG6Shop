@@ -4,11 +4,6 @@
     Author     : KhanhDang
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-
-
-
-
 <!-- Modal Create Admin -->
 <div class="modal fade" id="createAdminModal" tabindex="-1" aria-labelledby="createAdminModalLabel" aria-hidden="true">
     <div class="modal-dialog">

@@ -107,7 +107,7 @@ public class CheckoutServlet extends HttpServlet {
         try {
             String[] rawSel = request.getParameterValues("selectedIds");
 
-            if (rawSel == null || rawSel.length == 0 || (rawSel.length == 1 && rawSel[0].isBlank())) {
+            if (rawSel == null || rawSel.length == 0 || (rawSel.length == 1 && rawSel[0].trim().isEmpty())) {
                 session.setAttribute(AttributeConstant.ERROR, "No products selected");
                 response.sendRedirect(request.getContextPath() + "/cart?action=view");
                 return;
@@ -192,6 +192,9 @@ public class CheckoutServlet extends HttpServlet {
                 Voucher voucher = voucherDAO.getVoucherByCode(couponCode);
                 if (voucher != null && voucher.getExpiryDate().after(new Date())) {
                     discount = totalPrice * voucher.getDiscountPercent() / 100.0;
+                    if (discount > voucher.getMaxDiscount()) {
+                        discount = voucher.getMaxDiscount();
+                    }
                     couponId = voucher.getId();
                     session.removeAttribute("voucherError");
                 } else {
@@ -211,8 +214,8 @@ public class CheckoutServlet extends HttpServlet {
 
             if (receiverName == null || receiverPhone == null || receiverAddress == null
                     || receiverCity == null || receiverProvince == null
-                    || receiverName.isBlank() || receiverPhone.isBlank()
-                    || receiverAddress.isBlank() || receiverCity.isBlank() || receiverProvince.isBlank()) {
+                    || receiverName.trim().isEmpty() || receiverPhone.trim().isEmpty()
+                    || receiverAddress.trim().isEmpty() || receiverCity.trim().isEmpty() || receiverProvince.trim().isEmpty()) {
 
                 session.setAttribute(AttributeConstant.ERROR, "Please fill in all required shipping information.");
                 response.sendRedirect(request.getContextPath() + "/shop");
@@ -320,7 +323,7 @@ public class CheckoutServlet extends HttpServlet {
                 session.removeAttribute("voucherError");
 
                 String back = request.getHeader("referer");
-                response.sendRedirect(back != null && !back.isBlank() ? back : request.getContextPath() + "/shop");
+                response.sendRedirect(back != null && !back.trim().isEmpty() ? back : request.getContextPath() + "/shop");
 
             } catch (SQLException ex) {
                 if (conn != null) {

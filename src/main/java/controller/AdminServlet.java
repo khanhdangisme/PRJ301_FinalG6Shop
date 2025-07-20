@@ -179,6 +179,17 @@ public class AdminServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/admin/reports.jsp")
                         .forward(request, response);
                 break;
+            case "voucher":
+            {
+                try {
+                    request.setAttribute("vouchers", new dao.VoucherDAO().getAllVouchers());
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+                request.getRequestDispatcher("/WEB-INF/admin/voucherList.jsp").forward(request, response);
+                break;
+
         }
     }
 

@@ -1,5 +1,3 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-
 <c:if test="${not empty sessionScope.message}">
     <c:set var="type" value="${sessionScope.messageType != null ? sessionScope.messageType : 'success'}" />
 

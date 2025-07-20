@@ -1,7 +1,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="/WEB-INF/include/header.jsp" %>
+<%@include file="/WEB-INF/include/headerOnly.jsp" %>
+
+<!-- Voucher Floating Icon -->
+<jsp:include page="/WEB-INF/include/floatingIcon.jsp"/>
 <title>G6Shop ‑ Cart</title>
 
 <!-- ====== GIAO DIỆN SÁNG, FONT ROBOTO / BOOTSTRAP ====== -->
@@ -64,11 +67,29 @@
 <div class="container py-4">
     <h1 class="h2 text-center mb-4"><strong>Your Shopping Cart</strong></h1>
 
-    <c:if test="${not empty couponError}">
-        <div class="alert alert-danger text-center">${couponError}</div>
+    <c:choose>
+        <c:when test="${not empty sessionScope.couponError}">
+            <div class="alert alert-danger auto-dismiss text-center">${sessionScope.couponError}</div>
+            <c:remove var="couponError" scope="session"/>
+        </c:when>
+        <c:when test="${not empty sessionScope.couponSuccess}">
+            <div class="alert alert-success auto-dismiss text-center">${sessionScope.couponSuccess}</div>
+            <c:remove var="couponSuccess" scope="session"/>
+        </c:when>
+    </c:choose>
+
+    <c:if test="${not empty sessionScope.successMessage}">
+        <div class="alert alert-success auto-dismiss text-center my-3">
+            <i class="fa fa-check-circle me-2"></i>${sessionScope.successMessage}
+        </div>
+        <c:remove var="successMessage" scope="session"/>
     </c:if>
-    <c:if test="${not empty couponSuccess}">
-        <div class="alert alert-success text-center">${couponSuccess}</div>
+
+    <c:if test="${not empty sessionScope.errorMessage}">
+        <div class="alert alert-danger auto-dismiss text-center my-3">
+<i class="fa fa-exclamation-circle me-2"></i>${sessionScope.errorMessage}
+        </div>
+        <c:remove var="errorMessage" scope="session"/>
     </c:if>
 
     <!-- ====== GIỎ TRỐNG ====== -->
@@ -126,7 +147,7 @@
                                     <button type="button" class="btn btn-outline-dark qty-btn"
                                             onclick="changeQty(this, -1)">
                                         <i class="fas fa-minus"></i>
-                                    </button>
+</button>
 
                                     <!-- ô nhập (ẩn spinner mặc định) -->
                                     <input type="number" name="quantity" min="0"
@@ -186,7 +207,7 @@
             </h5>
             <c:if test="${discount > 0}">
                 <h5>Discount:
-                    <span><fmt:formatNumber value="${discount}" pattern="#,##0"/>₫</span>
+<span><fmt:formatNumber value="${discount}" pattern="#,##0"/>₫</span>
                 </h5>
             </c:if>
             <h5 class="total-amount">Final Total:
@@ -209,6 +230,17 @@
     <c:remove var="orderSuccess" scope="session"/>
 </c:if>
 
+<c:if test="${not empty sessionScope.coSelIds}">
+    <script>
+        window.addEventListener("load", () => {
+            const selId = "${sessionScope.coSelIds}";
+            document.getElementById('coSelIds').value = selId;
+            new bootstrap.Modal(document.getElementById('checkoutModal')).show();
+        });
+    </script>
+    <c:remove var="coSelIds" scope="session" />
+</c:if>
+
 <!-- ====== SCRIPT ====== -->
 <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>-->
 <!--<script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>-->
@@ -218,19 +250,19 @@
     const formatVND = v => new Intl.NumberFormat('vi-VN').format(v) + '₫';
 
     /* ---- CẬP NHẬT TỔNG ---- */
-    function updateTotal() {
-        let total = 0;
-        document.querySelectorAll('.item-checkbox:checked').forEach(cb => {
-            total += parseFloat(cb.dataset.price);
-        });
-        document.getElementById('totalAmount').innerText = formatVND(total);
-    }
-    document.querySelectorAll('.item-checkbox').forEach(cb => cb.addEventListener('change', updateTotal));
-    document.getElementById('selectAll')?.addEventListener('change', function () {
-        document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = this.checked);
-        updateTotal();
-    });
-    updateTotal();        // chạy lần đầu
+    // function updateTotal() {
+    //     let total = 0;
+    //     document.querySelectorAll('.item-checkbox:checked').forEach(cb => {
+    //         total += parseFloat(cb.dataset.price);
+    //     });
+    //     document.getElementById('totalAmount').innerText = formatVND(total);
+    // }
+    // document.querySelectorAll('.item-checkbox').forEach(cb => cb.addEventListener('change', updateTotal));
+    // document.getElementById('selectAll')?.addEventListener('change', function () {
+    //     document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = this.checked);
+    //     updateTotal();
+    // });
+    // updateTotal();        // chạy lần đầu
 
     /* ---- NÚT ↑ / ↓ ---- */
     function changeQty(btn, delta) {
@@ -252,7 +284,7 @@
         // enter
         inp.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
-                e.preventDefault();          // khỏi reload trang
+e.preventDefault();          // khỏi reload trang
                 e.stopPropagation(); // Ngăn sự kiện lan truyền
                 inp.closest('form').submit();
             }
@@ -293,3 +325,18 @@
 
 <%@include file="/WEB-INF/include/footer.jsp"%>
 <%@include file="/WEB-INF/include/showPopupUser.jsp" %>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        document.querySelectorAll('.auto-dismiss').forEach(function(el) {
+            el.style.transition = 'opacity 0.5s';
+            el.style.opacity = 0;
+            setTimeout(function() { el.remove(); }, 500);
+        });
+    }, 3000);
+});
+</script>
+
+</body>
+</html>

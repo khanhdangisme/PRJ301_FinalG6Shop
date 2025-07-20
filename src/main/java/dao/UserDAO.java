@@ -155,4 +155,11 @@ public class UserDAO extends DBContext {
         // Regex: bắt đầu bằng chữ in hoa, sau đó bất kỳ ký tự nào, và phải có ít nhất 1 số
         return password.matches("^[A-Z].*\\d+.*$");
     }
+
+    public static void main(String[] args) {
+        UserDAO dao = new UserDAO();
+        String raw = "password123";
+        String hashed = dao.hashMd5(raw);
+        System.out.println("Hash MD5 of 'password123': " + hashed);
+    }
 }

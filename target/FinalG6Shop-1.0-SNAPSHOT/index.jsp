@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@include file="/WEB-INF/include/header.jsp" %>
+<jsp:include page="header.jsp" />
 <%@include file="/WEB-INF/include/showNotification.jsp" %>
 <title>G6Shop - Home</title>
 
@@ -102,6 +103,7 @@
     </div>
 </section>
 <!-- End Categories of The Month -->
+
 
 
 <%@include file="/WEB-INF/include/footer.jsp" %>

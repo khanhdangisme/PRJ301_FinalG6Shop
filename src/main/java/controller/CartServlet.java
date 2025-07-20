@@ -170,9 +170,13 @@ public class CartServlet extends HttpServlet {
                     updateCartCount(session, cart);
 
                     Voucher voucher = (Voucher) session.getAttribute(AttributeConstant.COUPON);
-                    double discount = (voucher != null && voucher.getExpiryDate().after(new Date()))
-                            ? total * voucher.getDiscountPercent() / 100.0
-                            : 0;
+                    double discount = 0;
+                    if (voucher != null && voucher.getExpiryDate().after(new Date())) {
+                        discount = total * voucher.getDiscountPercent() / 100.0;
+                        if (discount > voucher.getMaxDiscount()) {
+                            discount = voucher.getMaxDiscount();
+                        }
+                    }
 
                     request.setAttribute(AttributeConstant.CART_ITEMS, cartItems);
                     request.setAttribute(AttributeConstant.TOTAL, total);
@@ -313,32 +317,26 @@ public class CartServlet extends HttpServlet {
 
             /* =========================== APPLY COUPON ======================== */
             case "applyCoupon": {
-                try {
-                    String code = request.getParameter(ParamConstant.COUPON);
-                    if (code == null || code.trim().isEmpty()) {
-                        session.setAttribute(AttributeConstant.COUPON_ERROR, "Coupon code is required");
-                        response.sendRedirect(request.getContextPath() + "/cart?action=view");;
-                        return;
-                    }
-
-                    VoucherDAO voucherDAO = new VoucherDAO();
-                    Voucher voucher = voucherDAO.getVoucherByCode(code);
-
-                    if (voucher == null || voucher.getExpiryDate().before(new Date())) {
-                        session.setAttribute(AttributeConstant.COUPON_ERROR, "Invalid or expired coupon");
-                    } else {
-                        session.setAttribute(AttributeConstant.COUPON, voucher);
-                        session.setAttribute(AttributeConstant.COUPON_SUCCESS, "Coupon applied successfully");
-                    }
-                    response.sendRedirect(request.getContextPath() + "/cart?action=view");;
-
-                } catch (SQLException ex) {
-                    Logger.getLogger(CartServlet.class.getName()).log(Level.SEVERE, null, ex);
-                    session.setAttribute(AttributeConstant.ERROR, "Database error");
-                    response.sendRedirect(request.getContextPath() + "/cart?action=view");;
+                String code = request.getParameter(ParamConstant.COUPON);
+                if (code == null || code.trim().isEmpty()) {
+                    session.setAttribute(AttributeConstant.COUPON_ERROR, "Coupon code is required");
+                    session.removeAttribute(AttributeConstant.COUPON);
+                    response.sendRedirect(request.getContextPath() + "/cart?action=view");
+                    return;
                 }
+                VoucherDAO voucherDAO = new VoucherDAO();
+                Voucher voucher = voucherDAO.getVoucherByCode(code);
+                if (voucher == null || voucher.getExpiryDate().before(new Date())) {
+                    session.setAttribute(AttributeConstant.COUPON_ERROR, "Invalid or expired coupon");
+                    session.removeAttribute(AttributeConstant.COUPON);
+                } else {
+                    session.setAttribute(AttributeConstant.COUPON, voucher);
+                    session.setAttribute(AttributeConstant.COUPON_SUCCESS, "Coupon applied successfully");
+                }
+                response.sendRedirect(request.getContextPath() + "/cart?action=view");
                 break;
             }
+
 
             /* =========================== INVALID ============================= */
             default:

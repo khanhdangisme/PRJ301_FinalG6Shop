@@ -108,6 +108,13 @@ public class ShopServlet extends HttpServlet {
                 }
 
                 request.setAttribute("getDetail", productDao);
+                // Lấy review cho sản phẩm này
+                try {
+                    List<model.Review> reviews = new dao.ReviewDAO().getReviewsByProductId(productDao.getProductID());
+                    request.setAttribute("reviews", reviews);
+                } catch (Exception e) {
+                    request.setAttribute("reviews", java.util.Collections.emptyList());
+                }
                 request.getRequestDispatcher(PathConstant.URL_SHOP_DETAILS).forward(request, response);
             } catch (NumberFormatException e) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid product ID format");
