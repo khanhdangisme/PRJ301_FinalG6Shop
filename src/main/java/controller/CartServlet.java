@@ -25,6 +25,7 @@ import model.Voucher;
 import java.util.Date;
 import java.net.URLEncoder;
 import java.util.Base64;
+import model.User;
 
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart"})
 public class CartServlet extends HttpServlet {
@@ -114,9 +115,18 @@ public class CartServlet extends HttpServlet {
                     // Encode để tránh lỗi cookie invalid character
                     String encodedCart = URLEncoder.encode(cartData.toString(), "UTF-8");
 
-                    Cookie cartCookie = new Cookie("cart", encodedCart);
-                    cartCookie.setMaxAge(30 * 24 * 60 * 60); // 30 ngày
-                    cartCookie.setPath("/"); // (khuyến nghị) để cookie áp dụng toàn bộ site
+//                    Cookie cartCookie = new Cookie("cart", encodedCart);
+//                    cartCookie.setMaxAge(30 * 24 * 60 * 60); // 30 ngày
+//                    cartCookie.setPath("/"); // (khuyến nghị) để cookie áp dụng toàn bộ site
+//                    response.addCookie(cartCookie);
+                    User loggedUser = (User) session.getAttribute(AttributeConstant.LOGGEDUSER);
+                    String username = (loggedUser != null) ? loggedUser.getUsername() : "guest"; // fallback cho khách
+
+                    String cartCookieName = "cart_" + username;
+
+                    Cookie cartCookie = new Cookie(cartCookieName, encodedCart);
+                    cartCookie.setMaxAge(30 * 24 * 60 * 60);
+                    cartCookie.setPath("/");
                     response.addCookie(cartCookie);
 
                     // quay về trang trước (nếu có) hoặc /shop

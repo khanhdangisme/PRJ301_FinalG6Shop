@@ -208,13 +208,57 @@ public class CheckoutServlet extends HttpServlet {
             String receiverAddress = request.getParameter("address");
             String receiverCity = request.getParameter("city");
             String receiverProvince = request.getParameter("province");
+            String receiverEmail = request.getParameter("email");
 
             if (receiverName == null || receiverPhone == null || receiverAddress == null
-                    || receiverCity == null || receiverProvince == null
+                    || receiverCity == null || receiverProvince == null || receiverEmail == null
                     || receiverName.isBlank() || receiverPhone.isBlank()
-                    || receiverAddress.isBlank() || receiverCity.isBlank() || receiverProvince.isBlank()) {
+                    || receiverAddress.isBlank() || receiverCity.isBlank()
+                    || receiverProvince.isBlank() || receiverEmail.isBlank()) {
 
                 session.setAttribute(AttributeConstant.ERROR, "Please fill in all required shipping information.");
+                response.sendRedirect(request.getContextPath() + "/shop");
+                return;
+            }
+
+// Regex patterns
+            String textPattern = "^[a-zA-Z0-9\\s]+$";
+            String phonePattern = "^0\\d{9}$";
+            String emailPattern = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$";
+
+// Kiểm tra từng trường cụ thể
+            if (!receiverName.matches(textPattern)) {
+                session.setAttribute(AttributeConstant.ERROR, "Full Name must only contain letters, numbers, and spaces.");
+                response.sendRedirect(request.getContextPath() + "/shop");
+                return;
+            }
+
+            if (!receiverAddress.matches(textPattern)) {
+                session.setAttribute(AttributeConstant.ERROR, "Address must only contain letters, numbers, and spaces.");
+                response.sendRedirect(request.getContextPath() + "/shop");
+                return;
+            }
+
+            if (!receiverCity.matches(textPattern)) {
+                session.setAttribute(AttributeConstant.ERROR, "City must only contain letters, numbers, and spaces.");
+                response.sendRedirect(request.getContextPath() + "/shop");
+                return;
+            }
+
+            if (!receiverProvince.matches(textPattern)) {
+                session.setAttribute(AttributeConstant.ERROR, "Province must only contain letters, numbers, and spaces.");
+                response.sendRedirect(request.getContextPath() + "/shop");
+                return;
+            }
+
+            if (!receiverPhone.matches(phonePattern)) {
+                session.setAttribute(AttributeConstant.ERROR, "Phone number must start with 0 and be exactly 10 digits.");
+                response.sendRedirect(request.getContextPath() + "/shop");
+                return;
+            }
+
+            if (!receiverEmail.matches(emailPattern)) {
+                session.setAttribute(AttributeConstant.ERROR, "Please enter a valid email address (e.g. example@gmail.com).");
                 response.sendRedirect(request.getContextPath() + "/shop");
                 return;
             }

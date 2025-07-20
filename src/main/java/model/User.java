@@ -47,6 +47,10 @@ public class User {
         return userName;
     }
 
+    public String getUsername() {
+        return this.userName;
+    }
+
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -106,18 +110,19 @@ public class User {
     public void setStatus(String status) {
         this.status = status;
     }
+
     @Override
-public String toString() {
-    return "User{" +
-            "userID=" + userID +
-            ", userName='" + userName + '\'' +
-            ", userPassword='" + userPassword + '\'' +
-            ", userFullname='" + userFullname + '\'' +
-            ", userEmail='" + userEmail + '\'' +
-            ", userPhone='" + userPhone + '\'' +
-            ", userRole=" + userRole +
-            ", avatar='" + avatar + '\'' +
-            ", status='" + status + '\'' +
-            '}';
-}
+    public String toString() {
+        return "User{"
+                + "userID=" + userID
+                + ", userName='" + userName + '\''
+                + ", userPassword='" + userPassword + '\''
+                + ", userFullname='" + userFullname + '\''
+                + ", userEmail='" + userEmail + '\''
+                + ", userPhone='" + userPhone + '\''
+                + ", userRole=" + userRole
+                + ", avatar='" + avatar + '\''
+                + ", status='" + status + '\''
+                + '}';
+    }
 }

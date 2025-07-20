@@ -8,6 +8,7 @@ import constant.AttributeConstant;
 import constant.MessageConstant;
 import constant.ParamConstant;
 import constant.PathConstant;
+import dao.ShopProductDAO;
 import dao.UserDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +19,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLDecoder;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.ProductDTO;
 import model.User;
 
 /**
@@ -93,41 +101,110 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Lấy dữ liệu
         String username = request.getParameter(ParamConstant.USERNAME);
         String password = request.getParameter(ParamConstant.PASSWORD);
         String remember = request.getParameter(ParamConstant.REMEMBER_ME);
-
         HttpSession session = request.getSession();
-        
-        if (username != null && !username.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
+
+        if (username != null && !username.trim().isEmpty()
+                && password != null && !password.trim().isEmpty()) {
             UserDAO dao = new UserDAO();
             User loggedUser = dao.login(username, password);
 
-            /* ====================  ĐĂNG NHẬP THÀNH CÔNG  ==================== */
             if (loggedUser != null) {
-                // Lưu session
                 session.setAttribute(AttributeConstant.LOGGEDUSER, loggedUser);
                 session.setMaxInactiveInterval(15 * 60);
 
-                /* ---- Remember‑me ---- */
+                // Xóa chỉ cookie guest cart
+                Cookie[] cookies = request.getCookies();
+                if (cookies != null) {
+                    for (Cookie c : cookies) {
+                        if ("cart_guest".equals(c.getName())) {
+                            Cookie guestCookie = new Cookie("cart_guest", "");
+                            guestCookie.setMaxAge(0);
+                            guestCookie.setPath("/");
+                            response.addCookie(guestCookie);
+                            break;
+                        }
+                    }
+                }
+
+                // Khôi phục giỏ của tài khoản hiện tại
+                @SuppressWarnings("unchecked")
+                Map<String, Integer> cart = new HashMap<String, Integer>();
+                String cartCookieName = "cart_" + username;
+                if (cookies != null) {
+                    for (Cookie c : cookies) {
+                        if (cartCookieName.equals(c.getName())) {
+                            try {
+                                String cartRaw = URLDecoder.decode(c.getValue(), "UTF-8");
+                                String[] items = cartRaw.split(",");
+                                for (String item : items) {
+                                    String[] parts = item.split("=");
+                                    if (parts.length == 2) {
+                                        cart.put(parts[0], Integer.parseInt(parts[1]));
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Logger.getLogger(LoginServlet.class.getName()).log(Level.WARNING, "Invalid cart cookie", e);
+                            }
+                            break;
+                        }
+                    }
+                }
+                session.setAttribute(AttributeConstant.CART, cart);
+
+                // Lưu guest cart riêng biệt
+                @SuppressWarnings("unchecked")
+                Map<String, Integer> guestCart = new HashMap<String, Integer>();
+                if (cookies != null) {
+                    for (Cookie c : cookies) {
+                        if ("cart_guest".equals(c.getName())) {
+                            try {
+                                String cartRaw = URLDecoder.decode(c.getValue(), "UTF-8");
+                                String[] items = cartRaw.split(",");
+                                for (String item : items) {
+                                    String[] parts = item.split("=");
+                                    if (parts.length == 2) {
+                                        guestCart.put(parts[0], Integer.parseInt(parts[1]));
+                                    }
+                                }
+                            } catch (Exception e) {
+                                Logger.getLogger(LoginServlet.class.getName()).log(Level.WARNING, "Invalid guest cart cookie", e);
+                            }
+                            break;
+                        }
+                    }
+                }
+                session.setAttribute("GUEST_CART", guestCart);
+
+                // Đếm tổng số lượng item trong cart
+                int cartCount = 0;
+                for (Integer qty : cart.values()) {
+                    cartCount += qty;
+                }
+                session.setAttribute(AttributeConstant.CART_COUNT, cartCount);
+
+                // Ghi cookie remember-me
                 Cookie usernameCookie = new Cookie("username", "remember-me".equals(remember) ? username : "");
                 usernameCookie.setMaxAge("remember-me".equals(remember) ? 7 * 24 * 60 * 60 : 0);
+                usernameCookie.setPath("/");
                 response.addCookie(usernameCookie);
 
-                /* ---- (tuỳ chọn) Giao diện dark ---- */
+                // Ghi cookie theme
                 Cookie themeCookie = new Cookie("theme", "dark");
                 themeCookie.setMaxAge(24 * 60 * 60);
+                themeCookie.setPath("/");
                 response.addCookie(themeCookie);
 
-                /* ---- Thông báo ---- */
+                // Gửi thông báo thành công
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.LOGIN_SUCCESSFULLY);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
 
-                /* ---- Chuyển hướng ---- */
-                String redirect = (String) session.getAttribute(REDIRECT_ATTR);
-                if (redirect != null) {
-                    session.removeAttribute(REDIRECT_ATTR);
+                // Chuyển đến checkout với guest cart
+                String redirect = (String) session.getAttribute("redirectAfterLogin");
+                if (redirect != null && redirect.contains("checkout")) {
+                    session.removeAttribute("redirectAfterLogin");
                     response.sendRedirect(redirect);
                 } else {
                     response.sendRedirect(request.getContextPath() + "/index.jsp");
@@ -136,14 +213,11 @@ public class LoginServlet extends HttpServlet {
             }
         }
 
-        /* ====================  ĐĂNG NHẬP THẤT BẠI  ==================== */
+        // Login thất bại
         request.setAttribute(AttributeConstant.USERNAME, username);
         session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.LOGIN_ERROR);
         session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-
-        // forward về trang login; KHÔNG redirect nữa
         request.getRequestDispatcher(PathConstant.URL_LOGIN).forward(request, response);
-        // không cần return – forward đã kết thúc luồng
     }
 
     /**

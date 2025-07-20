@@ -54,11 +54,11 @@
         width:1px;
     }
     .product-image {
-    width: 60px;  /* Điều chỉnh chiều rộng */
-    height: 80px; /* Điều chỉnh chiều cao */
-    object-fit: cover; /* Đảm bảo hình ảnh không bị kéo dãn */
-    border-radius: 5px; /* Thêm góc bo tròn (tuỳ chọn) */
-}
+        width: 60px;  /* Điều chỉnh chiều rộng */
+        height: 80px; /* Điều chỉnh chiều cao */
+        object-fit: cover; /* Đảm bảo hình ảnh không bị kéo dãn */
+        border-radius: 5px; /* Thêm góc bo tròn (tuỳ chọn) */
+    }
 </style>
 
 <div class="container py-4">
@@ -108,7 +108,7 @@
                         <!-- Thông tin sản phẩm -->
                         <td class="text-start">${item.productName}</td>
                         <td>${item.version}</td>
-                        
+
                         <td>${item.color}</td>
                         <td>${item.storage}</td>
 

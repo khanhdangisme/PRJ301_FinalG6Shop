@@ -379,3 +379,79 @@
         });
     </script>
 </c:if>
+
+<script>
+    function isValidText(value) {
+        return /^[a-zA-Z0-9\s]+$/.test(value);
+    }
+
+    function isValidPhone(phone) {
+        return /^0\d{9}$/.test(phone);
+    }
+
+    function isValidEmail(email) {
+        return /^[\w.-]+@[\w.-]+\.[a-zA-Z]{2,6}$/.test(email);
+    }
+
+    function validateCheckoutForm(form) {
+        const fullname = form.fullname.value.trim();
+        const email = form.email.value.trim();
+        const phone = form.phone.value.trim();
+        const address = form.address.value.trim();
+        const city = form.city.value.trim();
+        const province = form.province.value.trim();
+
+        if (!isValidText(fullname)) {
+            alert("Fullname must contain only letters, numbers, and spaces.");
+            form.fullname.focus();
+            return false;
+        }
+        if (!isValidEmail(email)) {
+            alert("Please enter a valid email (e.g. example@gmail.com).");
+            form.email.focus();
+            return false;
+        }
+        if (!isValidPhone(phone)) {
+            alert("Phone number must start with 0 and contain exactly 10 digits.");
+            form.phone.focus();
+            return false;
+        }
+        if (!isValidText(address)) {
+            alert("Address must contain only letters, numbers, and spaces.");
+            form.address.focus();
+            return false;
+        }
+        if (!isValidText(city)) {
+            alert("City must contain only letters, numbers, and spaces.");
+            form.city.focus();
+            return false;
+        }
+        if (!isValidText(province)) {
+            alert("Province must contain only letters, numbers, and spaces.");
+            form.province.focus();
+            return false;
+        }
+
+        return true; // allow submission
+    }
+
+// Gán xử lý cho các form Checkout
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkoutForm = document.querySelector('#checkoutModal form');
+        const buyCheckoutForm = document.querySelector('#buyCheckoutModal form');
+
+        if (checkoutForm) {
+            checkoutForm.onsubmit = function (e) {
+                if (!validateCheckoutForm(this))
+                    e.preventDefault();
+            }
+        }
+
+        if (buyCheckoutForm) {
+            buyCheckoutForm.onsubmit = function (e) {
+                if (!validateCheckoutForm(this))
+                    e.preventDefault();
+            }
+        }
+    });
+</script>

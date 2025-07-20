@@ -68,9 +68,20 @@ public class ReportDAO extends DBContext {
                 + "LEFT JOIN iPhone_Details ip ON ip.DetailID = d.DetailID AND p.CategoryID = 1 "
                 + "LEFT JOIN iPad_Details ipad ON ipad.DetailID = d.DetailID AND p.CategoryID = 2 "
                 + "LEFT JOIN MacBook_Details mac ON mac.DetailID = d.DetailID AND p.CategoryID = 3 "
+                + "JOIN ( "
+                + "    SELECT OSH.OrderID "
+                + "    FROM OrderStatusHistory OSH "
+                + "    JOIN ( "
+                + "        SELECT OrderID, MAX(ChangedAt) AS LatestChange "
+                + "        FROM OrderStatusHistory "
+                + "        GROUP BY OrderID "
+                + "    ) latest ON OSH.OrderID = latest.OrderID AND OSH.ChangedAt = latest.LatestChange "
+                + "    WHERE OSH.Status = 'Completed' "
+                + ") CompletedOrders ON o.ID = CompletedOrders.OrderID "
                 + "WHERE o.OrderDate BETWEEN ? AND ? "
                 + "GROUP BY p.ID, p.Name, p.CategoryID, c.Name, d.Version, d.Color, d.Storage, ip.ImageURL, ipad.ImageURL, mac.ImageURL "
                 + "ORDER BY Quantity DESC, SubTotal DESC";
+
         try ( Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, Timestamp.valueOf(fromDate.atStartOfDay()));
             ps.setTimestamp(2, Timestamp.valueOf(toDate.atTime(23, 59, 59)));
