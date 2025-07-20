@@ -72,7 +72,7 @@
                                     <tr>
                                         <td colspan="8" class="text-center text-secondary" style="font-size:1.2rem;">
                                             <i class="bi bi-emoji-frown" style="font-size:2rem;"></i><br>
-                                            No data 🥲
+                                            No data 
                                         </td>
                                     </tr>
                                 </c:if>

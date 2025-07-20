@@ -4,15 +4,20 @@
  */
 package controller;
 
+import constant.AttributeConstant;
 import constant.PathConstant;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.net.URLEncoder;
+import java.util.Map;
+import model.User;
 
 /**
  *
@@ -59,9 +64,26 @@ public class LogoutServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //clear session
         HttpSession session = request.getSession(false);
         if (session != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Integer> cart = (Map<String, Integer>) session.getAttribute(AttributeConstant.CART);
+            if (cart != null) {
+                User loggedUser = (User) session.getAttribute(AttributeConstant.LOGGEDUSER);
+                String username = (loggedUser != null) ? loggedUser.getUsername() : "guest";
+                StringBuilder cartData = new StringBuilder();
+                for (Map.Entry<String, Integer> entry : cart.entrySet()) {
+                    cartData.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
+                }
+                if (cartData.length() > 0) {
+                    cartData.setLength(cartData.length() - 1);
+                }
+                String encodedCart = URLEncoder.encode(cartData.toString(), "UTF-8");
+                Cookie cartCookie = new Cookie("cart_" + username, encodedCart);
+                cartCookie.setMaxAge(30 * 24 * 60 * 60);
+                cartCookie.setPath("/");
+                response.addCookie(cartCookie);
+            }
             session.invalidate();
         }
         response.sendRedirect(request.getContextPath());
