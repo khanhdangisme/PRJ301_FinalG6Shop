@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@include file="/WEB-INF/include/header.jsp" %>
 <title>G6Shop - Register</title>
 
@@ -17,7 +18,7 @@
 
             <!-- Username -->
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="username" value="${username}"  id="usernameInput" placeholder="Enter Username" required>
+                <input type="text" class="form-control" name="username" value="${fn:escapeXml(username)}"  id="usernameInput" placeholder="Enter Username" required>
                 <label for="usernameInput">Username</label>
             </div>
 
@@ -29,19 +30,19 @@
 
             <!-- Full name -->
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="fullname" value="${fullname}"id="fullnameInput" placeholder="Enter Fullname" required>
+                <input type="text" class="form-control" name="fullname" value="${fn:escapeXml(fullname)}"id="fullnameInput" placeholder="Enter Fullname" required>
                 <label for="fullnameInput">Full Name</label>
             </div>
 
             <!-- Email -->
             <div class="form-floating mb-3">
-                <input type="email" class="form-control" name="email" value="${email}" id="emailInput" placeholder="name@example.com" required>
+                <input type="email" class="form-control" name="email" value="${fn:escapeXml(email)}" id="emailInput" placeholder="name@example.com" required>
                 <label for="emailInput">Email</label>
             </div>
 
             <!-- Phone -->
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" name="phone" value="${phone}" id="phoneInput" placeholder="Enter Phone" required>
+                <input type="text" class="form-control" name="phone" value="${fn:escapeXml(phone)}" id="phoneInput" placeholder="Enter Phone" required>
                 <label for="phoneInput">Phone Number</label>
             </div>
 

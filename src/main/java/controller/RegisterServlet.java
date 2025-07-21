@@ -89,6 +89,17 @@ public class RegisterServlet extends HttpServlet {
 
         UserDAO dao = new UserDAO();
         HttpSession session = request.getSession();
+        if (dao.containsScript(username) || dao.containsScript(fullname)
+                || dao.containsScript(email) || dao.containsScript(phone)) {
+            session.setAttribute(AttributeConstant.MESSAGE, "Input contains unsafe characters or scripts.");
+            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+            request.setAttribute(AttributeConstant.USERNAME, username);
+            request.setAttribute(AttributeConstant.FULLNAME, fullname);
+            request.setAttribute(AttributeConstant.EMAIL, email);
+            request.setAttribute(AttributeConstant.PHONE, phone);
+            request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+            return;
+        }
 
         if (username != null && !username.trim().isEmpty()
                 && password != null && !password.trim().isEmpty()

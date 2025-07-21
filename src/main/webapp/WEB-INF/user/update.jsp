@@ -6,9 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%
-    model.User user = (model.User) session.getAttribute("loggedUser");
-%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="user" value="${sessionScope.loggedUser}" />
 <%@include file="/WEB-INF/include/header.jsp" %>
 <title>G6Shop - Update Profile</title>
 
@@ -29,7 +28,7 @@
                     <c:otherwise>
                         <div class="text-dark d-flex align-items-center justify-content-center"
                              style="width: 100%; height: 100%; font-size: 2rem !important;">
-                            <%= user.getUserFullname().toUpperCase().charAt(0) %>
+                            ${fn:toUpperCase(fn:substring(user.userFullname, 0, 1))}
                         </div>
                     </c:otherwise>
                 </c:choose>
@@ -47,19 +46,19 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Full Name</label>
-                        <input type="text" name="fullname" value="<%= user.getUserFullname() %>" class="form-control" required>
+                        <input type="text" name="fullname" value="${fn:escapeXml(user.userFullname)}" class="form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Username</label>
-                        <input type="text" name="username" value="<%= user.getUserName() %>" class="form-control" readonly>
+                        <input type="text" name="username" value="${fn:escapeXml(user.userName)}" class="form-control" readonly>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" value="<%= user.getUserEmail() %>" class="form-control" required>
+                        <input type="email" name="email" value="${fn:escapeXml(user.userEmail)}" class="form-control" required>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Phone</label>
-                        <input type="text" name="phone" value="<%= user.getUserPhone() %>" class="form-control" required>
+                        <input type="text" name="phone" value="${fn:escapeXml(user.userPhone)}" class="form-control" required>
                     </div>
                 </div>
 

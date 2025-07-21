@@ -162,4 +162,14 @@ public class UserDAO extends DBContext {
         String hashed = dao.hashMd5(raw);
         System.out.println("Hash MD5 of 'password123': " + hashed);
     }
+
+    public boolean containsScript(String input) {
+        if (input == null) {
+            return false;
+        }
+        String lower = input.toLowerCase();
+        return lower.contains("<script") || lower.contains("</script>")
+                || lower.contains("javascript:") || lower.contains("onerror=")
+                || lower.contains("onload=") || lower.contains("alert(");
+    }
 }

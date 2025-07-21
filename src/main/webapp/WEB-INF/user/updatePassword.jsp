@@ -6,9 +6,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%
-    model.User user = (model.User) session.getAttribute("loggedUser");
-%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="user" value="${sessionScope.loggedUser}" />
 <%@include file="/WEB-INF/include/header.jsp" %>
 <title>G6Shop - Update Profile</title>
 
@@ -16,24 +15,24 @@
     <form action="user?action=change-password" method="post" enctype="multipart/form-data">
         <!-- Avatar upload -->
         <div class="text-center mb-5">
-                <!-- Avatar lớn -->
-                <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow"
-                     style="background-color: #e5e7eb; width: 110px; height: 110px; overflow: hidden; font-weight: 600;">
+            <!-- Avatar lớn -->
+            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center shadow"
+                 style="background-color: #e5e7eb; width: 110px; height: 110px; overflow: hidden; font-weight: 600;">
 
-                    <c:choose>
-                        <c:when test="${not empty loggedUser.avatar}">
-                            <img src="${pageContext.request.contextPath}/${loggedUser.avatar}"
-                                 alt="Avatar"
-                                 style="width: 100%; height: 100%; object-fit: cover;" />
-                        </c:when>
-                        <c:otherwise>
-                            <div class="text-dark d-flex align-items-center justify-content-center"
-                                 style="width: 100%; height: 100%; font-size: 2rem !important;">
-                                <%= user.getUserFullname().toUpperCase().charAt(0) %>
-                            </div>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
+                <c:choose>
+                    <c:when test="${not empty loggedUser.avatar}">
+                        <img src="${pageContext.request.contextPath}/${loggedUser.avatar}"
+                             alt="Avatar"
+                             style="width: 100%; height: 100%; object-fit: cover;" />
+                    </c:when>
+                    <c:otherwise>
+                        <div class="text-dark d-flex align-items-center justify-content-center"
+                             style="width: 100%; height: 100%; font-size: 2rem !important;">
+                            ${fn:toUpperCase(fn:substring(user.userFullname, 0, 1))}
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
 
             <div class="mt-4 position-relative d-inline-block">
                 <span class="fw-semibold" style="font-size: 1.25rem; color: #2563eb;">Change Password</span>
@@ -47,19 +46,19 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Full Name</label>
-                        <input type="text" name="fullname" value="<%= user.getUserFullname() %>" class="form-control" readonly>
+                        <div class="form-control bg-light">${fn:escapeXml(user.userFullname)}</div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Username</label>
-                        <input type="text" name="username" value="<%= user.getUserName() %>" class="form-control" readonly>
+                        <div class="form-control bg-light">${fn:escapeXml(user.userName)}</div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" value="<%= user.getUserEmail() %>" class="form-control" readonly>
+                        <div class="form-control bg-light">${fn:escapeXml(user.userEmail)}</div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Phone</label>
-                        <input type="text" name="phone" value="<%= user.getUserPhone() %>" class="form-control" readonly>
+                        <div class="form-control bg-light">${fn:escapeXml(user.userPhone)}</div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Current Password</label>

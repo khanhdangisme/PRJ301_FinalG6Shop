@@ -5,6 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@include file="/WEB-INF/include/header.jsp" %>
 <title>G6Shop - Sign in</title>
 <link href="/assets/css/signin.css" rel="stylesheet">
@@ -19,7 +20,7 @@
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" name="username" id="usernameInput"
                        placeholder="Enter User Name"
-                       value="${not empty savedUsername ? savedUsername : (username != null ? username : '')}" required>
+                       value="${not empty savedUsername ? savedUsername : (username != null ? fn:escapeXml(username) : '')}" required>
                 <label for="usernameInput">Username</label>
             </div>
 

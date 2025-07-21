@@ -1,8 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%
-    model.User user = (model.User) session.getAttribute("loggedUser");
-%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:set var="user" value="${sessionScope.loggedUser}" />
 <%@include file="/WEB-INF/include/header.jsp" %>
 <title>G6Shop - Profile</title>
 <div class="page-content-wrapper">
@@ -23,7 +22,7 @@
                         <c:otherwise>
                             <div class="text-dark d-flex align-items-center justify-content-center"
                                  style="width: 100%; height: 100%; font-size: 2rem !important;">
-                                <%= user.getUserFullname().toUpperCase().charAt(0) %>
+                                ${fn:toUpperCase(fn:substring(user.userFullname, 0, 1))}
                             </div>
                         </c:otherwise>
                     </c:choose>
@@ -42,19 +41,19 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label">Full Name</label>
-                            <div class="form-control bg-light"><%= user.getUserFullname() %></div>
+                            <div class="form-control bg-light">${fn:escapeXml(user.userFullname)}</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Username</label>
-                            <div class="form-control bg-light"><%= user.getUserName() %></div>
+                            <div class="form-control bg-light">${fn:escapeXml(user.userName)}</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Email</label>
-                            <div class="form-control bg-light"><%= user.getUserEmail() %></div>
+                            <div class="form-control bg-light">${fn:escapeXml(user.userEmail)}</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Phone</label>
-                            <div class="form-control bg-light"><%= user.getUserPhone() %></div>
+                            <div class="form-control bg-light">${fn:escapeXml(user.userPhone)}</div>
                         </div>
                     </div>
 
