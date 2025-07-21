@@ -1,10 +1,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<%@include file="/WEB-INF/include/headerOnly.jsp" %>
+<%@include file="/WEB-INF/include/header.jsp" %>
 
 <!-- Voucher Floating Icon -->
-<jsp:include page="/WEB-INF/include/floatingIcon.jsp"/>
 <title>G6Shop ‑ Cart</title>
 
 <!-- ====== GIAO DIỆN SÁNG, FONT ROBOTO / BOOTSTRAP ====== -->

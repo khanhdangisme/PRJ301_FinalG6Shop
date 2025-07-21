@@ -78,7 +78,7 @@ public class CheckoutServlet extends HttpServlet {
         if (selectedIds != null && !selectedIds.isBlank()) {
             request.getSession().setAttribute("coSelIds", selectedIds);
         }
-
+        
         // Sau login quay lại trang shop
         response.sendRedirect(request.getContextPath() + "/shop");
     }
