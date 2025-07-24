@@ -146,7 +146,7 @@
                                     <button type="button" class="btn btn-outline-dark qty-btn"
                                             onclick="changeQty(this, -1)">
                                         <i class="fas fa-minus"></i>
-</button>
+                                    </button>
 
                                     <!-- ô nhập (ẩn spinner mặc định) -->
                                     <input type="number" name="quantity" min="0"
@@ -219,6 +219,7 @@
 </div>
 
 <!-- ====== ORDER SUCCESS TRIGGER ====== -->
+<c:set var="voucher" value="${sessionScope.COUPON}" />
 <c:if test="${sessionScope.orderSuccess}">
     <script>
         window.addEventListener("load", () => {
@@ -322,9 +323,6 @@ e.preventDefault();          // khỏi reload trang
     }
 </script>
 
-<%@include file="/WEB-INF/include/footer.jsp"%>
-<%@include file="/WEB-INF/include/showPopupUser.jsp" %>
-
 <script>
 window.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
@@ -336,6 +334,9 @@ window.addEventListener('DOMContentLoaded', function() {
     }, 3000);
 });
 </script>
+
+<%@include file="/WEB-INF/include/footer.jsp"%>
+<%@include file="/WEB-INF/include/showPopupUser.jsp" %>
 
 </body>
 </html>

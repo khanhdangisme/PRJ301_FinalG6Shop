@@ -108,6 +108,7 @@
                                                             </form>
                                                         </c:when>
                                                         <c:when test="${item.status == 'Completed'}">
+                                                            <!-- Nút Request Return -->
                                                             <form action="${pageContext.request.contextPath}/history" method="post" style="display:inline;">
                                                                 <input type="hidden" name="action" value="request-return" />
                                                                 <input type="hidden" name="orderId" value="${item.orderId}" />
@@ -115,6 +116,14 @@
                                                                     Request Return
                                                                 </button>
                                                             </form>
+                                                            <!-- Nút Rating -->
+                                                            <c:if test="${not empty item.productId and not empty item.color and not empty item.storage}">
+                                                                <a class="btn btn-warning text-white mt-2"
+                                                                   href="shop?view=details&id=${item.productId}&color=${item.color}&storage=${item.storage}">
+                                                                    <i class="fas fa-star"></i> Rating
+                                                                </a>
+                                                            </c:if>
+
                                                         </c:when>
                                                         <c:otherwise>
                                                             <span class="text-muted">–</span>

@@ -77,13 +77,8 @@
                 </div>
             </c:otherwise>
         </c:choose>
-
         <div class="back-link">
             <a href="${pageContext.request.contextPath}/voucher">← Back to voucher list.</a
         </div>
-
-
-
-
     </body>
 </html>

@@ -131,9 +131,12 @@
                 <div class="modal-footer px-4 py-3">
                     <button type="submit" class="btn btn-success px-4">Place Order</button>
                 </div>
+            <input type="hidden" name="voucherCode" value="${voucher.code}" />
             </form>
         </div>
     </div>
+            <p>Voucher in modal: ${voucher.code}</p>
+
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -290,12 +293,11 @@
 
             <form action="${pageContext.request.contextPath}/checkout" method="post">
                 <div class="modal-body px-4 py-3">
-                    <!-- ID sản phẩm đã chọn -->
+                    <!-- Hidden fields -->
                     <input type="hidden" name="selectedIds" id="buySelIds">
-
                     <input type="hidden" name="source" id="buySource" value="direct">
 
-                    <!-- Thông tin người dùng -->
+                    <!-- User info -->
                     <div class="mb-2">
                         <label class="form-label">Fullname</label>
                         <input name="fullname" class="form-control" required>
@@ -322,20 +324,18 @@
                             <input name="province" class="form-control" required>
                         </div>
                     </div>
-
-                    <!-- Thông báo lỗi voucher -->
-                    <div id="voucherErrorAlert" class="alert alert-danger d-none mt-2 text-center fw-semibold">
-                        <!-- JS sẽ chèn lỗi voucher vào đây -->
-                    </div>
                 </div>
 
-                <!-- Footer có thêm ô nhập mã giảm giá -->
+                <!-- Footer: voucher + submit -->
                 <div class="modal-footer px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <!-- Ô nhập mã giảm giá -->
-                    <input type="text" name="voucherCode" class="form-control"
-                           placeholder="Enter voucher code (optional)" style="max-width: 260px;" />
+                    <div class="d-flex flex-column" style="max-width: 260px; width: 100%;">
+                        <input type="text" name="voucherCode" id="voucherCode" class="form-control <c:if test='${not empty voucherError}'>is-invalid</c:if>'"
+                               placeholder="Enter voucher code (optional)" value="${param.voucherCode}" />
+                        <c:if test="${not empty voucherError}">
+                            <div id="voucherErrorText" class="text-danger fw-semibold small mt-1">${voucherError}</div>
+                        </c:if>
+                    </div>
 
-                    <!-- Nút đặt hàng -->
                     <button type="submit" class="btn btn-success px-4">
                         Place Order
                     </button>
@@ -344,6 +344,7 @@
         </div>
     </div>
 </div>
+
 
 <c:if test="${not empty sessionScope.voucherError}">
     <script>

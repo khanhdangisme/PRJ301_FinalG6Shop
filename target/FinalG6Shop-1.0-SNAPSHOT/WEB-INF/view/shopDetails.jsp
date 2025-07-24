@@ -183,10 +183,7 @@
                                style="width: 300px; height: 44px; margin-bottom: 5px;" />
 
                         <!-- Nút Add + Buy + Total Price -->
-                        <div class="d-flex flex-column align-items-center gap-1">
-                            <span class="text-danger fw-bold" style="font-size: 1rem; text-align: center; margin-bottom: 5px;">
-                                <fmt:formatNumber value="${price * 0.9}" pattern="#,##0"/> ₫ (10% off)
-                            </span>
+                        <div class="d-flex flex-column align-items-center gap-1">                         
                             <div class="d-flex gap-2">
                                 <c:choose>
                                     <c:when test="${getDetail.productQuatity > 0}">
@@ -335,7 +332,7 @@
                                             <label>Rating:</label>
                                             <div class="star-rating" style="display: flex; gap: 2px;">
                                                 <c:forEach var="i" begin="1" end="5">
-                                                    <input type="radio" id="starEdit${r.id}_${i}" name="rating" value="${i}" ${r.rating == i ? 'checked' : ''} style="display:none;" />
+                                                    <input type="radio" id="starEdit${r.id}_${i}" name="rating" value="${i}" ${r.rating == i ? 'checked' : ''} style="display:none;" required/>
                                                     <label for="starEdit${r.id}_${i}" class="star-label" style="font-size: 1.5rem; color: #ccc; cursor:pointer;">
                                                         <i class="fa fa-star"></i>
                                                     </label>
@@ -372,7 +369,7 @@
                         <label>Rating:</label>
                         <div class="star-rating" style="display: flex; gap: 2px;">
                             <c:forEach var="i" begin="1" end="5">
-                                <input type="radio" id="starAdd${i}" name="rating" value="${i}" style="display:none;" />
+                                <input type="radio" id="starAdd${i}" name="rating" value="${i}" style="display:none;" required />
                                 <label for="starAdd${i}" class="star-label" style="font-size: 1.5rem; color: #ccc; cursor:pointer;">
                                     <i class="fa fa-star"></i>
                                 </label>
@@ -391,38 +388,69 @@
     <c:if test="${sessionScope.loggedUser == null}">
         <div class="alert alert-info">Please <a href="login">login</a> to add a review.</div>
     </c:if>
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>You must purchase this product before reviewing.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <%@include file="/WEB-INF/include/footer.jsp" %> 
 <%@include file="/WEB-INF/include/showPopupUser.jsp" %>
 <!-- CSS và JS cho hiệu ứng chọn sao -->
 <style>
-.star-label i { transition: color 0.2s; }
+    .star-label i {
+        transition: color 0.2s;
+    }
 </style>
 <script>
-document.querySelectorAll('.star-rating').forEach(function(starRating) {
-    const radios = starRating.querySelectorAll('input[type=radio]');
-    const labels = starRating.querySelectorAll('label');
-    labels.forEach((label, idx) => {
-        label.addEventListener('mouseenter', function() {
-            for (let i = 0; i <= idx; i++) labels[i].style.color = '#ffc107';
+    document.querySelectorAll('.star-rating').forEach(function (starRating) {
+        const radios = starRating.querySelectorAll('input[type=radio]');
+        const labels = starRating.querySelectorAll('label');
+        labels.forEach((label, idx) => {
+            label.addEventListener('mouseenter', function () {
+                for (let i = 0; i <= idx; i++)
+                    labels[i].style.color = '#ffc107';
+            });
+            label.addEventListener('mouseleave', function () {
+                labels.forEach(l => l.style.color = '#ccc');
+                const checked = starRating.querySelector('input[type=radio]:checked');
+                if (checked) {
+                    for (let i = 0; i < checked.value; i++)
+                        labels[i].style.color = '#ffc107';
+                }
+            });
+            label.addEventListener('click', function () {
+                labels.forEach(l => l.style.color = '#ccc');
+                for (let i = 0; i <= idx; i++)
+                    labels[i].style.color = '#ffc107';
+            });
         });
-        label.addEventListener('mouseleave', function() {
-            labels.forEach(l => l.style.color = '#ccc');
-            const checked = starRating.querySelector('input[type=radio]:checked');
-            if (checked) {
-                for (let i = 0; i < checked.value; i++) labels[i].style.color = '#ffc107';
-            }
-        });
-        label.addEventListener('click', function() {
-            labels.forEach(l => l.style.color = '#ccc');
-            for (let i = 0; i <= idx; i++) labels[i].style.color = '#ffc107';
-        });
+        // On load, highlight checked
+        const checked = starRating.querySelector('input[type=radio]:checked');
+        if (checked) {
+            for (let i = 0; i < checked.value; i++)
+                labels[i].style.color = '#ffc107';
+        }
     });
-    // On load, highlight checked
-    const checked = starRating.querySelector('input[type=radio]:checked');
-    if (checked) {
-        for (let i = 0; i < checked.value; i++) labels[i].style.color = '#ffc107';
-    }
-});
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("error") === "notpurchased") {
+            const modal = new bootstrap.Modal(document.getElementById('errorModal'));
+            modal.show();
+        }
+    });
 </script>

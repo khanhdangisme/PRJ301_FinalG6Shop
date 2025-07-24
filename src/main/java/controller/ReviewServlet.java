@@ -12,6 +12,7 @@ import java.util.List;
 
 @WebServlet(name = "ReviewServlet", urlPatterns = {"/review"})
 public class ReviewServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -53,6 +54,15 @@ public class ReviewServlet extends HttpServlet {
             ReviewDAO dao = new ReviewDAO();
             if ("add".equals(action)) {
                 int productId = Integer.parseInt(request.getParameter("productId"));
+                boolean hasPurchased = dao.hasUserPurchasedProduct(user.getUserID(), productId);
+
+                if (!hasPurchased) {
+                    // Gửi lại URL kèm thông báo lỗi
+                    String back = request.getHeader("referer");
+                    response.sendRedirect(back + (back.contains("?") ? "&" : "?") + "error=notpurchased");
+                    return;
+                }
+
                 int rating = Integer.parseInt(request.getParameter("rating"));
                 String comment = request.getParameter("comment");
                 Review review = new Review(0, user.getUserID(), productId, rating, comment, null, null);
