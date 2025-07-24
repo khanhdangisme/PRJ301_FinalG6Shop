@@ -17,6 +17,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class OrderDAO extends DBContext {
+    public static void main(String[] args) throws SQLException {
+        OrderDAO dao = new OrderDAO();
+        System.out.println(dao.getOrderHistoryByUser('2'));
+    }
 
     public List<ProductDTO> getOrderHistoryByUser(int userId) throws SQLException {
         List<ProductDTO> list = new ArrayList<>();
@@ -75,12 +79,12 @@ public class OrderDAO extends DBContext {
                         dto.setCategoryName(rs.getString("CategoryName"));
                         dto.setQuantity(rs.getInt("Quantity"));
                         dto.setPrice(rs.getDouble("Price"));
-                        dto.setPrice(rs.getDouble("TotalPrice"));
+                        dto.setSubTotal(rs.getDouble("TotalPrice"));
                         dto.setStatus(rs.getString("OrderStatus"));
                         dto.setVersion(rs.getString("Version"));
                         dto.setColor(rs.getString("Color"));
                         dto.setStorage(rs.getString("Storage"));
-                        dto.setSubTotal(dto.getPrice() * dto.getQuantity());
+//                        dto.setSubTotal(dto.getPrice() * dto.getQuantity());
 
                         productMap.put(key, dto);
                     }
