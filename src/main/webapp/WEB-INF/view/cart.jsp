@@ -220,6 +220,7 @@
 </div>
 
 <!-- ====== ORDER SUCCESS TRIGGER ====== -->
+<c:set var="voucher" value="${sessionScope.COUPON}" />
 <c:if test="${sessionScope.orderSuccess}">
     <script>
         window.addEventListener("load", () => {
@@ -325,9 +326,6 @@
     }
 </script>
 
-<%@include file="/WEB-INF/include/footer.jsp"%>
-<%@include file="/WEB-INF/include/showPopupUser.jsp" %>
-
 <script>
     window.addEventListener('DOMContentLoaded', function () {
         setTimeout(function () {
@@ -341,6 +339,9 @@
         }, 3000);
     });
 </script>
+
+<%@include file="/WEB-INF/include/footer.jsp"%>
+<%@include file="/WEB-INF/include/showPopupUser.jsp" %>
 
 </body>
 </html>

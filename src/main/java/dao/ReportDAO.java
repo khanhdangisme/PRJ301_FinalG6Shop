@@ -54,7 +54,7 @@ public class ReportDAO extends DBContext {
         String sql
                 = "SELECT TOP 5 "
                 + "    p.ID AS ProductID, p.Name AS ProductName, p.CategoryID, c.Name AS CategoryName, "
-                + "    SUM(d.Quantity) AS Quantity, SUM(d.Quantity * d.Price) AS SubTotal, "
+                + "    SUM(d.Quantity) AS Quantity, SUM(d.Quantity * o.TotalPrice) AS SubTotal, "
                 + "    CASE "
                 + "        WHEN p.CategoryID = 1 THEN ip.ImageURL "
                 + "        WHEN p.CategoryID = 2 THEN ipad.ImageURL "
