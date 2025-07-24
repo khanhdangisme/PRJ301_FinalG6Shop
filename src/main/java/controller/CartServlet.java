@@ -24,7 +24,6 @@ import model.ProductDTO;
 import model.Voucher;
 import java.util.Date;
 import java.net.URLEncoder;
-import java.util.Base64;
 import model.User;
 
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart"})
@@ -179,7 +178,7 @@ public class CartServlet extends HttpServlet {
                     session.setAttribute(AttributeConstant.CART, cart); // Cập nhật giỏ
                     updateCartCount(session, cart);
 
-                    Voucher voucher = (Voucher) session.getAttribute(AttributeConstant.COUPON);
+                    Voucher voucher = request.getAttribute(AttributeConstant.COUPON);
                     double discount = 0;
                     if (voucher != null && voucher.getExpiryDate().after(new Date())) {
                         discount = total * voucher.getDiscountPercent() / 100.0;
@@ -340,7 +339,7 @@ public class CartServlet extends HttpServlet {
                     session.setAttribute(AttributeConstant.COUPON_ERROR, "Invalid or expired coupon");
                     session.removeAttribute(AttributeConstant.COUPON);
                 } else {
-                    session.setAttribute(AttributeConstant.COUPON, voucher);
+                    request.setAttribute(AttributeConstant.COUPON, voucher);
                     session.setAttribute(AttributeConstant.COUPON_SUCCESS, "Coupon applied successfully");
                 }
                 response.sendRedirect(request.getContextPath() + "/cart?action=view");
