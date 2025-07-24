@@ -110,10 +110,17 @@ public class UserServlet extends HttpServlet {
 
         if ("save-profile".equals(action)) {
             // Lấy dữ liệu từ form
-            String username = request.getParameter(ParamConstant.USERNAME);
+            String username = user.getUserName();
             String fullname = request.getParameter(ParamConstant.FULLNAME);
             String email = request.getParameter(ParamConstant.EMAIL);
             String phone = request.getParameter(ParamConstant.PHONE);
+
+            if (dao.containsScript(fullname) || dao.containsScript(email) || dao.containsScript(phone)) {
+                session.setAttribute(AttributeConstant.MESSAGE, "Input must not contain scripts or malicious content.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PROFILE).forward(request, response);
+                return;
+            }
 
             if (username != null && !username.isEmpty()
                     && fullname != null && !fullname.isEmpty()
@@ -152,7 +159,6 @@ public class UserServlet extends HttpServlet {
                 }
 
                 // Gán lại thông tin cho user hiện tại
-                user.setUserName(username);
                 user.setUserFullname(fullname);
                 user.setUserEmail(email);
                 user.setUserPhone(phone);
@@ -182,13 +188,19 @@ public class UserServlet extends HttpServlet {
 
         } else if ("change-password".equals(action)) {
 
-            String username = request.getParameter(AttributeConstant.USERNAME);
-            String fullname = request.getParameter(ParamConstant.FULLNAME);
-            String email = request.getParameter(ParamConstant.EMAIL);
-            String phone = request.getParameter(ParamConstant.PHONE);
+            String username = user.getUserName();
+            String fullname = user.getUserFullname();
+            String email = user.getUserEmail();
+            String phone = user.getUserPhone();
             String currentPassword = request.getParameter(AttributeConstant.CURRENT_PASSWORD);
             String newPassword = request.getParameter(AttributeConstant.NEW_PASSWORD);
 
+            if (dao.containsScript(currentPassword) || dao.containsScript(newPassword)) {
+                session.setAttribute(AttributeConstant.MESSAGE, "Script tags or dangerous characters are not allowed in password.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.getRequestDispatcher(PathConstant.URL_USER_UPDATE_PASSWORD).forward(request, response);
+                return;
+            }
             if (username != null && !username.trim().isEmpty()
                     && currentPassword != null && !currentPassword.trim().isEmpty()
                     && newPassword != null && !newPassword.trim().isEmpty()

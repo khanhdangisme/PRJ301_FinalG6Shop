@@ -177,13 +177,14 @@
                             <i class="fas fa-arrow-left"></i> Back to Shop
                         </a>
 
-                        <!-- Ô nhập voucher -->
-                        <input type="text" value="G6SALE10"
-                               class="form-control text-center fw-bold"
-                               style="width: 300px; height: 44px; margin-bottom: 5px;" />
-
+                       
+                        
                         <!-- Nút Add + Buy + Total Price -->
+<<<<<<< HEAD
                         <div class="d-flex flex-column align-items-center gap-1">                         
+=======
+                        <div class="d-flex flex-column align-items-center gap-1">
+>>>>>>> 433d68f5167085fb38e6aa212ae5bb74bf373ed1
                             <div class="d-flex gap-2">
                                 <c:choose>
                                     <c:when test="${getDetail.productQuatity > 0}">

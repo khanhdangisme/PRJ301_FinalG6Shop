@@ -86,7 +86,7 @@
 
     <c:if test="${not empty sessionScope.errorMessage}">
         <div class="alert alert-danger auto-dismiss text-center my-3">
-<i class="fa fa-exclamation-circle me-2"></i>${sessionScope.errorMessage}
+            <i class="fa fa-exclamation-circle me-2"></i>${sessionScope.errorMessage}
         </div>
         <c:remove var="errorMessage" scope="session"/>
     </c:if>
@@ -206,7 +206,7 @@
             </h5>
             <c:if test="${discount > 0}">
                 <h5>Discount:
-<span><fmt:formatNumber value="${discount}" pattern="#,##0"/>₫</span>
+                    <span><fmt:formatNumber value="${discount}" pattern="#,##0"/>₫</span>
                 </h5>
             </c:if>
             <h5 class="total-amount">Final Total:
@@ -284,7 +284,7 @@
         // enter
         inp.addEventListener('keydown', e => {
             if (e.key === 'Enter') {
-e.preventDefault();          // khỏi reload trang
+                e.preventDefault();          // khỏi reload trang
                 e.stopPropagation(); // Ngăn sự kiện lan truyền
                 inp.closest('form').submit();
             }
@@ -324,15 +324,17 @@ e.preventDefault();          // khỏi reload trang
 </script>
 
 <script>
-window.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        document.querySelectorAll('.auto-dismiss').forEach(function(el) {
-            el.style.transition = 'opacity 0.5s';
-            el.style.opacity = 0;
-            setTimeout(function() { el.remove(); }, 500);
-        });
-    }, 3000);
-});
+    window.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+            document.querySelectorAll('.auto-dismiss').forEach(function (el) {
+                el.style.transition = 'opacity 0.5s';
+                el.style.opacity = 0;
+                setTimeout(function () {
+                    el.remove();
+                }, 500);
+            });
+        }, 3000);
+    });
 </script>
 
 <%@include file="/WEB-INF/include/footer.jsp"%>

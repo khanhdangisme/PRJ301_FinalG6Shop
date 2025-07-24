@@ -24,7 +24,6 @@ import model.ProductDTO;
 import model.Voucher;
 import java.util.Date;
 import java.net.URLEncoder;
-import java.util.Base64;
 import model.User;
 
 @WebServlet(name = "CartServlet", urlPatterns = {"/cart"})
@@ -341,6 +340,7 @@ public class CartServlet extends HttpServlet {
                     session.removeAttribute(AttributeConstant.COUPON);
                 } else {
                     session.setAttribute(AttributeConstant.COUPON, voucher);
+                    session.setAttribute("voucherCode", code); // <- giữ lại code sau reload
                     session.setAttribute(AttributeConstant.COUPON_SUCCESS, "Coupon applied successfully");
                 }
                 response.sendRedirect(request.getContextPath() + "/cart?action=view");
