@@ -19,6 +19,11 @@ import model.User;
  */
 public class UserDAO extends DBContext {
 
+    public static void main(String[] args) {
+        UserDAO user = new UserDAO();
+        System.out.println(user.hashMd5("123"));
+    }
+
     public static final String SELECT_PASSWORD = "SELECT ID, Username, Password, FullName, Email, Phone, Role, avatar, status FROM Users WHERE Username = ? AND Password = ?";
     public static final String INSERT_USER = "INSERT INTO Users (Username, Password, FullName, Email, Phone, Role, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
     public static final String CHECK_EXIST = "SELECT 1 FROM Users WHERE Username = ?";
@@ -154,13 +159,6 @@ public class UserDAO extends DBContext {
         }
         // Regex: bắt đầu bằng chữ in hoa, sau đó bất kỳ ký tự nào, và phải có ít nhất 1 số
         return password.matches("^[A-Z].*\\d+.*$");
-    }
-
-    public static void main(String[] args) {
-        UserDAO dao = new UserDAO();
-        String raw = "password123";
-        String hashed = dao.hashMd5(raw);
-        System.out.println("Hash MD5 of 'password123': " + hashed);
     }
 
     public boolean containsScript(String input) {

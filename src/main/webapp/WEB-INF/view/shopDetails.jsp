@@ -177,16 +177,10 @@
                             <i class="fas fa-arrow-left"></i> Back to Shop
                         </a>
 
-                        <!-- Ô nhập voucher -->
-                        <input type="text" value="G6SALE10"
-                               class="form-control text-center fw-bold"
-                               style="width: 300px; height: 44px; margin-bottom: 5px;" />
-
+                       
+                        
                         <!-- Nút Add + Buy + Total Price -->
                         <div class="d-flex flex-column align-items-center gap-1">
-                            <span class="text-danger fw-bold" style="font-size: 1rem; text-align: center; margin-bottom: 5px;">
-                                <fmt:formatNumber value="${price * 0.9}" pattern="#,##0"/> ₫ (10% off)
-                            </span>
                             <div class="d-flex gap-2">
                                 <c:choose>
                                     <c:when test="${getDetail.productQuatity > 0}">

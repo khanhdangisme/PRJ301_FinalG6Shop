@@ -29,6 +29,7 @@ public class OrderDAO extends DBContext {
                 + "    d.DetailID,\n"
                 + "    d.Quantity,\n"
                 + "    d.Price,\n"
+                + "    o.TotalPrice,\n"
                 + "    d.Version,\n"
                 + "    d.Color,\n"
                 + "    d.Storage,\n"
@@ -74,6 +75,7 @@ public class OrderDAO extends DBContext {
                         dto.setCategoryName(rs.getString("CategoryName"));
                         dto.setQuantity(rs.getInt("Quantity"));
                         dto.setPrice(rs.getDouble("Price"));
+                        dto.setPrice(rs.getDouble("TotalPrice"));
                         dto.setStatus(rs.getString("OrderStatus"));
                         dto.setVersion(rs.getString("Version"));
                         dto.setColor(rs.getString("Color"));
