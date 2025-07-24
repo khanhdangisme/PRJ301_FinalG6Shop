@@ -178,7 +178,7 @@ public class CartServlet extends HttpServlet {
                     session.setAttribute(AttributeConstant.CART, cart); // Cập nhật giỏ
                     updateCartCount(session, cart);
 
-                    Voucher voucher = request.getAttribute(AttributeConstant.COUPON);
+                    Voucher voucher = (Voucher) session.getAttribute(AttributeConstant.COUPON);
                     double discount = 0;
                     if (voucher != null && voucher.getExpiryDate().after(new Date())) {
                         discount = total * voucher.getDiscountPercent() / 100.0;
@@ -326,22 +326,38 @@ public class CartServlet extends HttpServlet {
 
             /* =========================== APPLY COUPON ======================== */
             case "applyCoupon": {
-                String code = request.getParameter(ParamConstant.COUPON);
+                String code = request.getParameter("voucherCode");
                 if (code == null || code.trim().isEmpty()) {
                     session.setAttribute(AttributeConstant.COUPON_ERROR, "Coupon code is required");
                     session.removeAttribute(AttributeConstant.COUPON);
+                    session.removeAttribute("voucherCode");
                     response.sendRedirect(request.getContextPath() + "/cart?action=view");
                     return;
                 }
+
+                // Anti-script injection (basic XSS check)
+                if (code.contains("<") || code.contains(">") || code.matches(".*[\"'`;].*")) {
+                    session.setAttribute(AttributeConstant.COUPON_ERROR, "Invalid characters in coupon");
+                    session.removeAttribute(AttributeConstant.COUPON);
+                    session.removeAttribute("voucherCode");
+                    response.sendRedirect(request.getContextPath() + "/cart?action=view");
+                    return;
+                }
+
                 VoucherDAO voucherDAO = new VoucherDAO();
                 Voucher voucher = voucherDAO.getVoucherByCode(code);
+
                 if (voucher == null || voucher.getExpiryDate().before(new Date())) {
                     session.setAttribute(AttributeConstant.COUPON_ERROR, "Invalid or expired coupon");
                     session.removeAttribute(AttributeConstant.COUPON);
+                    session.removeAttribute("voucherCode");
                 } else {
-                    request.setAttribute(AttributeConstant.COUPON, voucher);
+                    session.setAttribute(AttributeConstant.COUPON, voucher);
+                    session.setAttribute("voucherCode", code); // <- giữ lại code sau reload
                     session.setAttribute(AttributeConstant.COUPON_SUCCESS, "Coupon applied successfully");
+                    System.out.println(voucher);
                 }
+
                 response.sendRedirect(request.getContextPath() + "/cart?action=view");
                 break;
             }

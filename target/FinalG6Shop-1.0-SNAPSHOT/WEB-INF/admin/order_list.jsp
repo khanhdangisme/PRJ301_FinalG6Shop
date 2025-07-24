@@ -2,6 +2,7 @@
 <title>G6Shop - Order History</title>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@include file="/WEB-INF/include/headerAdmin.jsp" %>
 
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" style="margin-top: 110px;">
@@ -21,6 +22,7 @@
                         <table class="table table-bordered table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
+                                    <th>#</th>
                                     <th>Image</th>
                                     <th>Product</th>
                                     <th>Version</th>
@@ -38,7 +40,19 @@
                             </thead>
                             <tbody>
                                 <c:forEach var="item" items="${orders}">
-                                    <tr>
+                                    <c:if test="${item.orderId != currentOrderId}">
+                                                <c:set var="currentOrderId" value="${item.orderId}" />
+                                                <c:choose>
+                                                    <c:when test="${rowColor == 'bg-white'}">
+                                                        <c:set var="rowColor" value="bg-light" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="rowColor" value="bg-white" />
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
+                                    <tr class="${rowColor}">
+                                        <td>${item.orderId}</td>
                                         <td>
                                             <img src="${pageContext.request.contextPath}/assets/img/${item.image}"
                                                  alt="" width="60" height="60" class="rounded shadow-sm" />
@@ -50,7 +64,17 @@
                                         <td>${item.categoryName}</td>
                                         <td>${item.quantity}</td>
                                         <td><fmt:formatNumber value="${item.price}" pattern="#,##0"/> ₫</td>
-                                        <td><fmt:formatNumber value="${item.subTotal}" pattern="#,##0"/> ₫</td>
+                                        <c:choose>
+                                                    <c:when test="${not fn:contains(displayedOrderIds, item.orderId)}">
+                                                        <td class="fw-bold text-danger">
+                                                            <fmt:formatNumber value="${item.subTotal}" pattern="#,##0"/> ₫
+                                                            <c:set var="displayedOrderIds" value="${displayedOrderIds}${item.orderId}," />
+                                                        </td>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <td class="text-muted">–</td>
+                                                    </c:otherwise>
+                                                </c:choose>
                                         <td>${item.username}</td>
                                         <td>
                                             <fmt:formatDate value="${item.orderDate}" pattern="HH:mm:ss" /><br/>

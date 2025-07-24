@@ -193,8 +193,9 @@
         <div class="col-md-6">
             <form action="cart" method="post" class="input-group" style="margin-top: 20px;">
                 <input type="hidden" name="action" value="applyCoupon">
-                <input type="text" name="coupon" id="couponCode"
-                       class="form-control" placeholder="Enter Coupon Code" style="height: 46px;">
+                <input type="text" name="voucherCode" id="couponCode"
+                       class="form-control" placeholder="Enter Coupon Code" style="height: 46px;"
+                       value="${sessionScope.voucherCode != null ? sessionScope.voucherCode : ''}">
                 <button class="btn btn-dark" type="submit" style="height: 46px;">Apply</button>
             </form>
         </div>
@@ -298,6 +299,7 @@
     function checkout() {
         const ids = [...document.querySelectorAll('.item-checkbox:checked')]
                 .map(cb => cb.dataset.id);
+        const voucherCode = document.getElementById('couponCode')?.value || "";
 
         if (ids.length === 0) {
             // dùng modal cảnh báo đã có (cartAlertModal)
@@ -317,7 +319,8 @@
 
         /* → chưa đăng nhập : chuyển về /checkout để Filter báo “You need to log in!” */
         const url = '${pageContext.request.contextPath}/checkout'
-                + '?selectedIds=' + encodeURIComponent(ids.join(','));
+                + '?selectedIds=' + encodeURIComponent(ids.join(','))
+                + '&voucherCode=' + encodeURIComponent(voucherCode);
         window.location.href = url;
     }
 </script>

@@ -1,6 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <title>G6Shop ‑ Order History</title>
 <%@ include file="/WEB-INF/include/header.jsp" %>
 
@@ -24,6 +25,7 @@
                                 <table class="table table-hover align-middle">
                                     <thead class="table-light">
                                         <tr>
+                                            <th>#</th>
                                             <th>Image</th>
                                             <th>Product</th>
                                             <th>Version</th>
@@ -39,8 +41,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <c:set var="displayedOrderIds" value="" />
+                                        <c:set var="currentOrderId" value="" />
+                                        <c:set var="rowColor" value="bg-white" />
                                         <c:forEach var="item" items="${orderHistories}">
-                                            <tr>
+                                            <c:if test="${item.orderId != currentOrderId}">
+                                                <c:set var="currentOrderId" value="${item.orderId}" />
+                                                <c:choose>
+                                                    <c:when test="${rowColor == 'bg-white'}">
+                                                        <c:set var="rowColor" value="bg-light" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="rowColor" value="bg-white" />
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
+                                            <tr class="${rowColor}">
+                                                <td>${item.orderId}</td>
                                                 <td><img src="${pageContext.request.contextPath}/assets/img/${item.image}" alt="${item.productName}" width="60" height="60" class="rounded shadow-sm border" /></td>
                                                 <td class="fw-semibold">${item.productName}</td>
                                                 <td>${item.version}</td>
@@ -49,7 +66,17 @@
                                                 <td><span class="badge bg-secondary">${item.categoryName}</span></td>
                                                 <td>${item.quantity}</td>
                                                 <td><fmt:formatNumber value="${item.price}" pattern="#,##0"/> ₫</td>
-                                                <td class="fw-bold text-danger"><fmt:formatNumber value="${item.subTotal}" pattern="#,##0"/> ₫</td>
+                                                <c:choose>
+                                                    <c:when test="${not fn:contains(displayedOrderIds, item.orderId)}">
+                                                        <td class="fw-bold text-danger">
+                                                            <fmt:formatNumber value="${item.subTotal}" pattern="#,##0"/> ₫
+                                                            <c:set var="displayedOrderIds" value="${displayedOrderIds}${item.orderId}," />
+                                                        </td>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <td class="text-muted">–</td>
+                                                    </c:otherwise>
+                                                </c:choose>
                                                 <td>
                                                     <fmt:formatDate value="${item.orderDate}" pattern="HH:mm:ss" /><br/>
                                                     <fmt:formatDate value="${item.orderDate}" pattern="dd/MM/yyyy" />

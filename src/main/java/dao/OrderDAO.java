@@ -13,13 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class OrderDAO extends DBContext {
+
     public static void main(String[] args) throws SQLException {
         OrderDAO dao = new OrderDAO();
-        System.out.println(dao.getOrderHistoryByUser('2'));
+        System.out.println(dao.getOrderHistoryByUser(2));
     }
 
     public List<ProductDTO> getOrderHistoryByUser(int userId) throws SQLException {
@@ -64,12 +67,15 @@ public class OrderDAO extends DBContext {
         try ( Connection conn = getConnection();  PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             try ( ResultSet rs = ps.executeQuery()) {
+                Set<Integer> orderIdSet = new HashSet<>(); //sua o day
                 while (rs.next()) {
                     String key = rs.getInt("OrderID") + "-" + rs.getInt("ProductID") + "-" + rs.getInt("DetailID");
                     ProductDTO dto = productMap.get(key);
 
                     if (dto == null) {
                         dto = new ProductDTO();
+                        int orderId = rs.getInt("OrderID");
+                        
                         dto.setOrderId(rs.getInt("OrderID"));
                         dto.setOrderDate(rs.getTimestamp("OrderDate"));
                         dto.setProductId(rs.getInt("ProductID"));
@@ -84,14 +90,20 @@ public class OrderDAO extends DBContext {
                         dto.setVersion(rs.getString("Version"));
                         dto.setColor(rs.getString("Color"));
                         dto.setStorage(rs.getString("Storage"));
-//                        dto.setSubTotal(dto.getPrice() * dto.getQuantity());
+
+                        // ✅ Set SubTotal (total order) duy nhất cho 1 orderId
+                        if (!orderIdSet.contains(orderId)) {
+                            dto.setSubTotal(rs.getDouble("TotalPrice"));
+                            orderIdSet.add(orderId);
+                        } else {
+                            dto.setSubTotal('-'); // Hoặc không set gì nếu bạn render logic phía JSP
+                        }
 
                         productMap.put(key, dto);
                     }
                 }
             }
         }
-
         list.addAll(productMap.values());
         return list;
     }
@@ -100,7 +112,7 @@ public class OrderDAO extends DBContext {
         List<ProductDTO> list = new ArrayList<>();
         Map<String, ProductDTO> orderProductMap = new LinkedHashMap<>();
 
-        String sql = "SELECT o.ID AS OrderID, o.OrderDate, u.Username, d.ProductID, d.Quantity, d.Price, "
+        String sql = "SELECT o.ID AS OrderID, o.OrderDate, u.Username, d.ProductID, d.Quantity, d.Price, o.TotalPrice,"
                 + "p.Name AS ProductName, "
                 + "CASE "
                 + "    WHEN p.CategoryID = 1 THEN ip.ImageURL "
@@ -129,6 +141,7 @@ public class OrderDAO extends DBContext {
                 System.out.println("Số bản ghi lấy được từ getAllOrderHistories: " + rowCount + " at " + new java.util.Date());
                 rs.beforeFirst();
             }
+            Set<Integer> orderIdSet = new HashSet<>();
 
             while (rs.next()) {
                 String key = rs.getInt("OrderID") + "-" + rs.getInt("ProductID") + "-" + rs.getInt("DetailID");
@@ -136,6 +149,8 @@ public class OrderDAO extends DBContext {
 
                 if (dto == null) {
                     dto = new ProductDTO();
+                    int orderId = rs.getInt("OrderID");
+                    
                     dto.setOrderId(rs.getInt("OrderID"));
                     dto.setOrderDate(rs.getTimestamp("OrderDate"));
                     dto.setProductId(rs.getInt("ProductID"));
@@ -145,13 +160,22 @@ public class OrderDAO extends DBContext {
                     dto.setCategoryName(rs.getString("CategoryName"));
                     dto.setQuantity(rs.getInt("Quantity"));
                     dto.setPrice(rs.getDouble("Price"));
+                    dto.setSubTotal(rs.getDouble("TotalPrice"));
                     dto.setVersion(rs.getString("Version")); // từ OrderDetails
                     dto.setColor(rs.getString("Color"));
                     dto.setStorage(rs.getString("Storage"));
                     dto.setUsername(rs.getString("Username"));
                     dto.setDetailId(rs.getInt("DetailID"));
-                    dto.setSubTotal(dto.getPrice() * dto.getQuantity());
                     dto.setStatus(rs.getString("OrderStatus"));
+                    
+                    // ✅ Set SubTotal (total order) duy nhất cho 1 orderId
+                        if (!orderIdSet.contains(orderId)) {
+                            dto.setSubTotal(rs.getDouble("TotalPrice"));
+                            orderIdSet.add(orderId);
+                        } else {
+                            dto.setSubTotal('-'); // Hoặc không set gì nếu bạn render logic phía JSP
+                        }
+                        
                     orderProductMap.put(key, dto);
                 }
             }

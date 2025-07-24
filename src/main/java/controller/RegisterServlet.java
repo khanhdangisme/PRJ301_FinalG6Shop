@@ -81,6 +81,7 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String username = request.getParameter(ParamConstant.USERNAME);
         String password = request.getParameter(ParamConstant.PASSWORD);
         String fullname = request.getParameter(ParamConstant.FULLNAME);
@@ -89,10 +90,11 @@ public class RegisterServlet extends HttpServlet {
 
         UserDAO dao = new UserDAO();
         HttpSession session = request.getSession();
+
         if (dao.containsScript(username) || dao.containsScript(fullname)
                 || dao.containsScript(email) || dao.containsScript(phone)) {
             session.setAttribute(AttributeConstant.MESSAGE, "Input contains unsafe characters or scripts.");
-            session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
             request.setAttribute(AttributeConstant.USERNAME, username);
             request.setAttribute(AttributeConstant.FULLNAME, fullname);
             request.setAttribute(AttributeConstant.EMAIL, email);
@@ -106,10 +108,10 @@ public class RegisterServlet extends HttpServlet {
                 && fullname != null && !fullname.trim().isEmpty()
                 && email != null && !email.trim().isEmpty()
                 && phone != null && !phone.trim().isEmpty()) {
+
             if (!dao.isValidPassword(password)) {
                 session.setAttribute(AttributeConstant.MESSAGE, "Password must start with an uppercase letter and contain at least 1 digit.");
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 request.setAttribute(AttributeConstant.USERNAME, username);
                 request.setAttribute(AttributeConstant.FULLNAME, fullname);
                 request.setAttribute(AttributeConstant.EMAIL, email);
@@ -117,10 +119,10 @@ public class RegisterServlet extends HttpServlet {
                 request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
                 return;
             }
+
             if (!dao.isValidGmail(email)) {
                 session.setAttribute(AttributeConstant.MESSAGE, "Email must be a valid @gmail.com address.");
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 request.setAttribute(AttributeConstant.USERNAME, username);
                 request.setAttribute(AttributeConstant.FULLNAME, fullname);
                 request.setAttribute(AttributeConstant.EMAIL, email);
@@ -128,10 +130,10 @@ public class RegisterServlet extends HttpServlet {
                 request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
                 return;
             }
+
             if (!dao.isValidPhone(phone)) {
                 session.setAttribute(AttributeConstant.MESSAGE, "Phone number must start with 0 and have exactly 10 digits.");
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
                 request.setAttribute(AttributeConstant.USERNAME, username);
                 request.setAttribute(AttributeConstant.FULLNAME, fullname);
                 request.setAttribute(AttributeConstant.EMAIL, email);
@@ -139,20 +141,66 @@ public class RegisterServlet extends HttpServlet {
                 request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
                 return;
             }
-            // Kiểm tra người dùng đã tồn tại chưa
-            if (dao.checkUserExists(username)) {
-                session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
+
+            try {
+                if (dao.checkUserExists(username)) {
+session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.setAttribute(AttributeConstant.USERNAME, username);
+                    request.setAttribute(AttributeConstant.FULLNAME, fullname);
+                    request.setAttribute(AttributeConstant.EMAIL, email);
+                    request.setAttribute(AttributeConstant.PHONE, phone);
+                    request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                    return;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Database error while checking username.");
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                request.setAttribute(AttributeConstant.USERNAME, username);
-                request.setAttribute(AttributeConstant.FULLNAME, fullname);
-                request.setAttribute(AttributeConstant.EMAIL, email);
-                request.setAttribute(AttributeConstant.PHONE, phone);
                 request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
                 return;
             }
+
+            try {
+                if (dao.checkEmailExists(email)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Email is already registered.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.setAttribute(AttributeConstant.USERNAME, username);
+                    request.setAttribute(AttributeConstant.FULLNAME, fullname);
+                    request.setAttribute(AttributeConstant.EMAIL, email);
+                    request.setAttribute(AttributeConstant.PHONE, phone);
+                    request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                    return;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Database error while checking email.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                return;
+            }
+
+            try {
+                if (dao.checkPhoneExists(phone)) {
+                    session.setAttribute(AttributeConstant.MESSAGE, "Phone number is already registered.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.setAttribute(AttributeConstant.USERNAME, username);
+                    request.setAttribute(AttributeConstant.FULLNAME, fullname);
+                    request.setAttribute(AttributeConstant.EMAIL, email);
+                    request.setAttribute(AttributeConstant.PHONE, phone);
+request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                    return;
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Database error while checking phone number.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
+                return;
+            }
+
             User newUser = new User(0, username, password, fullname, email, phone, 1, null, "Enable"); // Role = 1 là customer
 
-            boolean inserted = false;
             try {
                 if (dao.insertUser(newUser)) {
                     session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_SUCCESSFULLY);
@@ -169,6 +217,9 @@ public class RegisterServlet extends HttpServlet {
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                session.setAttribute(AttributeConstant.MESSAGE, "Database error during registration.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
             }
         } else {
             session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
@@ -178,18 +229,11 @@ public class RegisterServlet extends HttpServlet {
             request.setAttribute(AttributeConstant.EMAIL, email);
             request.setAttribute(AttributeConstant.PHONE, phone);
             request.getRequestDispatcher(PathConstant.URL_REGISTER).forward(request, response);
-
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "Handles user registration";
+    }
 }

@@ -80,4 +80,11 @@ public class Voucher {
     public void setActive(boolean active) {
         isActive = active;
     }
+
+    @Override
+    public String toString() {
+        return "Voucher{" + "id=" + id + ", code=" + code + ", discountPercent=" + discountPercent + ", maxDiscount=" + maxDiscount + ", expiryDate=" + expiryDate + ", isActive=" + isActive + '}';
+    }
+    
+    
 }

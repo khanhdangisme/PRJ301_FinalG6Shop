@@ -86,33 +86,25 @@ public class AdminServlet extends HttpServlet {
             throws ServletException, IOException {
         String view = request.getParameter(ParamConstant.VIEW);
 
-        switch (view) { // thêm 1 case lấy order_history [Admin]
+        switch (view) {
             case "dashboard":
                 request.getRequestDispatcher(PathConstant.URL_ADMIN_DASHBOARD).forward(request, response);
                 break;
             case "customer":
                 AdminDAO dao = new AdminDAO();
                 try {
-                    // Lấy số trang hiện tại từ request, mặc định là trang 1 nếu không có tham số trang
                     String pageRaw = request.getParameter("page");
                     int page = (pageRaw == null || pageRaw.isEmpty()) ? 1 : Integer.parseInt(pageRaw);
+                    int pageSize = PaginationUtil.NUMBER_OF_ACCOUNT;
 
-                    // Đặt kích thước trang (số lượng khách hàng mỗi trang)
-                    int pageSize = PaginationUtil.NUMBER_OF_ACCOUNT;  // Ví dụ, hiển thị 10 khách hàng mỗi trang
-
-                    // Lấy danh sách khách hàng cho trang hiện tại
                     List<User> customers = dao.getAll(page, pageSize);
-
-                    // Tính tổng số trang
-                    int totalCustomers = dao.getTotalCustomers();  // Phương thức này cần phải được tạo trong AdminDAO để đếm tổng số khách hàng
+                    int totalCustomers = dao.getTotalCustomers();
                     int totalPages = (int) Math.ceil((double) totalCustomers / pageSize);
 
-                    // Truyền dữ liệu vào request
                     request.setAttribute(AttributeConstant.LIST, customers);
                     request.setAttribute("totalPages", totalPages);
                     request.setAttribute("currentPage", page);
 
-                    // Chuyển tiếp đến JSP
                     request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
                 } catch (SQLException ex) {
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
@@ -121,47 +113,37 @@ public class AdminServlet extends HttpServlet {
             case "product":
                 AdminProductDAO productCate = new AdminProductDAO();
                 try {
-                    // 1. Lấy danh sách category
-                    List<Product> cate = productCate.getAllCategory(); // Lấy danh sách danh mục
+                    List<Product> cate = productCate.getAllCategory();
                     request.setAttribute(AttributeConstant.LIST, cate);
 
-                    // 2. Lấy thông tin phân trang từ request
-                    String pageRaw = request.getParameter("page"); // Lấy số trang từ request
-                    int page = (pageRaw == null || pageRaw.isEmpty()) ? 1 : Integer.parseInt(pageRaw); // Trang mặc định là 1
-                    int pageSize = PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE_PRODUCT; // Định nghĩa số sản phẩm mỗi trang
+                    String pageRaw = request.getParameter("page");
+                    int page = (pageRaw == null || pageRaw.isEmpty()) ? 1 : Integer.parseInt(pageRaw);
+                    int pageSize = PaginationUtil.NUMBER_OF_ITEMS_PAER_PAGE_PRODUCT;
 
-                    // 3. Lấy sản phẩm cho từng category (phân trang)
                     Map<Integer, List<ProductDTO>> productsMap = new HashMap<>();
                     for (Product p : cate) {
-                        // Lấy sản phẩm theo phân trang cho từng category
                         List<ProductDTO> prodList = productCate.getProduct(p.getCategoryID(), page, pageSize);
                         productsMap.put(p.getCategoryID(), prodList);
                     }
 
-                    // 4. Tính toán tổng số trang cho mỗi category
                     Map<Integer, Integer> totalPagesMap = new HashMap<>();
                     for (Product p : cate) {
-                        // Lấy số lượng sản phẩm theo category
                         int totalProduct = productCate.countProductByCategory(p.getCategoryID());
-
-                        // Tính toán số trang cho mỗi category
                         int totalPages = (int) Math.ceil((double) totalProduct / pageSize);
                         totalPagesMap.put(p.getCategoryID(), totalPages);
                     }
 
-                    // 5. Truyền dữ liệu phân trang vào request
                     request.setAttribute("productsMap", productsMap);
                     request.setAttribute("totalPagesMap", totalPagesMap);
                     request.setAttribute("currentPage", page);
 
-                    // 6. Chuyển tiếp tới JSP
                     request.getRequestDispatcher(PathConstant.URL_ADMIN_PRODUCT).forward(request, response);
                 } catch (SQLException ex) {
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
 
-            case "orderlist":       // ← menu Integrations sẽ gọi ?view=integrations
+            case "orderlist":
                 try {
                 OrderDAO orderDAO = new OrderDAO();
                 List<ProductDTO> allOrders = orderDAO.getAllOrderHistories();
@@ -179,16 +161,15 @@ public class AdminServlet extends HttpServlet {
                 request.getRequestDispatcher("/WEB-INF/admin/reports.jsp")
                         .forward(request, response);
                 break;
-            case "voucher":
-            {
+            case "voucher": {
                 try {
                     request.setAttribute("vouchers", new dao.VoucherDAO().getAllVouchers());
                 } catch (SQLException ex) {
                     Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-                request.getRequestDispatcher("/WEB-INF/admin/voucherList.jsp").forward(request, response);
-                break;
+            request.getRequestDispatcher("/WEB-INF/admin/voucherList.jsp").forward(request, response);
+            break;
 
         }
     }
@@ -206,51 +187,104 @@ public class AdminServlet extends HttpServlet {
             throws ServletException, IOException {
         String action = request.getParameter(ParamConstant.ACTION);
         HttpSession session = request.getSession(false);
-        User user = (User) session.getAttribute("loggedUser"); // KHÔNG cần check null nữa
+        User user = (User) session.getAttribute("loggedUser");
         UserDAO dao = new UserDAO();
         AdminDAO adminDAO = new AdminDAO();
 
-        // Bắt input, nếu null thì ->
         if ("register".equals(action)) {
             String username = request.getParameter(ParamConstant.USERNAME);
             String password = request.getParameter(ParamConstant.PASSWORD);
             String fullname = request.getParameter(ParamConstant.FULLNAME);
             String email = request.getParameter(ParamConstant.EMAIL);
             String phone = request.getParameter(ParamConstant.PHONE);
+
+            request.setAttribute(AttributeConstant.USERNAME, username);
+            request.setAttribute(AttributeConstant.FULLNAME, fullname);
+            request.setAttribute(AttributeConstant.EMAIL, email);
+            request.setAttribute(AttributeConstant.PHONE, phone);
+
+            if (dao.containsScript(username) || dao.containsScript(fullname)
+                    || dao.containsScript(email) || dao.containsScript(phone)) {
+                session.setAttribute(AttributeConstant.MESSAGE, "Input contains unsafe characters or scripts.");
+                session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
+                return;
+            }
+
             if (username != null && !username.trim().isEmpty()
                     && password != null && !password.trim().isEmpty()
                     && fullname != null && !fullname.trim().isEmpty()
                     && email != null && !email.trim().isEmpty()
                     && phone != null && !phone.trim().isEmpty()) {
+
                 if (!dao.isValidPassword(password)) {
                     session.setAttribute(AttributeConstant.MESSAGE, "Password must start with an uppercase letter and contain at least 1 digit.");
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
                     return;
                 }
+
                 if (!dao.isValidGmail(email)) {
                     session.setAttribute(AttributeConstant.MESSAGE, "Email must be a valid @gmail.com address.");
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
                     return;
                 }
+
                 if (!dao.isValidPhone(phone)) {
                     session.setAttribute(AttributeConstant.MESSAGE, "Phone number must start with 0 and have exactly 10 digits.");
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
                     return;
                 }
 
-                // Kiểm tra người dùng đã tồn tại chưa
-                if (dao.checkUserExists(username)) {
-                    session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
+                try {
+                    if (dao.checkUserExists(username)) {
+                        session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR_EXISTS);
+                        session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                        request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
+                        return;
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    session.setAttribute(AttributeConstant.MESSAGE, "Database error while checking username.");
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                    response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                    request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
                     return;
                 }
-                User newUser = new User(0, username, password, fullname, email, phone, 0, null, "Enable"); // Role = 1 là customer
 
-                boolean inserted = false;
+                try {
+                    if (dao.checkEmailExists(email)) {
+                        session.setAttribute(AttributeConstant.MESSAGE, "Email is already registered.");
+                        session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                        request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
+                        return;
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    session.setAttribute(AttributeConstant.MESSAGE, "Database error while checking email.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
+                    return;
+                }
+
+                try {
+                    if (dao.checkPhoneExists(phone)) {
+                        session.setAttribute(AttributeConstant.MESSAGE, "Phone number is already registered.");
+                        session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                        request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
+                        return;
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    session.setAttribute(AttributeConstant.MESSAGE, "Database error while checking phone number.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
+                    return;
+                }
+
+                User newUser = new User(0, username, password, fullname, email, phone, 1, null, "Enable");
+
                 try {
                     if (dao.insertUser(newUser)) {
                         session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_SUCCESSFULLY);
@@ -259,15 +293,18 @@ public class AdminServlet extends HttpServlet {
                     } else {
                         session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
                         session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                        response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                        request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
                     }
                 } catch (SQLException ex) {
-                    Logger.getLogger(RegisterServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(AdminServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    session.setAttribute(AttributeConstant.MESSAGE, "Database error during registration.");
+                    session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
+                    request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
                 }
             } else {
                 session.setAttribute(AttributeConstant.MESSAGE, MessageConstant.REGISTER_ERROR);
                 session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.DANGER);
-                response.sendRedirect(request.getContextPath() + PathConstant.URL_SERVLET_ADMIN_CUSTOMERS);
+                request.getRequestDispatcher(PathConstant.URL_ADMIN_CUSTOMERS).forward(request, response);
             }
 
         } else if ("update-status".equals(action)) {
@@ -305,7 +342,6 @@ public class AdminServlet extends HttpServlet {
                 conn = orderDAO.getConnection();
                 conn.setAutoCommit(false);
 
-                // Lấy và kiểm tra tham số
                 String idRaw = request.getParameter("productId");
                 String categoryRaw = request.getParameter("categoryId");
                 String detailRaw = request.getParameter("detailId");
@@ -327,7 +363,6 @@ public class AdminServlet extends HttpServlet {
                     throw new NumberFormatException("Quantity must be > 0");
                 }
 
-                // Ghi bảng Orders
                 String sqlOrder = "INSERT INTO Orders (UserID, OrderDate) VALUES (?, ?)";
                 PreparedStatement psO = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
                 psO.setInt(1, user.getUserID());
@@ -338,10 +373,8 @@ public class AdminServlet extends HttpServlet {
                 int orderId = rsKey.next() ? rsKey.getInt(1) : -1;
                 psO.close();
 
-                // Lấy đúng sản phẩm theo biến thể
                 ProductDTO product = orderDAO.getProductById(productId, categoryId, detailId);
 
-                // Ghi bảng OrderDetails
                 String sqlDetail = "INSERT INTO OrderDetails (OrderID, ProductID, Quantity, Price, Version, Color, Storage) "
                         + "VALUES (?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement psD = conn.prepareStatement(sqlDetail);
@@ -452,7 +485,7 @@ public class AdminServlet extends HttpServlet {
                 boolean updated = orderDAO.updateOrderStatus(orderId, "Cancelled");
 
                 if (updated) {
-                    orderDAO.restoreStockFromOrder(orderId); // <-- cập nhật tồn kho
+                    orderDAO.restoreStockFromOrder(orderId);
                     session.setAttribute(AttributeConstant.MESSAGE, "Order has been cancelled and stock restored.");
                     session.setAttribute(AttributeConstant.MESSAGETYPE, MessageConstant.SUCCESS);
                 } else {
@@ -494,7 +527,7 @@ public class AdminServlet extends HttpServlet {
             String startDateStr = request.getParameter("startDate");
             String endDateStr = request.getParameter("endDate");
             request.setAttribute("action", "revenue");
-            request.setAttribute("startDate", startDateStr); // giữ lại input đã nhập
+            request.setAttribute("startDate", startDateStr);
             request.setAttribute("endDate", endDateStr);
             if (startDateStr != null && endDateStr != null) {
                 LocalDate fromDate = LocalDate.parse(startDateStr);
@@ -523,7 +556,7 @@ public class AdminServlet extends HttpServlet {
                 LocalDate toDate = LocalDate.parse(endDateStr);
                 ReportDAO rDao = new ReportDAO();
                 try {
-                    // ĐỔI HÀM Ở ĐÂY: lấy bản full info
+
                     List<ProductDTO> topProducts = rDao.getTop5BestSellingProductsFullInfo(fromDate, toDate);
                     request.setAttribute("topProducts", topProducts);
                     request.setAttribute("fromDate", Timestamp.valueOf(fromDate.atStartOfDay()));
@@ -536,7 +569,6 @@ public class AdminServlet extends HttpServlet {
             }
             request.getRequestDispatcher("/WEB-INF/admin/reports.jsp").forward(request, response);
         }
-
     }
 
     /**
@@ -548,5 +580,4 @@ public class AdminServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
 }

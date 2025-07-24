@@ -18,7 +18,6 @@
                         </button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
@@ -87,54 +86,6 @@
     </div>
 </div>
 
-<!-- Checkout Modal -->
-<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutLabel" aria-hidden="true">
-    <div class="modal-dialog mt-3">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title" id="checkoutLabel">Checkout Information</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-
-            <form action="${pageContext.request.contextPath}/checkout" method="post">
-                <div class="modal-body px-4 py-3">
-                    <!-- id sản phẩm đã chọn -->
-                    <input type="hidden" name="selectedIds" id="coSelIds">
-
-                    <div class="mb-2">
-                        <label class="form-label">Fullname</label>
-                        <input name="fullname" class="form-control" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Email</label>
-                        <input name="email" type="email" class="form-control" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Phone</label>
-                        <input name="phone" class="form-control" required>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Address</label>
-                        <input name="address" class="form-control" required>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">City</label>
-                            <input name="city" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">Province</label>
-                            <input name="province" class="form-control" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer px-4 py-3">
-                    <button type="submit" class="btn btn-success px-4">Place Order</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
@@ -247,8 +198,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer px-4 py-3">
-                    <button type="submit" class="btn btn-success px-4">Place Order</button>
+                <div class="modal-footer px-4 py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <!-- Ô nhập mã giảm giá -->
+                    <input type="text" name="coupon" class="form-control"
+                           placeholder="Enter voucher code (optional)" style="max-width: 260px;" />
+
+                    <!-- Nút đặt hàng -->
+                    <button type="submit" class="btn btn-success px-4">
+                        Place Order
+                    </button>
                 </div>
             </form>
         </div>

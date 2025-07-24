@@ -7,6 +7,8 @@ package dao;
 import db.DBContext;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -32,8 +34,6 @@ public class UserDAO extends DBContext {
     public static final String CHECK_EXIST_BEFORE_UPDATE_PASSWORD = "SELECT 1 FROM Users WHERE username = ? AND password = ?";
     public static final String DELETE_USER = "DELETE FROM Users WHERE Username = ? and password = ?";
 
-    //method login(User)
-    //ham ma hoa password 
     private String hashMd5(String raw) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -78,16 +78,6 @@ public class UserDAO extends DBContext {
         return null;
     }
 
-    public boolean checkUserExists(String username) {
-
-        try ( ResultSet rs = this.executeSelectQuery(CHECK_EXIST, new Object[]{username})) {
-            return rs.next();
-        } catch (SQLException ex) {
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
     public boolean insertUser(User user) throws SQLException {
         String hashedPwd = hashMd5(user.getUserPassword());
         Object[] params = {
@@ -99,10 +89,33 @@ public class UserDAO extends DBContext {
             user.getUserRole(),
             user.getStatus()
         };
-        return this.executeQuery(INSERT_USER, params) > 0;
+return this.executeQuery(INSERT_USER, params) > 0;
     }
 
     public boolean updateUser(User user) throws SQLException {
+
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users WHERE Email = ? AND Username != ?")) {
+            stmt.setString(1, user.getUserEmail());
+            stmt.setString(2, user.getUserName());
+            try ( ResultSet rs = stmt.executeQuery()) {
+                rs.next();
+                if (rs.getInt(1) > 0) {
+                    throw new SQLException("Email is already registered by another user.");
+                }
+            }
+        }
+
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users WHERE Phone = ? AND Username != ?")) {
+            stmt.setString(1, user.getUserPhone());
+            stmt.setString(2, user.getUserName());
+            try ( ResultSet rs = stmt.executeQuery()) {
+                rs.next();
+                if (rs.getInt(1) > 0) {
+                    throw new SQLException("Phone number is already registered by another user.");
+                }
+            }
+        }
+
         Object[] params = {
             user.getUserFullname(),
             user.getUserEmail(),
@@ -149,15 +162,15 @@ public class UserDAO extends DBContext {
         if (email == null) {
             return false;
         }
-        // Regex: bắt đầu bằng ký tự, chỉ cho phép chữ cái, số, dấu chấm, dấu gạch dưới
+
         return email.matches("^[a-zA-Z0-9._%+-]+@gmail\\.com$");
     }
 
     public static boolean isValidPassword(String password) {
-        if (password == null || password.length() < 6) {
+if (password == null || password.length() < 6) {
             return false;
         }
-        // Regex: bắt đầu bằng chữ in hoa, sau đó bất kỳ ký tự nào, và phải có ít nhất 1 số
+
         return password.matches("^[A-Z].*\\d+.*$");
     }
 
@@ -169,5 +182,35 @@ public class UserDAO extends DBContext {
         return lower.contains("<script") || lower.contains("</script>")
                 || lower.contains("javascript:") || lower.contains("onerror=")
                 || lower.contains("onload=") || lower.contains("alert(");
+    }
+
+    public boolean checkUserExists(String username) throws SQLException {
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users WHERE Username = ?")) {
+            stmt.setString(1, username);
+            try ( ResultSet rs = stmt.executeQuery()) {
+                rs.next();
+                return rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    public boolean checkEmailExists(String email) throws SQLException {
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users WHERE Email = ?")) {
+            stmt.setString(1, email);
+            try ( ResultSet rs = stmt.executeQuery()) {
+                rs.next();
+                return rs.getInt(1) > 0;
+            }
+        }
+    }
+
+    public boolean checkPhoneExists(String phone) throws SQLException {
+        try ( Connection conn = DBContext.getConnection();  PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) FROM Users WHERE Phone = ?")) {
+            stmt.setString(1, phone);
+            try ( ResultSet rs = stmt.executeQuery()) {
+                rs.next();
+                return rs.getInt(1) > 0;
+            }
+        }
     }
 }
