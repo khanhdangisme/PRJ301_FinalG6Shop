@@ -82,26 +82,7 @@ public class ProductAdminServlet extends HttpServlet {
                 }
                 break;
             }
-//            case "list": {
-//                AdminProductDAO dao = new AdminProductDAO();
-//                try {
-//                    List<Product> categories = dao.getAllCategory();
-//                    Map<Integer, List<ProductDTO>> productsMap = new HashMap<>();
-//
-//                    for (Product c : categories) {
-//                        List<ProductDTO> list = dao.getProduct(c.getCategoryID());
-//                        productsMap.put(c.getCategoryID(), list);
-//                    }
-//
-//                    request.setAttribute("list", categories);
-//                    request.setAttribute("productsMap", productsMap);
-//                    request.getRequestDispatcher("/WEB-INF/admin/product.jsp").forward(request, response);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error loading product list.");
-//                }
-//                break;
-//            }
+
             case "add": {
                 try {
                     AdminProductDAO dao = new AdminProductDAO();
@@ -136,32 +117,32 @@ public class ProductAdminServlet extends HttpServlet {
         String view = request.getParameter("view");
         if ("add".equals(view)) {
             try {
-                String name = request.getParameter("productName");
-                String version = request.getParameter("version");
-                String color = request.getParameter("color");
-                String storage = request.getParameter("storage");
-                String priceParam = request.getParameter("price");
-                String quantityParam = request.getParameter("quantity");
+                String name = escapeHtml(request.getParameter("productName"));
+                String version = escapeHtml(request.getParameter("version"));
+                String color = escapeHtml(request.getParameter("color"));
+                String storage = escapeHtml(request.getParameter("storage"));
+                String priceParam = request.getParameter("price");    // số, không cần escape
+                String quantityParam = request.getParameter("quantity"); // số, không cần escape
                 int categoryId = Integer.parseInt(request.getParameter("categoryId"));
-                String image = request.getParameter("productImage");
+                String image = escapeHtml(request.getParameter("productImage"));
 
                 double price = Double.parseDouble(priceParam);
                 int quantity = Integer.parseInt(quantityParam);
 
-                String screenSize = request.getParameter("screenSize");
-                String rearCamera = request.getParameter("rearCamera");
-                String frontCamera = request.getParameter("frontCamera");
-                String chipset = request.getParameter("chipset");
-                String battery = request.getParameter("battery");
-                String simType = request.getParameter("simType");
-                String os = request.getParameter("os");
-                String resolution = request.getParameter("resolution");
-                String screenFeatures = request.getParameter("screenFeatures");
-                String cpuType = request.getParameter("cpuType");
-                String ram = request.getParameter("ram");
-                String gpuType = request.getParameter("gpuType");
-                String screenTech = request.getParameter("screenTech");
-                String ports = request.getParameter("ports");
+                String screenSize = escapeHtml(request.getParameter("screenSize"));
+                String rearCamera = escapeHtml(request.getParameter("rearCamera"));
+                String frontCamera = escapeHtml(request.getParameter("frontCamera"));
+                String chipset = escapeHtml(request.getParameter("chipset"));
+                String battery = escapeHtml(request.getParameter("battery"));
+                String simType = escapeHtml(request.getParameter("simType"));
+                String os = escapeHtml(request.getParameter("os"));
+                String resolution = escapeHtml(request.getParameter("resolution"));
+                String screenFeatures = escapeHtml(request.getParameter("screenFeatures"));
+                String cpuType = escapeHtml(request.getParameter("cpuType"));
+                String ram = escapeHtml(request.getParameter("ram"));
+                String gpuType = escapeHtml(request.getParameter("gpuType"));
+                String screenTech = escapeHtml(request.getParameter("screenTech"));
+                String ports = escapeHtml(request.getParameter("ports"));
 
                 AdminProductDAO dao = new AdminProductDAO();
 
@@ -212,32 +193,32 @@ public class ProductAdminServlet extends HttpServlet {
                 int categoryId = Integer.parseInt(request.getParameter("categoryId"));
 
                 // NEW: Lấy giá trị cũ
-                String oldColor = request.getParameter("oldColor");
-                String oldStorage = request.getParameter("oldStorage");
+                String oldColor = escapeHtml(request.getParameter("oldColor"));
+                String oldStorage = escapeHtml(request.getParameter("oldStorage"));
 
                 // NEW: Lấy giá trị mới
-                String name = request.getParameter("productName");
-                String version = request.getParameter("version");
-                String color = request.getParameter("color");
-                String storage = request.getParameter("storage");
+                String name = escapeHtml(request.getParameter("productName"));
+                String version = escapeHtml(request.getParameter("version"));
+                String color = escapeHtml(request.getParameter("color"));
+                String storage = escapeHtml(request.getParameter("storage"));
                 double price = Double.parseDouble(request.getParameter("price"));
                 int quantity = Integer.parseInt(request.getParameter("quantity"));
 
                 // Các thuộc tính đặc thù
-                String screenSize = request.getParameter("screenSize");
-                String rearCamera = request.getParameter("rearCamera");
-                String frontCamera = request.getParameter("frontCamera");
-                String chipset = request.getParameter("chipset");
-                String battery = request.getParameter("battery");
-                String simType = request.getParameter("simType");
-                String os = request.getParameter("os");
-                String resolution = request.getParameter("resolution");
-                String screenFeatures = request.getParameter("screenFeatures");
-                String cpuType = request.getParameter("cpuType");
-                String ram = request.getParameter("ram");
-                String gpuType = request.getParameter("gpuType");
-                String screenTech = request.getParameter("screenTech");
-                String ports = request.getParameter("ports");
+                String screenSize = escapeHtml(request.getParameter("screenSize"));
+                String rearCamera = escapeHtml(request.getParameter("rearCamera"));
+                String frontCamera = escapeHtml(request.getParameter("frontCamera"));
+                String chipset = escapeHtml(request.getParameter("chipset"));
+                String battery = escapeHtml(request.getParameter("battery"));
+                String simType = escapeHtml(request.getParameter("simType"));
+                String os = escapeHtml(request.getParameter("os"));
+                String resolution = escapeHtml(request.getParameter("resolution"));
+                String screenFeatures = escapeHtml(request.getParameter("screenFeatures"));
+                String cpuType = escapeHtml(request.getParameter("cpuType"));
+                String ram = escapeHtml(request.getParameter("ram"));
+                String gpuType = escapeHtml(request.getParameter("gpuType"));
+                String screenTech = escapeHtml(request.getParameter("screenTech"));
+                String ports = escapeHtml(request.getParameter("ports"));
 
                 AdminProductDAO dao = new AdminProductDAO();
 
@@ -324,7 +305,6 @@ public class ProductAdminServlet extends HttpServlet {
                     request.setAttribute("getDetail", existing);
                     request.getRequestDispatcher(PathConstant.URL_ADMIN_DETAILS).forward(request, response);
                 }
-                
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -342,5 +322,17 @@ public class ProductAdminServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+
+    private String escapeHtml(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#x27;");
+    }
 
 }

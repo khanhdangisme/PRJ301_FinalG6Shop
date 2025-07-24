@@ -64,13 +64,13 @@ public class ReviewServlet extends HttpServlet {
                 }
 
                 int rating = Integer.parseInt(request.getParameter("rating"));
-                String comment = request.getParameter("comment");
+                String comment = escapeHtml(request.getParameter("comment"));
                 Review review = new Review(0, user.getUserID(), productId, rating, comment, null, null);
                 dao.addReview(review);
             } else if ("edit".equals(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 int rating = Integer.parseInt(request.getParameter("rating"));
-                String comment = request.getParameter("comment");
+                String comment = escapeHtml(request.getParameter("comment"));
                 Review review = dao.getReviewById(id);
                 if (review != null && review.getUserId() == user.getUserID()) {
                     review.setRating(rating);
@@ -88,4 +88,16 @@ public class ReviewServlet extends HttpServlet {
             throw new ServletException(e);
         }
     }
+
+    private String escapeHtml(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#x27;");
+    }
+
 }
